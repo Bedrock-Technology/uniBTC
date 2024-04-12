@@ -14,5 +14,5 @@ def main():
     uniBTC_impl = uniBTC.deploy({'from': deployer})
     uniBTC_proxy = TransparentUpgradeableProxy.deploy(uniBTC_impl, deployer, b'', {'from': deployer})
 
-    transparent_uniBTC = Contract.from_abi("unBTC",uniBTC_proxy.address, uniBTC.abi)
+    transparent_uniBTC = Contract.from_abi("uniBTC",uniBTC_proxy.address, uniBTC.abi)
     transparent_uniBTC.initialize(owner, owner, {'from': owner})

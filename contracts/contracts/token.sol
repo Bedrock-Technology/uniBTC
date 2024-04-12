@@ -24,6 +24,10 @@ contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Ac
         _grantRole(MINTER_ROLE, minter);
     }
 
+    function decimals() public view virtual override returns (uint8) {
+        return 8;
+    }
+
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
         _mint(to, amount);
     }
