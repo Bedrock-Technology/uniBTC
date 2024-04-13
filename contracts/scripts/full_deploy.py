@@ -37,6 +37,7 @@ def main():
     transparent_uniBTC = Contract.from_abi("uniBTC",uniBTC_proxy.address, uniBTC.abi)
     transparent_uniBTC.initialize(owner, vault_proxy, {'from': owner})
 
+"""
     # deploy timelock and set proposer to a gnosis multisig wallet
     timelock = TimelockController.deploy(86400, [multisig], [nullAddress], nullAddress, {'from': deployer})
 
@@ -52,4 +53,4 @@ def main():
     print("proxyAdmin:", proxyAdmin)
     print("vault_proxy:", vault_proxy)
     print("uniBTC_proxy:", uniBTC_proxy)
-
+"""

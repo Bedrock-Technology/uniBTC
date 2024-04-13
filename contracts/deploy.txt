@@ -1,0 +1,43 @@
+$ brownie run scripts/full_deploy.py --network mainnet -I
+Brownie v1.19.3 - Python development framework for Ethereum
+
+ContractsProject is the active project.
+
+Running 'scripts/full_deploy.py::main'...
+Enter password for "mainnet-owner":
+Enter password for "mainnet-deployer":
+Transaction sent: 0x02787e084dba5e936eb03811370cf666a260ccf914400781bd52c835bb8ba03b
+  Gas price: 13.313115811 gwei   Gas limit: 487604   Nonce: 98
+  ProxyAdmin.constructor confirmed   Block: 19645484   Gas used: 443277 (90.91%)
+  ProxyAdmin deployed at: 0x029E4FbDAa31DE075dD74B2238222A08233978f6
+
+Transaction sent: 0x781bcd83be5d28750b87f755609c752b809f7f797a7881a86238019d77feed08
+  Gas price: 13.026188412 gwei   Gas limit: 1547302   Nonce: 113
+  uniBTC.constructor confirmed   Block: 19645487   Gas used: 1406639 (90.91%)
+  uniBTC deployed at: 0x51A7f889480c57cbeea81614f7D0bE2B70db6c5e
+
+Transaction sent: 0x9458a2073de3eac36b295e9b7b8d97441203d3f9ffec5e85dac92c5c8c47ea6d
+  Gas price: 12.734074949 gwei   Gas limit: 670629   Nonce: 114
+  TransparentUpgradeableProxy.constructor confirmed   Block: 19645532   Gas used: 609663 (90.91%)
+  TransparentUpgradeableProxy deployed at: 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
+
+Transaction sent: 0xe676d524b6e406a2f8b1866ad25ff1c77c1a498e804f3d145a6d4d53c10650f0
+  Gas price: 12.07037354 gwei   Gas limit: 1130379   Nonce: 115
+  Vault.constructor confirmed   Block: 19645538   Gas used: 1027618 (90.91%)
+  Vault deployed at: 0x317B8E2739616c9EA30C4f7e51c1d48C47876eF6
+
+Transaction sent: 0x9f6813ffca82ead81b7c90fc2f6c777382348a3d98761eccfd6c7f6ae7c0315c
+  Gas price: 10.457736132 gwei   Gas limit: 670629   Nonce: 116
+  TransparentUpgradeableProxy.constructor confirmed   Block: 19645601   Gas used: 609663 (90.91%)
+  TransparentUpgradeableProxy deployed at: 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
+
+Transaction sent: 0xd95e4dbd1a719a7123b56a2d3b9d1ae8324fb5ea351683210d04ca5983d6274b
+  Gas price: 9.608088046 gwei   Gas limit: 193517   Nonce: 99
+  Transaction confirmed   Block: 19645722   Gas used: 172546 (89.16%)
+
+Transaction sent: 0x549c37e07be58e4c024c5e106a66eb974558f9fc7f78d90b8cbfb99c0df21a6d
+  Gas price: 9.136826387 gwei   Gas limit: 166510   Nonce: 100
+  Transaction confirmed   Block: 19645731   Gas used: 148366 (89.10%)
+
+
+Interactive mode enabled. Use quit() to close.
