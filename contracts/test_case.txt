@@ -1,0 +1,89 @@
+$ brownie run scripts/full_deploy.py --network mainnet-fork -I
+Brownie v1.19.3 - Python development framework for Ethereum
+
+ContractsProject is the active project.
+
+Launching 'ganache-cli --chain.vmErrorsOnRPCResponse true --wallet.totalAccounts 10 --hardfork istanbul --fork.url https://archive-eth.w3node.com/95505c03e75b4d5101aa488da67867842d56ff4fffba8d978961cf5611f8f92b/api --miner.blockGasLimit 12000000 --wallet.mnemonic brownie --server.port 8545 --chain.chainId 1'...
+
+Running 'scripts/full_deploy.py::main'...
+Enter password for "mainnet-owner":
+Enter password for "mainnet-deployer":
+Transaction sent: 0x792dc0711944fad401936aaa25352d963453274627a484616f26b1fae369c956
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 113
+  uniBTC.constructor confirmed   Block: 19644176   Gas used: 1406339 (11.72%)
+  uniBTC deployed at: 0x51A7f889480c57cbeea81614f7D0bE2B70db6c5e
+
+Transaction sent: 0xd6cb45109d740c79936fef5d5d8bd5770f4da0de6e6182e9f3efafb3d975749d
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 114
+  TransparentUpgradeableProxy.constructor confirmed   Block: 19644177   Gas used: 605615 (5.05%)
+  TransparentUpgradeableProxy deployed at: 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
+
+Transaction sent: 0xd29c3dac22ba351214b961ddc62bd89850590e50d996c42fd1cb222482e65025
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 115
+  Vault.constructor confirmed   Block: 19644178   Gas used: 1027428 (8.56%)
+  Vault deployed at: 0x317B8E2739616c9EA30C4f7e51c1d48C47876eF6
+
+Transaction sent: 0x0b559b92c943f36a8649f079a1995894d72f29eb3f2a27f9fbb778cad6e324b3
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 116
+  TransparentUpgradeableProxy.constructor confirmed   Block: 19644179   Gas used: 605615 (5.05%)
+  TransparentUpgradeableProxy deployed at: 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
+
+Transaction sent: 0xe098992023a09cbc328fa977eb5724da62269025154f007bfc3130317dc6092f
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 98
+  Transaction confirmed   Block: 19644180   Gas used: 167946 (1.40%)
+
+Transaction sent: 0x65ff243b0a8fa387229cbc31cc43b68a1b182d8d15d18240195037b55c68c84e
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 99
+  Transaction confirmed   Block: 19644181   Gas used: 145766 (1.21%)
+
+btcOwner: 0x5Ee5bf7ae06D1Be5997A1A72006FE6C607eC6DE8
+
+Interactive mode enabled. Use quit() to close.
+>>> transparent_vault.pause({'from':owner})
+Transaction sent: 0xb0de63804dbbad4b334f566c1a8d9d822b419274b60d2c61ab2df38e7f334996
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 100
+  Transaction confirmed   Block: 19644182   Gas used: 47815 (0.40%)
+
+<Transaction '0xb0de63804dbbad4b334f566c1a8d9d822b419274b60d2c61ab2df38e7f334996'>
+>>> WBTC.allowance(btcOwner, transparent_vault)
+0
+>>> WBTC.approve(transparent_vault,10000000, {'from':btcOwner})
+Transaction sent: 0x6a069a570dfb8503e5278d664d9c4c7773fde74113b37b0c0f0a52483daef2af
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 1
+  ERC20.approve confirmed   Block: 19644183   Gas used: 44920 (0.37%)
+
+<Transaction '0x6a069a570dfb8503e5278d664d9c4c7773fde74113b37b0c0f0a52483daef2af'>
+>>> tx = transparent_vault.mint(1, {'from':btcOwner})
+Transaction sent: 0x428d872118b8f338292ef52a11757aa139ea06422752fcf3d3f7190abd5ba2b9
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 2
+  Transaction confirmed (Pausable: paused)   Block: 19644184   Gas used: 25141 (0.21%)
+
+>>> transparent_vault.unpause({'from':owner})
+Transaction sent: 0x4003e3349f041b797fc5183cd19e9c93ca47bd43d9b05cb9d41e2ff373e6c04c
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 101
+  Transaction confirmed   Block: 19644185   Gas used: 17792 (0.15%)
+
+<Transaction '0x4003e3349f041b797fc5183cd19e9c93ca47bd43d9b05cb9d41e2ff373e6c04c'>
+>>> tx = transparent_vault.mint(1, {'from':btcOwner})
+Transaction sent: 0x09498efe39cecdfdca1d6073890b6244d073b4d223dbf5e7acc8b0fba4d03f18
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 3
+  Transaction confirmed   Block: 19644186   Gas used: 117142 (0.98%)
+
+>>> tx = transparent_vault.mint(1, {'from':btcOwner})
+Transaction sent: 0xc9a6499877196158557e247f06c5709fab8fb40ae15583167461b39eea5f9f61
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 4
+  Transaction confirmed   Block: 19644187   Gas used: 72142 (0.60%)
+
+>>> transparent_uniBTC.batchTransfer([accounts[0], accounts[1]], [1,2], {'from':btcOwner})
+Transaction sent: 0x0b9733a462cd967e50d77fcf2be88b8ef696831e6c5765c5605eae8126379a9c
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 5
+  Transaction confirmed (ERC20: transfer amount exceeds balance)   Block: 19644188   Gas used: 57328 (0.48%)
+
+<Transaction '0x0b9733a462cd967e50d77fcf2be88b8ef696831e6c5765c5605eae8126379a9c'>
+>>> transparent_uniBTC.batchTransfer([accounts[0], accounts[1]], [1,1], {'from':btcOwner})
+Transaction sent: 0xd6d798703fd636af0dfaa45a57fedb6ca83dac387fa7ce46fc4d3130eb5992db
+  Gas price: 0.0 gwei   Gas limit: 12000000   Nonce: 6
+  Transaction confirmed   Block: 19644189   Gas used: 65946 (0.55%)
+
+<Transaction '0xd6d798703fd636af0dfaa45a57fedb6ca83dac387fa7ce46fc4d3130eb5992db'>
+>>>
