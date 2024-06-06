@@ -46,7 +46,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev UPDATE(20240606):  to set initial cap
      */
    function initializeV2() reinitializer(2) public {
-       caps[WBTC] = 3200 * 1e8;
+       caps[WBTC] = 2000 * 1e8;
    } 
 
     function pause() public onlyRole(PAUSER_ROLE) {
@@ -88,5 +88,24 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
         IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
         IMintableContract(uniBTC).mint(msg.sender, _amount);
+        emit Minted(_token, _amount);
     }
+
+    /**
+     * @dev withdraw token
+     */
+    function _adminWithdraw(address _token, uint256 _amount, address _target) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        IERC20(_token).safeTransfer(_target, _amount);
+        emit Withdrawed(_token, _amount, _target);
+    }
+
+    /**
+     * ======================================================================================
+     *
+     * EVENTS
+     *
+     * ======================================================================================
+     */
+    event Withdrawed(address token, uint256 amount, address target);
+    event Minted(address token, uint256 amount);
 }
