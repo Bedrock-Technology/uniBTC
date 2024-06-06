@@ -42,7 +42,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
     */
 
-      /**
+    /**
      * @dev mint uniBTC with WBTC
      */
     function mint(uint256 _amount) external whenNotPaused {
