@@ -42,22 +42,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
     */
 
-    /**
-     * @dev UPDATE(20240606):  to set initial cap
-     */
-   function initializeV2() reinitializer(2) public {
-       caps[WBTC] = 2000 * 1e8;
-   } 
-
-    function pause() public onlyRole(PAUSER_ROLE) {
-        _pause();
-    }
-
-    function unpause() public onlyRole(PAUSER_ROLE) {
-        _unpause();
-    }
-
-    /**
+      /**
      * @dev mint uniBTC with WBTC
      */
     function mint(uint256 _amount) external whenNotPaused {
@@ -72,6 +57,30 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
+     * ======================================================================================
+     *
+     * ADMIN
+     *
+     * ======================================================================================
+     */
+
+    /**
+     * @dev UPDATE(20240606):  to set initial cap
+     */
+    function initializeV2() reinitializer(2) public {
+        caps[WBTC] = 2000 * 1e8;
+    } 
+
+    function pause() public onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    function unpause() public onlyRole(PAUSER_ROLE) {
+        _unpause();
+    }
+
+
+    /**
      * @dev set cap for a specific type of wrapped BTC
      */
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -81,6 +90,21 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
+     * @dev withdraw token
+     */
+    function adminWithdraw(address _token, uint256 _amount, address _target) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        IERC20(_token).safeTransfer(_target, _amount);
+        emit Withdrawed(_token, _amount, _target);
+    }
+
+    /**
+     * ======================================================================================
+     *
+     * INTERNAL
+     *
+     * ======================================================================================
+     */
+    /**
      * @dev mint internal 
      */
     function _mint(address _token, uint256 _amount) internal {
@@ -89,14 +113,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
         IMintableContract(uniBTC).mint(msg.sender, _amount);
         emit Minted(_token, _amount);
-    }
-
-    /**
-     * @dev withdraw token
-     */
-    function _adminWithdraw(address _token, uint256 _amount, address _target) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        IERC20(_token).safeTransfer(_target, _amount);
-        emit Withdrawed(_token, _amount, _target);
     }
 
     /**
