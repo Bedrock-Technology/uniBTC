@@ -68,7 +68,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev UPDATE(20240606):  to set initial cap
      */
     function initializeV2() reinitializer(2) public {
-        caps[WBTC] = 2000 * 1e8;
+        caps[WBTC] = 5000 * 1e8;
     } 
 
     function pause() public onlyRole(PAUSER_ROLE) {
