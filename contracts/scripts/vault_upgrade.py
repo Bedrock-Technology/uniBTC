@@ -19,6 +19,7 @@ def main():
     nullAddress = "0x0000000000000000000000000000000000000000"
     vault_proxy = TransparentUpgradeableProxy.at("0x047D41F2544B7F63A8e991aF2068a363d210d6Da")
     proxyAdmin = ProxyAdmin.at("0x029E4FbDAa31DE075dD74B2238222A08233978f6")
+    fbtc = "0xC96dE26018A54D51c097160568752c4E3BD6C364"
 
     # deploy vault
     vault_impl = Vault.deploy({'from': deployer})
@@ -27,3 +28,4 @@ def main():
     proxyAdmin.upgradeAndCall(vault_proxy, vault_impl, calldata, {'from': multisig})
 
     transparent_vault = Contract.from_abi("vault",vault_proxy.address, Vault.abi)
+    transparent_vault.setCap(fbtc, 1e8 * 5000, {'from':multisig})
