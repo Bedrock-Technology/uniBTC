@@ -24,24 +24,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     constructor() {
         _disableInitializers();
     }
-
-    /*
-    function initialize(address _defaultAdmin, address _WBTC, address _uniBTC) initializer public {
-        __AccessControl_init();
-        __Pausable_init();
-        __ReentrancyGuard_init();
-
-        require(_WBTC != address(0x0), "invalid WBTC address");
-        require(_uniBTC != address(0x0), "invalid uniBTC address");
-
-        _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
-        _grantRole(PAUSER_ROLE, _defaultAdmin);
-
-        WBTC = _WBTC;
-        uniBTC = _uniBTC;
-    }
-    */
-
     /**
      * @dev mint uniBTC with WBTC
      */
@@ -63,13 +45,20 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      *
      * ======================================================================================
      */
+    function initialize(address _defaultAdmin, address _WBTC, address _uniBTC) initializer public {
+        __AccessControl_init();
+        __Pausable_init();
+        __ReentrancyGuard_init();
 
-    /**
-     * @dev UPDATE(20240606):  to set initial cap
-     */
-    function initializeV2() reinitializer(2) public {
-        caps[WBTC] = 5000 * 1e8;
-    } 
+        require(_WBTC != address(0x0), "invalid WBTC address");
+        require(_uniBTC != address(0x0), "invalid uniBTC address");
+
+        _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
+        _grantRole(PAUSER_ROLE, _defaultAdmin);
+
+        WBTC = _WBTC;
+        uniBTC = _uniBTC;
+    }
 
     function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
@@ -78,7 +67,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     function unpause() public onlyRole(PAUSER_ROLE) {
         _unpause();
     }
-
 
     /**
      * @dev set cap for a specific type of wrapped BTC
