@@ -19,6 +19,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     address public uniBTC;
 
     mapping(address => uint256) public caps;
+    mapping(address => bool) public paused;
     
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -27,14 +28,16 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev mint uniBTC with WBTC
      */
-    function mint(uint256 _amount) external whenNotPaused {
+    function mint(uint256 _amount) external {
+        require(!paused[WBTC], "WBTC paused");
         _mint(WBTC, _amount);
     }
 
     /**
      * @dev mint uniBTC with give types of wrapped BTC
      */
-    function mint(address _token, uint256 _amount) external whenNotPaused {
+    function mint(address _token, uint256 _amount) external {
+        require(!paused[_token], "token paused");
         _mint(_token, _amount);
     }
 
@@ -60,12 +63,20 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         uniBTC = _uniBTC;
     }
 
-    function pause() public onlyRole(PAUSER_ROLE) {
-        _pause();
+    /**
+     * @dev a pauser pause the minting of a token
+     */
+    function pauseToken(address _token) public onlyRole(PAUSER_ROLE) {
+        paused[_token] = true;
+        emit TokenPaused(_token);
     }
 
-    function unpause() public onlyRole(PAUSER_ROLE) {
-        _unpause();
+    /**
+     * @dev a pauser unpause the minting of a token
+     */
+    function unpauseToken(address _token) public onlyRole(PAUSER_ROLE) {
+        paused[_token] = false;
+        emit TokenUnpaused(_token);
     }
 
     /**
@@ -112,4 +123,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     event Withdrawed(address token, uint256 amount, address target);
     event Minted(address token, uint256 amount);
+    event TokenPaused(address token);
+    event TokenUnpaused(address token);
 }
