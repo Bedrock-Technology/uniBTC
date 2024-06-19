@@ -23,9 +23,8 @@ def main():
 
     # deploy vault
     vault_impl = Vault.deploy({'from': deployer})
-    calldata = Vault[-1].initializeV2.encode_input()
-    print("calldata:", calldata)
-#    proxyAdmin.upgradeAndCall(vault_proxy, vault_impl, calldata, {'from': multisig})
+    proxyAdmin.upgrade(vault_proxy, vault_impl, {'from': multisig})
 
-#    transparent_vault = Contract.from_abi("vault",vault_proxy.address, Vault.abi)
-#    transparent_vault.setCap(fbtc, 1e8 * 5000, {'from':multisig})
+    transparent_vault = Contract.from_abi("vault",vault_proxy.address, Vault.abi)
+    transparent_vault.setCap(WBTC, 1e8 * 5000, {'from':multisig})
+    transparent_vault.setCap(fbtc, 1e8 * 5000, {'from':multisig})
