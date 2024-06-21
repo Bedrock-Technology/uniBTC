@@ -64,7 +64,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
      * @dev Burn uniBTC on the source chain and mint the corresponding amount of uniBTC on the destination chain
      * for the given recipient.
      */
-    function crossTransfer(
+    function sendToken(
         uint64 _dstChainId,
         address _recipient,
         uint256 _amount
@@ -139,7 +139,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
     /**
      * @dev Claim native tokens that are accidentally sent to this contract.
      */
-    function claimLockedEthers(address _recipient, uint256 _amount) onlyRole(MANAGER_ROLE) external {
+    function claimTokens(address _recipient, uint256 _amount) onlyRole(DEFAULT_ADMIN_ROLE) external {
         payable(_recipient).sendValue(_amount);
         emit NativeTokensClaimed(_recipient, _amount);
     }
@@ -147,7 +147,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
     /**
      * @dev Claim ERC-20 tokens that are accidentally sent to this contract.
      */
-    function claimLockedTokens(address _recipient, address _token, uint256 _amount) onlyRole(MANAGER_ROLE) external {
+    function claimTokens(address _recipient, address _token, uint256 _amount) onlyRole(DEFAULT_ADMIN_ROLE) external {
         IERC20(_token).safeTransfer(_recipient, _amount);
         emit ERC20TokensClaimed(_recipient, _token, _amount);
     }
