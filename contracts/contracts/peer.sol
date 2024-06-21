@@ -4,11 +4,11 @@ pragma solidity ^0.8.12;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@celer-network/contracts/message/framework/MessageApp.sol";
+import "@celer-network/contracts/message/interfaces/IMessageBus.sol";
 import "../interfaces/iface.sol";
 
-contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
+contract Peer is MessageApp, Pausable, AccessControl {
     using SafeERC20 for IERC20;
     using Address for address payable;
 
@@ -38,14 +38,6 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
     mapping(uint64 => address) public peers;
 
     /**
-     * @dev The map for recording request IDs and corresponding statuses.
-     *
-     * Key: Request ID, result of keccak256(abi.encodePacked(dstChainId, dstPeer, sender, recipient, amount, nonce)).
-     * Value: 1 indicates a cross-chain request has been sent, 2 indicates a refund has occurred.
-     */
-    mapping(bytes32 => uint8) public requestIds;
-
-    /** 
      * @dev The counter to record each cross-chain transaction
      */
     uint64 public nonce;
@@ -71,13 +63,6 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
     /**
      * @dev Burn uniBTC on the source chain and mint the corresponding amount of uniBTC on the destination chain
      * for the given recipient.
-     *
-     * In the extremely rare case that assets have been burned on the source chain but eventually fail to be minted
-     * on the destination chain, the "crossTransferRefund" function should be called to restore the user's assets.
-     *
-     * There are several potential reasons for this extreme situation, including:
-     * 1. The destination peer is unable to receive the request due to an SGN routing problem.
-     * 2. Message execution reverts on the destination chain without a successful retry.
      */
     function crossTransfer(
         uint64 _dstChainId,
@@ -86,12 +71,11 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
     ) external payable whenNotPaused {
         address dstPeer = peers[_dstChainId];
 
+        require(_dstChainId != block.chainid, "invalid chainId");
         require(dstPeer != address(0), "destination peer does not exist");
         require(_amount >= minTransferAmt, "invalid amount to transfer");
-        require(_recipient != address(0), "cross transfer to the zero address");
-
-        // Burn uniBTC
-        IMintableContract(uniBTC).burnFrom(msg.sender, _amount);
+        require(_recipient != address(0), "transfer to the zero address");
+        require(msg.value == calcFee(), "incorrect fee");
 
         // Request to mint uniBTC
         bytes memory message = abi.encode(
@@ -104,11 +88,19 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
             msg.value
         );
 
-        // Update states
-        nonce++;
-        bytes32 reqId = keccak256(abi.encodePacked(_dstChainId, dstPeer, msg.sender, _recipient, _amount, nonce));
-        requestIds[reqId] = 1;
+        // Burn uniBTC
+        IMintableContract(uniBTC).burnFrom(msg.sender, _amount);
         emit SrcBurned(_dstChainId, dstPeer, msg.sender, _recipient, _amount, nonce);
+    }
+
+    /**
+     * @dev The helper function that calculates the dynamic message fee for sending one cross-chain transfer request.
+     */
+    function calcFee() public view returns (uint256) {
+        bytes memory message = abi.encode(
+            Request({sender: address(0), recipient: address(0), amount: 0, nonce: 0})
+        );
+        return IMessageBus(messageBus).calcFee(message);
     }
 
     /**
@@ -145,29 +137,9 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
      */
 
     /**
-     * @dev Refund in the extremely rare case that assets have been burned on the source chain
-     * but fail to be minted on the destination chain.
-     */
-    function crossTransferRefund(
-        uint64 _dstChainId,
-        address _dstPeer,
-        address _sender,
-        address _recipient,
-        uint256 _amount,
-        uint256 _nonce
-    ) external onlyRole(MANAGER_ROLE) {
-        bytes32 reqId = keccak256(abi.encodePacked(_dstChainId, _dstPeer, _sender, _recipient, _amount, _nonce));
-        require(requestIds[reqId] == 1, "invalid refund inputs");
-
-        requestIds[reqId] == 2;
-        IMintableContract(uniBTC).mint(_sender, _amount);
-        emit SrcRefunded(_dstChainId, _dstPeer, _sender, _recipient, _amount, _nonce);
-    }
-
-    /**
      * @dev Claim native tokens that are accidentally sent to this contract.
      */
-    function claimLockedEthers(address _recipient, uint256 _amount) nonReentrant onlyRole(MANAGER_ROLE) external {
+    function claimLockedEthers(address _recipient, uint256 _amount) onlyRole(MANAGER_ROLE) external {
         payable(_recipient).sendValue(_amount);
         emit NativeTokensClaimed(_recipient, _amount);
     }
@@ -175,7 +147,7 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
     /**
      * @dev Claim ERC-20 tokens that are accidentally sent to this contract.
      */
-    function claimLockedTokens(address _recipient, address _token, uint256 _amount) nonReentrant onlyRole(MANAGER_ROLE) external {
+    function claimLockedTokens(address _recipient, address _token, uint256 _amount) onlyRole(MANAGER_ROLE) external {
         IERC20(_token).safeTransfer(_recipient, _amount);
         emit ERC20TokensClaimed(_recipient, _token, _amount);
     }
@@ -228,7 +200,6 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
      */
     event SrcBurned(uint64 dstChainId, address dstPeer, address sender, address recipient, uint256 amount, uint256 nonce);
     event DstMinted(uint64 srcChainId, address srcPeer, address sender, address recipient, uint256 amount, uint256 nonce);
-    event SrcRefunded(uint64 dstChainId, address dstPeer, address sender, address recipient, uint256 amount, uint256 nonce);
 
     event NativeTokensClaimed(address recipient, uint256 amount);
     event ERC20TokensClaimed(address recipient, address token, uint256 amount);
