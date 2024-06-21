@@ -16,6 +16,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
     uint private constant MIN_AMT_UNIT = 1e5;
+    uint private constant MSG_LEN = 128;
 
     struct Request {
         address sender;
@@ -99,10 +100,8 @@ contract Peer is MessageApp, Pausable, AccessControl {
      * @dev The helper function that calculates the dynamic message fee for sending one cross-chain transfer request.
      */
     function calcFee() public view returns (uint256) {
-        bytes memory message = abi.encode(
-            Request({sender: address(0), recipient: address(0), amount: 0, nonce: 0})
-        );
-        return IMessageBus(messageBus).calcFee(message);
+        ISGNFeeQuerier fq = ISGNFeeQuerier(messageBus);
+        return fq.feeBase() + MSG_LEN * fq.feePerByte();
     }
 
     /**
