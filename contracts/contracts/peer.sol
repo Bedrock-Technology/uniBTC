@@ -15,7 +15,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
     bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
-    uint private constant MIN_AMT_UNIT = 1e4;
+    uint private constant MIN_AMT_UNIT = 1e5;
 
     struct Request {
         address sender;
@@ -27,7 +27,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
     /**
      * @dev The minimum amount to make a cross-chain transfer.
      */
-    uint256 public minTransferAmt = 200 * MIN_AMT_UNIT;
+    uint256 public minTransferAmt = 20 * MIN_AMT_UNIT;
 
     /**
     * @dev The local uniBTC ERC-20 token address.
