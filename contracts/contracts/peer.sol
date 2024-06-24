@@ -4,11 +4,12 @@ pragma solidity ^0.8.12;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@celer-network/contracts/message/framework/MessageApp.sol";
 import "@celer-network/contracts/message/interfaces/IMessageBus.sol";
 import "../interfaces/iface.sol";
 
-contract Peer is MessageApp, Pausable, AccessControl {
+contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
     using SafeERC20 for IERC20;
     using Address for address payable;
 
@@ -74,11 +75,11 @@ contract Peer is MessageApp, Pausable, AccessControl {
     ) external payable whenNotPaused {
         address dstPeer = peers[_dstChainId];
 
-        require(_dstChainId != block.chainid, "invalid chainId");
-        require(dstPeer != address(0), "destination peer does not exist");
-        require(_amount >= minTransferAmt, "invalid amount to transfer");
-        require(_recipient != address(0), "transfer to the zero address");
-        require(msg.value == calcFee(), "incorrect fee");
+        require(_dstChainId != block.chainid, "USR004");
+        require(dstPeer != address(0), "USR005");
+        require(_amount >= minTransferAmt, "USR006");
+        require(_recipient != address(0), "USR007");
+        require(msg.value == calcFee(), "USR008");
 
         // Request to mint uniBTC
         bytes memory message = abi.encode(
@@ -119,7 +120,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
         bytes calldata _message,
         address // executor
     ) external payable override onlyMessageBus returns (ExecutionStatus) {
-        require(_srcPeer != peers[_srcChainId], "illegal remote caller");
+        require(_srcPeer != peers[_srcChainId], "USR009");
 
         Request memory req = abi.decode((_message), (Request));
 
@@ -140,7 +141,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
     /**
      * @dev Claim native tokens that are accidentally sent to this contract.
      */
-    function claimTokens(address _recipient, uint256 _amount) onlyRole(DEFAULT_ADMIN_ROLE) external {
+    function claimTokens(address _recipient, uint256 _amount) onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant external {
         payable(_recipient).sendValue(_amount);
         emit NativeTokensClaimed(_recipient, _amount);
     }
@@ -157,7 +158,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
      * @dev Set the minimum amount to make a cross-chain transfer.
      */
     function setMinTransferAmt(uint256 _minimalAmt) external onlyRole(MANAGER_ROLE) {
-        require(_minimalAmt > 0 && _minimalAmt % MIN_AMT_UNIT == 0, "minimum value should be a positive multiple of 10000");
+        require(_minimalAmt > 0 && _minimalAmt % MIN_AMT_UNIT == 0, "SYS007");
         minTransferAmt = _minimalAmt;
         emit MinTransferAmtSet(_minimalAmt);
     }
@@ -166,14 +167,14 @@ contract Peer is MessageApp, Pausable, AccessControl {
      * @dev Configure peers to chain ID so that they can communicate with each other and avoid illegal minting requests.
      */
     function configurePeers(uint64[] calldata _chainIds, address[] calldata _peers) external onlyRole(MANAGER_ROLE) {
-        require(_chainIds.length > 0 && _chainIds.length == _peers.length, "invalid input array lengths");
+        require(_chainIds.length > 0 && _chainIds.length == _peers.length, "SYS008");
 
         for (uint256 i = 0; i < _chainIds.length; i++) {
             uint64 chainId = _chainIds[i];
             address peer = _peers[i];
 
-            require(chainId != 0, "chain ID cannot be zero");
-            require(peer != address(0), "invalid peer address");
+            require(chainId != 0, "SYS009");
+            require(peer != address(0), "SYS010");
 
             peers[chainId] = peer;
         }

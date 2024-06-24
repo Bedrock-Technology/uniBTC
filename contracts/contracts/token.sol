@@ -46,8 +46,8 @@ contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Ac
      * @notice that excessive gas consumption causes transaction revert
      */
     function batchTransfer(address[] memory recipients, uint256[] memory amounts) public {
-        require(recipients.length > 0, "uniBTC: least one recipient address");
-        require(recipients.length == amounts.length, "uniBTC: number of recipient addresses does not match the number of tokens");
+        require(recipients.length > 0, "USR001");
+        require(recipients.length == amounts.length, "USR002");
 
         for(uint256 i = 0; i < recipients.length; ++i) {
             _transfer(_msgSender(), recipients[i], amounts[i]);

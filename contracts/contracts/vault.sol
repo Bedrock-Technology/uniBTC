@@ -29,7 +29,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev mint uniBTC with WBTC
      */
     function mint(uint256 _amount) external {
-        require(!paused[WBTC], "WBTC paused");
+        require(!paused[WBTC], "SYS003");
         _mint(WBTC, _amount);
     }
 
@@ -37,7 +37,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev mint uniBTC with give types of wrapped BTC
      */
     function mint(address _token, uint256 _amount) external {
-        require(!paused[_token], "token paused");
+        require(!paused[_token], "SYS004");
         _mint(_token, _amount);
     }
 
@@ -53,8 +53,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         __Pausable_init();
         __ReentrancyGuard_init();
 
-        require(_WBTC != address(0x0), "invalid WBTC address");
-        require(_uniBTC != address(0x0), "invalid uniBTC address");
+        require(_WBTC != address(0x0), "SYS001");
+        require(_uniBTC != address(0x0), "SYS002");
 
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         _grantRole(PAUSER_ROLE, _defaultAdmin);
@@ -83,8 +83,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev set cap for a specific type of wrapped BTC
      */
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_token != address(0x0), "invalid token address");
-        require(ERC20(_token).decimals() == 8, "incorrect decimals");
+        require(_token != address(0x0), "SYS005");
+        require(ERC20(_token).decimals() == 8, "SYS006");
         caps[_token] = _cap;
     }
 
@@ -107,7 +107,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev mint internal 
      */
     function _mint(address _token, uint256 _amount) internal {
-        require(IERC20(_token).balanceOf(address(this)) + _amount <= caps[_token], "insufficient quota");
+        require(IERC20(_token).balanceOf(address(this)) + _amount <= caps[_token], "USR003");
 
         IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
         IMintableContract(uniBTC).mint(msg.sender, _amount);
