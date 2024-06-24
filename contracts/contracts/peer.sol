@@ -4,11 +4,12 @@ pragma solidity ^0.8.12;
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@celer-network/contracts/message/framework/MessageApp.sol";
 import "@celer-network/contracts/message/interfaces/IMessageBus.sol";
 import "../interfaces/iface.sol";
 
-contract Peer is MessageApp, Pausable, AccessControl {
+contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
     using SafeERC20 for IERC20;
     using Address for address payable;
 
@@ -140,7 +141,7 @@ contract Peer is MessageApp, Pausable, AccessControl {
     /**
      * @dev Claim native tokens that are accidentally sent to this contract.
      */
-    function claimTokens(address _recipient, uint256 _amount) onlyRole(DEFAULT_ADMIN_ROLE) external {
+    function claimTokens(address _recipient, uint256 _amount) onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant external {
         payable(_recipient).sendValue(_amount);
         emit NativeTokensClaimed(_recipient, _amount);
     }
