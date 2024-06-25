@@ -13,13 +13,14 @@ pytest:
 compiler:
   #evm_version: "shanghai"
     solc:
-        version: 0.8.12
+        version: 0.8.17
         optimizer:
           enabled: true
           runs: 200
         remappings:
           - "@openzeppelin/contracts=OpenZeppelin/openzeppelin-contracts@4.8.3/contracts"
           - "@openzeppelin/contracts-upgradeable=OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/contracts"
+          - "@celer-network/contracts=celer-network/sgn-v2-contracts-main/contracts"
 
 # automatically fetch contract sources from Etherscan
 autofetch_sources: True
