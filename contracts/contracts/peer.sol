@@ -95,7 +95,7 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
 
         // Burn uniBTC
         IMintableContract(uniBTC).burnFrom(msg.sender, _amount);
-        emit SrcBurned(_dstChainId, dstPeer, msg.sender, _recipient, _amount, nonce);
+        emit SourceBurned(_dstChainId, dstPeer, msg.sender, _recipient, _amount, nonce);
     }
 
     /**
@@ -127,7 +127,7 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
 
         // Mint uniBTC
         IMintableContract(uniBTC).mint(req.recipient, req.amount);
-        emit DstMinted(_srcChainId, _srcPeer, req.sender, req.recipient, req.amount, req.nonce);
+        emit DestinationMinted(_srcChainId, _srcPeer, req.sender, req.recipient, req.amount, req.nonce);
 
         return ExecutionStatus.Success;
     }
@@ -202,8 +202,8 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
      * CONTRACT EVENTS
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
-    event SrcBurned(uint64 dstChainId, address dstPeer, address sender, address recipient, uint256 amount, uint256 nonce);
-    event DstMinted(uint64 srcChainId, address srcPeer, address sender, address recipient, uint256 amount, uint256 nonce);
+    event SourceBurned(uint64 dstChainId, address dstPeer, address sender, address recipient, uint256 amount, uint256 nonce);
+    event DestinationMinted(uint64 srcChainId, address srcPeer, address sender, address recipient, uint256 amount, uint256 nonce);
 
     event NativeTokensClaimed(address recipient, uint256 amount);
     event ERC20TokensClaimed(address recipient, address token, uint256 amount);
