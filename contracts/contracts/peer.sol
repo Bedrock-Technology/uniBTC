@@ -82,6 +82,7 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
         require(msg.value == calcFee(), "USR008");
 
         // Request to mint uniBTC
+        nonce++;
         bytes memory message = abi.encode(
             Request({sender: msg.sender, recipient: _recipient, amount: _amount, nonce: nonce})
         );
