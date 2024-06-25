@@ -120,7 +120,7 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
         bytes calldata _message,
         address // executor
     ) external payable override onlyMessageBus returns (ExecutionStatus) {
-        require(_srcPeer != peers[_srcChainId], "USR009");
+        require(_srcPeer == peers[_srcChainId] && _srcPeer != address(0), "USR009");
 
         Request memory req = abi.decode((_message), (Request));
 
