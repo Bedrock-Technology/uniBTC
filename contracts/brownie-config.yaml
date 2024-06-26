@@ -25,7 +25,7 @@ compiler:
 # automatically fetch contract sources from Etherscan
 autofetch_sources: True
 networks:
-  default: mainnet-fork
+#  default: mainnet-fork
   mainnet-fork:
     cmd_settings:
       #    evm_version: "shanghai"
