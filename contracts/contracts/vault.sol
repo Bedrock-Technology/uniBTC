@@ -6,12 +6,10 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import "@openzeppelin/contracts/governance/TimelockController.sol";
 
 import "../interfaces/iface.sol";
 
-contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
+contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     using SafeERC20 for IERC20;
 
@@ -51,7 +49,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     function initialize(address _defaultAdmin, address _WBTC, address _uniBTC) initializer public {
         __AccessControl_init();
         __Pausable_init();
-        __ReentrancyGuard_init();
 
         require(_WBTC != address(0x0), "SYS001");
         require(_uniBTC != address(0x0), "SYS002");
