@@ -5,13 +5,14 @@ from web3 import Web3
 from scripts.testnet.configs import contracts
 
 # Execution Command Format:
-# `brownie run scripts/testnet/deployment.py main "deployer" "owner" "avax-test" --network=avax-test`
+# `brownie run scripts/testnet/deploy.py main "deployer" "owner" "avax-test" --network=avax-test`
 
 
 def main(deployer="deployer", owner="owner", network="avax-test"):
     # Reference: https://docs.openzeppelin.com/contracts/4.x/api/proxy#TransparentUpgradeableProxy
     deps = project.load(  Path.home() / ".brownie" / "packages" / config["dependencies"][0])
     proxy = deps.TransparentUpgradeableProxy
+    proxyAdmin = deps.ProxyAdmin
 
     w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
     minter_role = w3.keccak(text='MINTER_ROLE')
@@ -22,14 +23,16 @@ def main(deployer="deployer", owner="owner", network="avax-test"):
     owner = accounts.load(owner)
 
     # Deploy contracts
+    proxy_admin = proxyAdmin.deploy({'from': owner})
+
     wbtc = WBTC.deploy({'from': owner})
 
     uni_btc = uniBTC.deploy({'from': deployer})
-    uni_btc_proxy = proxy.deploy(uni_btc, deployer, b'', {'from': deployer})
+    uni_btc_proxy = proxy.deploy(uni_btc, proxy_admin, b'', {'from': deployer})
     uni_btc_transparent = Contract.from_abi("uniBTC", uni_btc_proxy.address, uniBTC.abi)
 
     vault = Vault.deploy({'from': deployer})
-    vault_proxy = proxy.deploy(vault, deployer, b'', {'from': deployer})
+    vault_proxy = proxy.deploy(vault, proxy_admin, b'', {'from': deployer})
     vault_transparent = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
 
     peer = Peer.deploy(message_bus, uni_btc_transparent, {'from': owner})
@@ -55,6 +58,7 @@ def main(deployer="deployer", owner="owner", network="avax-test"):
     assert uni_btc_transparent.hasRole(minter_role, vault_transparent)
     assert uni_btc_transparent.hasRole(minter_role, peer)
 
+    print("Deployed ProxyAdmin address: ", proxy_admin)
     print("Deployed WBTC address: ", wbtc)
     print("Deployed Peer address: ", peer)
     print("Deployed uniBTC proxy address: ", uni_btc_transparent)
@@ -66,31 +70,36 @@ def main(deployer="deployer", owner="owner", network="avax-test"):
     print("Deployed Vault address: ", vault)
 
     # Deployed contracts on avax-test
-    # Deployed WBTC address:  0x56c3024eB229Ca0570479644c78Af9D53472B3e4
-    # Deployed Peer address:  0xC0c9E78BfC3996E8b68D872b29340816495D7e89
-    # Deployed uniBTC proxy address:  0x16221CaD160b441db008eF6DA2d3d89a32A05859
-    # Deployed Vault proxy address:  0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
+    # Deployed ProxyAdmin address:  0x8746649B65eA03A22e559Eb03059018baEDFBA9e
+    # Deployed WBTC address:  0x49D6844cbcef64952E6793677eeaBae324f895aD
+    # Deployed Peer address:  0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
+    # Deployed uniBTC proxy address:  0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f
+    # Deployed Vault proxy address:  0x85792f60633DBCF7c2414675bcC0a790B1b65CbB
     #
-    # Deployed uniBTC address:  0x57518941854F879f80fA1ABF2366f54339DE8436
-    # Deployed Vault address:  0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894
+    # Deployed uniBTC address:  0x54B045860E49711eABDa160eBd5db8be1fC85A55
+    # Deployed Vault address:  0x802d4900209b2292bF7f07ecAE187f836040A709
 
     # Deployed contracts on bsc-test
-    # Deployed WBTC address:  0xC0c9E78BfC3996E8b68D872b29340816495D7e89
-    # Deployed Peer address:  0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0
-    # Deployed uniBTC proxy address:  0x16221CaD160b441db008eF6DA2d3d89a32A05859
-    # Deployed Vault proxy address:  0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
+    # Deployed ProxyAdmin address:  0x49D6844cbcef64952E6793677eeaBae324f895aD
+    # Deployed WBTC address:  0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
+    # Deployed Peer address:  0xd59677a6eFe9151c0131E8cF174C8BBCEB536005
+    # Deployed uniBTC proxy address:  0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f
+    # Deployed Vault proxy address:  0x85792f60633DBCF7c2414675bcC0a790B1b65CbB
     #
-    # Deployed uniBTC address: 0x57518941854F879f80fA1ABF2366f54339DE8436
-    # Deployed Vault address:  0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894
+    # Deployed uniBTC address:  0x54B045860E49711eABDa160eBd5db8be1fC85A55
+    # Deployed Vault address:  0x802d4900209b2292bF7f07ecAE187f836040A709
 
     # Deployed contracts on ftm-test
-    # Deployed WBTC address:  0x56c3024eB229Ca0570479644c78Af9D53472B3e4
-    # Deployed Peer address:  0xC0c9E78BfC3996E8b68D872b29340816495D7e89
-    # Deployed uniBTC proxy address:  0x16221CaD160b441db008eF6DA2d3d89a32A05859
-    # Deployed Vault proxy address:  0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
+    # Deployed ProxyAdmin address:  0x8746649B65eA03A22e559Eb03059018baEDFBA9e
+    # Deployed WBTC address:  0x49D6844cbcef64952E6793677eeaBae324f895aD
+    # Deployed Peer address:  0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
+    # Deployed uniBTC proxy address:  0x802d4900209b2292bF7f07ecAE187f836040A709
+    # Deployed Vault proxy address:  0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad
     #
-    # Deployed uniBTC address:  0x57518941854F879f80fA1ABF2366f54339DE8436
-    # Deployed Vault address:  0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894
+    # Deployed uniBTC address:  0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f
+    # Deployed Vault address:  0x85792f60633DBCF7c2414675bcC0a790B1b65CbB
+
+
 
 
 

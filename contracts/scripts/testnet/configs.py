@@ -3,27 +3,30 @@
 contracts = {
     "avax-test": {
         "chain_id": 43113,
+        "proxy_admin": "0x8746649B65eA03A22e559Eb03059018baEDFBA9e",
         "message_bus": "0xE9533976C590200E32d95C53f06AE12d292cFc47",
-        "wbtc": "0x56c3024eB229Ca0570479644c78Af9D53472B3e4",
-        "uni_btc": "0x16221CaD160b441db008eF6DA2d3d89a32A05859",
-        "vault": "0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823",
-        "peer": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89"
+        "wbtc": "0x49D6844cbcef64952E6793677eeaBae324f895aD",
+        "uni_btc": "0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f",
+        "vault": "0x85792f60633DBCF7c2414675bcC0a790B1b65CbB",
+        "peer": "0xe7431fc992a54fAA435125Ca94E00B4a8c89095c"
     },
     "bsc-test": {
         "chain_id": 97,
+        "proxy_admin": "0x49D6844cbcef64952E6793677eeaBae324f895aD",
         "message_bus": "0xAd204986D6cB67A5Bc76a3CB8974823F43Cb9AAA",
-        "wbtc": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89",
-        "uni_btc": "0x16221CaD160b441db008eF6DA2d3d89a32A05859",
-        "vault": "0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823",
-        "peer": "0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0"
+        "wbtc": "0xe7431fc992a54fAA435125Ca94E00B4a8c89095c",
+        "uni_btc": "0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f",
+        "vault": "0x85792f60633DBCF7c2414675bcC0a790B1b65CbB",
+        "peer": "0xd59677a6eFe9151c0131E8cF174C8BBCEB536005"
     },
     "ftm-test": {
         "chain_id": 4002,
+        "proxy_admin": "0x8746649B65eA03A22e559Eb03059018baEDFBA9e",
         "message_bus": "0xb92d6933A024bcca9A21669a480C236Cbc973110",
-        "wbtc": "0x56c3024eB229Ca0570479644c78Af9D53472B3e4",
-        "uni_btc": "0x16221CaD160b441db008eF6DA2d3d89a32A05859",
-        "vault": "0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823",
-        "peer": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89"
+        "wbtc": "0x49D6844cbcef64952E6793677eeaBae324f895aD",
+        "uni_btc": "0x802d4900209b2292bF7f07ecAE187f836040A709",
+        "vault": "0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad",
+        "peer": "0xe7431fc992a54fAA435125Ca94E00B4a8c89095c"
     }
 }
 
