@@ -1,0 +1,33 @@
+# Reference: https://im-docs.celer.network/developer/contract-addresses-and-rpc-info#testnet
+
+contracts = {
+    "avax-test": {
+        "chain_id": 43113,
+        "proxy_admin": "0x8746649B65eA03A22e559Eb03059018baEDFBA9e",
+        "message_bus": "0xE9533976C590200E32d95C53f06AE12d292cFc47",
+        "wbtc": "0x49D6844cbcef64952E6793677eeaBae324f895aD",
+        "uni_btc": "0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f",
+        "vault": "0x85792f60633DBCF7c2414675bcC0a790B1b65CbB",
+        "peer": "0xe7431fc992a54fAA435125Ca94E00B4a8c89095c"
+    },
+    "bsc-test": {
+        "chain_id": 97,
+        "proxy_admin": "0x49D6844cbcef64952E6793677eeaBae324f895aD",
+        "message_bus": "0xAd204986D6cB67A5Bc76a3CB8974823F43Cb9AAA",
+        "wbtc": "0xe7431fc992a54fAA435125Ca94E00B4a8c89095c",
+        "uni_btc": "0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f",
+        "vault": "0x85792f60633DBCF7c2414675bcC0a790B1b65CbB",
+        "peer": "0xd59677a6eFe9151c0131E8cF174C8BBCEB536005"
+    },
+    "ftm-test": {
+        "chain_id": 4002,
+        "proxy_admin": "0x8746649B65eA03A22e559Eb03059018baEDFBA9e",
+        "message_bus": "0xb92d6933A024bcca9A21669a480C236Cbc973110",
+        "wbtc": "0x49D6844cbcef64952E6793677eeaBae324f895aD",
+        "uni_btc": "0x802d4900209b2292bF7f07ecAE187f836040A709",
+        "vault": "0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad",
+        "peer": "0xe7431fc992a54fAA435125Ca94E00B4a8c89095c"
+    }
+}
+
+amount = 1e8

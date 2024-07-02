@@ -59,6 +59,63 @@ def test_mint(fn_isolation, contracts, owner, alice):
     assert wbtc.balanceOf(vault) == cap
 
 
+def test_redeem(fn_isolation, contracts, owner, alice):
+    uni_btc, wbtc, vault = contracts[0], contracts[5], contracts[6]
+
+    cap = 10e8
+
+    # ---Revert Path Testing---
+
+    # Scenario 1: Redeem reverts if the Vault's balance is insufficient.
+    with brownie .reverts("ERC20: transfer amount exceeds balance"):
+        vault.redeem(cap, {'from': alice})
+
+    with brownie .reverts("ERC20: transfer amount exceeds balance"):
+        vault.redeem(wbtc, cap, {'from': alice})
+
+    vault.setCap(wbtc, cap, {'from': owner})
+    wbtc.mint(alice, cap, {'from': owner})
+    wbtc.approve(vault, cap, {'from': alice})
+    vault.mint(cap, {'from': alice})
+
+    # Scenario 2: Redeem reverts if the uniBTC allowance is insufficient.
+    with brownie .reverts("ERC20: insufficient allowance"):
+        vault.redeem(cap, {'from': alice})
+
+    with brownie .reverts("ERC20: insufficient allowance"):
+        vault.redeem(wbtc, cap, {'from': alice})
+
+    uni_btc.approve(vault, cap, {'from': alice})
+
+    # Scenario 3: Redeem reverts if the user's uniBTC balance is insufficient.
+    uni_btc.approve(owner, cap, {'from': alice})
+    uni_btc.burnFrom(alice, cap, {'from': owner})
+
+    with brownie .reverts("ERC20: burn amount exceeds balance"):
+        vault.redeem(cap, {'from': alice})
+
+    with brownie .reverts("ERC20: burn amount exceeds balance"):
+        vault.redeem(wbtc, cap, {'from': alice})
+
+    # ---Happy Path Testing---
+
+    # Scenario 4: Redeem tokens successfully with valid inputs.
+    uni_btc.mint(alice, cap, {'from': owner})
+    assert uni_btc.balanceOf(alice) == cap
+
+    tx = vault.redeem(cap/2, {'from': alice})
+    assert "Redeemed" in tx.events
+    assert uni_btc.balanceOf(alice) == cap/2
+    assert wbtc.balanceOf(alice) == cap/2
+    assert wbtc.balanceOf(vault) == cap/2
+
+    tx = vault.redeem(wbtc, cap/2, {'from': alice})
+    assert "Redeemed" in tx.events
+    assert uni_btc.balanceOf(alice) == 0
+    assert wbtc.balanceOf(alice) == cap
+    assert wbtc.balanceOf(vault) == 0
+
+
 def test_setCap(fn_isolation, contracts, owner, alice, zero_address):
     wbtc, vault = contracts[5], contracts[6]
 
