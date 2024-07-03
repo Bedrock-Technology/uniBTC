@@ -53,10 +53,10 @@ def main(owner="owner", minter="minter", user="user", from_network="avax-test", 
     assert uni_btc.balanceOf(user) == user_uni_btc_balance_before
 
     # SendToken tx from avax-test to bsc-test:
-    # https://testnet.snowtrace.io/tx/0x1d4f5ef714d67bdf7840df3f0c0dcdc0052e04baad6452f06cff79e903086ec5
+    # https://testnet.snowtrace.io/tx/0x0334a0369b57d3c3ab3819dc57897d96a87fa6a98f80893c97bdbfacf52595fd
 
     # SendToken tx from bsc-test to ftm-test:
-    # https://testnet.bscscan.com/tx/0x888943972d446b5fdbc2ad424eaf009d1fb258f0575a22753d4b599cf5be4d7e
+    # https://testnet.bscscan.com/tx/0xac149f7e314297793696611d877febe9443efe9caf4e47d36894a7413e43cf06
 
     # SendToken tx from ftm-test to avax-test:
-    # https://testnet.ftmscan.com/tx/0x78bfda70b70734b49784699dd6d28ed04bdf5455052e8118a4e366fbc93333ea
+    # https://testnet.ftmscan.com/tx/0xd0e6246d335d344dca139dcc106b3dcb3c37299989c7786f126267f135da03a0

@@ -2,6 +2,9 @@ from brownie import Peer, accounts, Contract, project, config
 
 from scripts.testnet.configs import contracts
 
+# Execution Command Format:
+# `brownie run scripts/testnet/configure_peers.py main "manager" "avax-test" --network=avax-test`
+
 
 def main(manager="manager", network="avax-test"):
     manager = accounts.load(manager)
