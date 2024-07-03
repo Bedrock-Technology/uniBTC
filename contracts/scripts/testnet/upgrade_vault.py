@@ -27,11 +27,11 @@ def main(deployer="deployer", owner="owner", network="avax-test"):
     print("Deployed Vault Proxy: ", vault_proxy)
     print("Deployed Vault implementation: ", vault_impl)
 
-    # Deployed Vault implementation on avax-test: 0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad
+    # Deployed Vault implementation on avax-test: 0x409dF0Ee22F057A88c1F98743c2e42D0c45DaDda
 
-    # Deployed Vault implementation on bsc-test: 0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad
+    # Deployed Vault implementation on bsc-test: 0x409dF0Ee22F057A88c1F98743c2e42D0c45DaDda
 
-    # Deployed Vault implementation on ftm-test: 0x409dF0Ee22F057A88c1F98743c2e42D0c45DaDda
+    # Deployed Vault implementation on ftm-test: 0x9cb04A403c6691AdEE14cE43D19aF1fE96C5ab91
 
 
 
