@@ -20,6 +20,13 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     mapping(address => uint256) public caps;
     mapping(address => bool) public paused;
 
+    bool public redeemable;
+
+    modifier whenRedeemable() {
+        require(redeemable, "SYS011");
+        _;
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -43,14 +50,14 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev burn uniBTC and redeem WBTC
      */
-    function redeem(uint256 _amount) external {
+    function redeem(uint256 _amount) external whenRedeemable {
         _redeem(WBTC, _amount);
     }
 
     /**
      * @dev burn uniBTC and redeem the given type of wrapped BTC
      */
-    function redeem(address _token, uint256 _amount) external {
+    function redeem(address _token, uint256 _amount) external whenRedeemable {
         _redeem(_token, _amount);
     }
 
@@ -90,6 +97,15 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     function unpauseToken(address _token) public onlyRole(PAUSER_ROLE) {
         paused[_token] = false;
         emit TokenUnpaused(_token);
+    }
+
+    function toggleRedemption() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        redeemable = !redeemable;
+        if (redeemable) {
+            emit RedemptionOn();
+        } else {
+            emit RedemptionOff();
+        }
     }
 
     /**
@@ -148,4 +164,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     event Redeemed(address token, uint256 amount);
     event TokenPaused(address token);
     event TokenUnpaused(address token);
+    event RedemptionOn();
+    event RedemptionOff();
 }

@@ -65,8 +65,18 @@ def test_redeem(fn_isolation, contracts, owner, alice):
     cap = 10e8
 
     # ---Revert Path Testing---
+    # Scenario 1: Redeem reverts if the given token is irredeemable.
+    with brownie .reverts("SYS011"):
+        vault.redeem(0, {'from': alice})
 
-    # Scenario 1: Redeem reverts if the Vault's balance is insufficient.
+    with brownie .reverts("SYS011"):
+        vault.redeem(wbtc, 0, {'from': alice})
+
+    tx = vault.toggleRedemption({'from': owner})
+    assert "RedemptionOn" in tx.events
+    assert vault.redeemable()
+
+    # Scenario 2: Redeem reverts if the Vault's balance is insufficient.
     with brownie .reverts("ERC20: transfer amount exceeds balance"):
         vault.redeem(cap, {'from': alice})
 
@@ -78,7 +88,7 @@ def test_redeem(fn_isolation, contracts, owner, alice):
     wbtc.approve(vault, cap, {'from': alice})
     vault.mint(cap, {'from': alice})
 
-    # Scenario 2: Redeem reverts if the uniBTC allowance is insufficient.
+    # Scenario 3: Redeem reverts if the uniBTC allowance is insufficient.
     with brownie .reverts("ERC20: insufficient allowance"):
         vault.redeem(cap, {'from': alice})
 
@@ -87,7 +97,7 @@ def test_redeem(fn_isolation, contracts, owner, alice):
 
     uni_btc.approve(vault, cap, {'from': alice})
 
-    # Scenario 3: Redeem reverts if the user's uniBTC balance is insufficient.
+    # Scenario 4: Redeem reverts if the user's uniBTC balance is insufficient.
     uni_btc.approve(owner, cap, {'from': alice})
     uni_btc.burnFrom(alice, cap, {'from': owner})
 
@@ -99,7 +109,7 @@ def test_redeem(fn_isolation, contracts, owner, alice):
 
     # ---Happy Path Testing---
 
-    # Scenario 4: Redeem tokens successfully with valid inputs.
+    # Scenario 5: Redeem tokens successfully with valid inputs.
     uni_btc.mint(alice, cap, {'from': owner})
     assert uni_btc.balanceOf(alice) == cap
 
@@ -114,6 +124,10 @@ def test_redeem(fn_isolation, contracts, owner, alice):
     assert uni_btc.balanceOf(alice) == 0
     assert wbtc.balanceOf(alice) == cap
     assert wbtc.balanceOf(vault) == 0
+
+    tx = vault.toggleRedemption({'from': owner})
+    assert "RedemptionOff" in tx.events
+    assert not vault.redeemable()
 
 
 def test_setCap(fn_isolation, contracts, owner, alice, zero_address):
