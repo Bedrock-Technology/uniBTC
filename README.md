@@ -1,18 +1,45 @@
 # uniBTC
 
 ### 1. Deployed Contracts
-Mainnet Deployment
-```
-ProxyAdmin: 0x029E4FbDAa31DE075dD74B2238222A08233978f6
-uniBTC: 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
-Vault: 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
-```
-Holesky Deployment
-```
-mockWBTC: 0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a
-uniBTC: 0x02e3E2c644601b18Ad67a6F09155fe5581AF25ea
-Vault: 0x98169228cB99Ed26c1043eD8Ca53A5Cb371D3B8D
-```
+**Ethereum Mainnet Deployment**
+
+- [ProxyAdmin](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6): 0x029E4FbDAa31DE075dD74B2238222A08233978f6
+- [uniBTC](https://etherscan.io/address/0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568): 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
+- [Vault](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da): 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
+
+**Holesky Testnet Deployment**
+
+- [mockWBTC](https://holesky.etherscan.io/address/0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a): 0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a
+- [uniBTC](https://holesky.etherscan.io/address/0x02e3e2c644601b18ad67a6f09155fe5581af25ea): 0x02e3E2c644601b18Ad67a6F09155fe5581AF25ea
+- [Vault](https://holesky.etherscan.io/address/0x98169228cb99ed26c1043ed8ca53a5cb371d3b8d): 0x98169228cB99Ed26c1043eD8Ca53A5Cb371D3B8D
+
+
+**Avalanche C-Chain Fuji Testnet Deployment**
+
+- [ProxyAdmin](https://testnet.snowtrace.io/address/0x8746649B65eA03A22e559Eb03059018baEDFBA9e): 0x8746649B65eA03A22e559Eb03059018baEDFBA9e
+- [mockWBTC](https://testnet.snowtrace.io/address/0x49D6844cbcef64952E6793677eeaBae324f895aD): 0x49D6844cbcef64952E6793677eeaBae324f895aD
+- [uniBTC](https://testnet.snowtrace.io/address/0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f): 0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f
+- [Vault](https://testnet.snowtrace.io/address/0x85792f60633DBCF7c2414675bcC0a790B1b65CbB): 0x85792f60633DBCF7c2414675bcC0a790B1b65CbB
+- [Peer](https://testnet.snowtrace.io/address/0xe7431fc992a54fAA435125Ca94E00B4a8c89095c): 0xe7431fc992a54fAA435125Ca94E00B4a8c89095c        
+
+
+**BSC Testnet Deployment**
+
+- [ProxyAdmin](https://testnet.bscscan.com/address/0x49D6844cbcef64952E6793677eeaBae324f895aD): 0x49D6844cbcef64952E6793677eeaBae324f895aD
+- [mockWBTC](https://testnet.bscscan.com/address/0xe7431fc992a54faa435125ca94e00b4a8c89095c): 0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
+- [uniBTC](https://testnet.bscscan.com/address/0x2c914ba874d94090ba0e6f56790bb8eb6d4c7e5f): 0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f
+- [Vault](https://testnet.bscscan.com/address/0x85792f60633dbcf7c2414675bcc0a790b1b65cbb): 0x85792f60633DBCF7c2414675bcC0a790B1b65CbB
+- [Peer](https://testnet.bscscan.com/address/0xd59677a6efe9151c0131e8cf174c8bbceb536005): 0xd59677a6eFe9151c0131E8cF174C8BBCEB536005
+
+
+**Fantom Testnet Deployment**
+
+- [ProxyAdmin](https://testnet.ftmscan.com/address/0x8746649B65eA03A22e559Eb03059018baEDFBA9e): 0x8746649B65eA03A22e559Eb03059018baEDFBA9e
+- [mockWBTC](https://testnet.ftmscan.com/address/0x49d6844cbcef64952e6793677eeabae324f895ad): 0x49D6844cbcef64952E6793677eeaBae324f895aD
+- [uniBTC](https://testnet.ftmscan.com/address/0x802d4900209b2292bf7f07ecae187f836040a709): 0x802d4900209b2292bF7f07ecAE187f836040A709
+- [Vault](https://testnet.ftmscan.com/address/0x06c186ff3a0da2ce668e5b703015f3134f4a88ad): 0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad
+- [Peer](https://testnet.ftmscan.com/address/0xe7431fc992a54faa435125ca94e00b4a8c89095c): 0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
+
 
 ### 2. Error Codes from contracts
 1. SYS001: INVALID_WBTC_ADDRESS
@@ -25,6 +52,7 @@ Vault: 0x98169228cB99Ed26c1043eD8Ca53A5Cb371D3B8D
 1. SYS008: INVALID_INPUT_ARRAY_LENGTHS
 1. SYS009: CHAIN_ID_CANNOT_BE_ZERO
 1. SYS010: INVALID_PEER_ADDRESS
+1. SYS011: IRREDEEMABLE_STATUS
 1. USR001: UNIBTC: LEAST_ONE_RECIPIENT_ADDRESS
 1. USR002: UNIBTC: NUMBER_OF_RECIPIENT_ADDRESSES_DOES_NOT_MATCH_THE_NUMBER_OF_TOKENS
 1. USR003: INSUFFICIENT_QUOTA

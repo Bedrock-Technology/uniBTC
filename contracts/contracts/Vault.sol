@@ -19,7 +19,14 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     mapping(address => uint256) public caps;
     mapping(address => bool) public paused;
-    
+
+    bool public redeemable;
+
+    modifier whenRedeemable() {
+        require(redeemable, "SYS011");
+        _;
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -33,11 +40,25 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev mint uniBTC with give types of wrapped BTC
+     * @dev mint uniBTC with the given type of wrapped BTC
      */
     function mint(address _token, uint256 _amount) external {
         require(!paused[_token], "SYS004");
         _mint(_token, _amount);
+    }
+
+    /**
+     * @dev burn uniBTC and redeem WBTC
+     */
+    function redeem(uint256 _amount) external whenRedeemable {
+        _redeem(WBTC, _amount);
+    }
+
+    /**
+     * @dev burn uniBTC and redeem the given type of wrapped BTC
+     */
+    function redeem(address _token, uint256 _amount) external whenRedeemable {
+        _redeem(_token, _amount);
     }
 
     /**
@@ -79,6 +100,18 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
+     * @dev enable or disable redemption feature
+     */
+    function toggleRedemption() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        redeemable = !redeemable;
+        if (redeemable) {
+            emit RedemptionOn();
+        } else {
+            emit RedemptionOff();
+        }
+    }
+
+    /**
      * @dev set cap for a specific type of wrapped BTC
      */
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -114,6 +147,15 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
+     * @dev redeem internal
+     */
+    function _redeem(address _token, uint256 _amount) internal {
+        IERC20(_token).safeTransfer(msg.sender, _amount);
+        IMintableContract(uniBTC).burnFrom(msg.sender, _amount);
+        emit Redeemed(_token, _amount);
+    }
+
+    /**
      * ======================================================================================
      *
      * EVENTS
@@ -122,6 +164,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     event Withdrawed(address token, uint256 amount, address target);
     event Minted(address token, uint256 amount);
+    event Redeemed(address token, uint256 amount);
     event TokenPaused(address token);
     event TokenUnpaused(address token);
+    event RedemptionOn();
+    event RedemptionOff();
 }
