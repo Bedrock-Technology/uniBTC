@@ -1,6 +1,17 @@
 # uniBTC
 
-### 1. Deployed Contracts
+
+### 1. Compile Contracts
+You need to update the submodules that this repository depends on to the required commits before building contracts with the following steps:
+
+(1) Clone all submodules before checking out any tags or commits. From the `uniBTC/` directory, run `git submodule update --init --recursive`. <br>
+(2) Checkout the celer-network commit. From the `uniBTC/contracts/lib/celer-network/sgn-v2-contracts-main/`, run `git checkout 0b4c531c52fd4f23cbb4397440da1cc42f837a12`. <br>
+(3) Checkout openzeppelin-contracts. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3/`, run `git checkout v4.8.3`. <br>
+(4) Checkout openzeppelin-contracts-upgradeable. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/`, run `git checkout v4.8.3`. <br>
+
+After all submodules updated as required, you can run the following command from the `uniBTC/contracts/` to build contracts: `brownie compile`
+
+### 2. Deployed Contracts
 **Ethereum Mainnet Deployment**
 
 - [ProxyAdmin](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6): 0x029E4FbDAa31DE075dD74B2238222A08233978f6
@@ -41,7 +52,7 @@
 - [Peer](https://testnet.ftmscan.com/address/0xe7431fc992a54faa435125ca94e00b4a8c89095c): 0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
 
 
-### 2. Error Codes from contracts
+### 3. Error Codes from contracts
 1. SYS001: INVALID_WBTC_ADDRESS
 1. SYS002: INVALID_UNIBTC_ADDRESS
 1. SYS003: WBTC_PAUSED
