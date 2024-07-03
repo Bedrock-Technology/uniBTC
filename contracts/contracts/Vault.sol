@@ -99,6 +99,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         emit TokenUnpaused(_token);
     }
 
+    /**
+     * @dev enable or disable redemption feature
+     */
     function toggleRedemption() external onlyRole(DEFAULT_ADMIN_ROLE) {
         redeemable = !redeemable;
         if (redeemable) {
