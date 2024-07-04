@@ -204,7 +204,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         IMintableContract(uniBTC).burnFrom(msg.sender, uniBTCAmount);
         payable(sender).sendValue(actualAmount);
 
-        emit Redeemed(NATIVE_BTC, actualAmount);
+        emit Redeemed(NATIVE_BTC, _maxAmount);
     }
 
     /**
@@ -217,7 +217,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         IMintableContract(uniBTC).burnFrom(msg.sender, uniBTCAmount);
         IERC20(_token).safeTransfer(msg.sender, actualAmount);
 
-        emit Redeemed(_token, actualAmount);
+        emit Redeemed(_token, _maxAmount);
     }
 
     /**
