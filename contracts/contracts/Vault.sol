@@ -50,38 +50,38 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev mint uniBTC with WBTC
      */
-    function mint(uint256 _maxAmount) external {
+    function mint(uint256 _amount) external {
         require(!paused[WBTC], "SYS003");
-        _mint(WBTC, _maxAmount);
+        _mint(WBTC, _amount);
     }
 
     /**
      * @dev mint uniBTC with the given type of wrapped BTC
      */
-    function mint(address _token, uint256 _maxAmount) external {
+    function mint(address _token, uint256 _amount) external {
         require(!paused[_token], "SYS004");
-        _mint(_token, _maxAmount);
+        _mint(_token, _amount);
     }
 
     /**
      * @dev burn uniBTC and redeem native BTC
      */
-    function redeemNative(uint256 _maxAmount) external whenRedeemable {
-        _redeemNative(msg.sender, _maxAmount);
+    function redeemNative(uint256 _amount) external whenRedeemable {
+        _redeemNative(msg.sender, _amount);
     }
 
     /**
      * @dev burn uniBTC and redeem WBTC
      */
-    function redeem(uint256 _maxAmount) external whenRedeemable {
-        _redeem(WBTC, _maxAmount);
+    function redeem(uint256 _amount) external whenRedeemable {
+        _redeem(WBTC, _amount);
     }
 
     /**
      * @dev burn uniBTC and redeem the given type of wrapped BTC
      */
-    function redeem(address _token, uint256 _maxAmount) external whenRedeemable {
-        _redeem(_token, _maxAmount);
+    function redeem(address _token, uint256 _amount) external whenRedeemable {
+        _redeem(_token, _amount);
     }
 
     /**
@@ -168,74 +168,74 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev mint uniBTC with native BTC tokens
      */
-    function _mintNative(address sender, uint256 _maxAmount) internal {
-        (, uint256 uniBTCAmount) = _amountsNative(_maxAmount);
+    function _mintNative(address _sender, uint256 _amount) internal {
+        (, uint256 uniBTCAmount) = _amountsNative(_amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(address(this).balance + _maxAmount <= caps[NATIVE_BTC], "USR003");
+        require(address(this).balance + _amount <= caps[NATIVE_BTC], "USR003");
 
         IMintableContract(uniBTC).mint(msg.sender, uniBTCAmount);
 
-        emit Minted(NATIVE_BTC, _maxAmount);
+        emit Minted(NATIVE_BTC, _amount);
     }
 
     /**
      * @dev mint uniBTC with wrapped BTC tokens
      */
-    function _mint(address _token, uint256 _maxAmount) internal {
-        (, uint256 uniBTCAmount) = _amounts(_token, _maxAmount);
+    function _mint(address _token, uint256 _amount) internal {
+        (, uint256 uniBTCAmount) = _amounts(_token, _amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(IERC20(_token).balanceOf(address(this)) + _maxAmount <= caps[_token], "USR003");
+        require(IERC20(_token).balanceOf(address(this)) + _amount <= caps[_token], "USR003");
 
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _maxAmount);
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
         IMintableContract(uniBTC).mint(msg.sender, uniBTCAmount);
 
-        emit Minted(_token, _maxAmount);
+        emit Minted(_token, _amount);
     }
 
     /**
      * @dev burn uniBTC and return native BTC tokens
      */
-    function _redeemNative(address sender, uint256 _maxAmount) internal {
-        (uint256 actualAmount, uint256 uniBTCAmount) = _amountsNative(_maxAmount);
+    function _redeemNative(address _sender, uint256 _amount) internal {
+        (uint256 actualAmount, uint256 uniBTCAmount) = _amountsNative(_amount);
         require(uniBTCAmount > 0, "USR010");
 
         IMintableContract(uniBTC).burnFrom(msg.sender, uniBTCAmount);
-        payable(sender).sendValue(actualAmount);
+        payable(_sender).sendValue(actualAmount);
 
-        emit Redeemed(NATIVE_BTC, _maxAmount);
+        emit Redeemed(NATIVE_BTC, _amount);
     }
 
     /**
      * @dev burn uniBTC and return wrapped BTC tokens
      */
-    function _redeem(address _token, uint256 _maxAmount) internal {
-        (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_token, _maxAmount);
+    function _redeem(address _token, uint256 _amount) internal {
+        (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_token, _amount);
         require(uniBTCAmount > 0, "USR010");
 
         IMintableContract(uniBTC).burnFrom(msg.sender, uniBTCAmount);
         IERC20(_token).safeTransfer(msg.sender, actualAmount);
 
-        emit Redeemed(_token, _maxAmount);
+        emit Redeemed(_token, _amount);
     }
 
     /**
      * @dev determine the valid native BTC amount and the corresponding uniBTC amount.
      */
-    function _amountsNative(uint256 _maxAmount) internal returns (uint256, uint256) {
-        uint256 uniBTCAmt = _maxAmount /EXCHANGE_RATE_BASE;
+    function _amountsNative(uint256 _amount) internal returns (uint256, uint256) {
+        uint256 uniBTCAmt = _amount /EXCHANGE_RATE_BASE;
         return (uniBTCAmt * EXCHANGE_RATE_BASE, uniBTCAmt);
     }
 
     /**
      * @dev determine the valid wrapped BTC amount and the corresponding uniBTC amount.
      */
-    function _amounts(address _token, uint256 _maxAmount) internal returns (uint256, uint256) {
+    function _amounts(address _token, uint256 _amount) internal returns (uint256, uint256) {
         uint8 decs = ERC20(_token).decimals();
-        if (decs == 8) return (_maxAmount, _maxAmount);
+        if (decs == 8) return (_amount, _amount);
         if (decs == 18) {
-            uint256 uniBTCAmt = _maxAmount /EXCHANGE_RATE_BASE;
+            uint256 uniBTCAmt = _amount /EXCHANGE_RATE_BASE;
             return (uniBTCAmt * EXCHANGE_RATE_BASE, uniBTCAmt);
         }
         return (0, 0);
