@@ -79,3 +79,4 @@ After all submodules updated as required, you can run the following command from
 1. USR007: TRANSFER_TO_THE_ZERO_ADDRESS
 1. USR008: INCORRECT_FEE
 1. USR009: ILLEGAL_REMOTE_CALLER
+2. USR010: INSUFFICIENT_AMOUNT
