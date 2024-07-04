@@ -183,15 +183,15 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev mint uniBTC with wrapped BTC tokens
      */
     function _mint(address _token, uint256 _maxAmount) internal {
-        (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_token, _maxAmount);
+        (, uint256 uniBTCAmount) = _amounts(_token, _maxAmount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(IERC20(_token).balanceOf(address(this)) + actualAmount <= caps[_token], "USR003");
+        require(IERC20(_token).balanceOf(address(this)) + _maxAmount <= caps[_token], "USR003");
 
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), actualAmount);
+        IERC20(_token).safeTransferFrom(msg.sender, address(this), _maxAmount);
         IMintableContract(uniBTC).mint(msg.sender, uniBTCAmount);
 
-        emit Minted(_token, actualAmount);
+        emit Minted(_token, _maxAmount);
     }
 
     /**
