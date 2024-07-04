@@ -21,6 +21,7 @@ After all submodules updated as required, you can run the following command from
 **Holesky Testnet Deployment**
 
 - [ProxyAdmin](https://holesky.etherscan.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89): 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
+- [mockFBTC](https://holesky.etherscan.io/address/0x087133ECddD986Da71e9b055d58964d3d7d8dc03): 0x087133ECddD986Da71e9b055d58964d3d7d8dc03
 - [mockWBTC](https://holesky.etherscan.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0): 0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0
 - [uniBTC](https://holesky.etherscan.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859): 0x16221CaD160b441db008eF6DA2d3d89a32A05859
 - [Vault](https://holesky.etherscan.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
@@ -30,6 +31,7 @@ After all submodules updated as required, you can run the following command from
 **Avalanche C-Chain Fuji Testnet Deployment**
 
 - [ProxyAdmin](https://testnet.snowtrace.io/address/0x8746649B65eA03A22e559Eb03059018baEDFBA9e): 0x8746649B65eA03A22e559Eb03059018baEDFBA9e
+- [mockFBTC](https://testnet.snowtrace.io/address/0xEB74BB04aD28b9b7ec1f2fd1812e7242170C6d1B): 0xEB74BB04aD28b9b7ec1f2fd1812e7242170C6d1B
 - [mockWBTC](https://testnet.snowtrace.io/address/0x49D6844cbcef64952E6793677eeaBae324f895aD): 0x49D6844cbcef64952E6793677eeaBae324f895aD
 - [uniBTC](https://testnet.snowtrace.io/address/0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f): 0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f
 - [Vault](https://testnet.snowtrace.io/address/0x85792f60633DBCF7c2414675bcC0a790B1b65CbB): 0x85792f60633DBCF7c2414675bcC0a790B1b65CbB
@@ -39,6 +41,7 @@ After all submodules updated as required, you can run the following command from
 **BSC Testnet Deployment**
 
 - [ProxyAdmin](https://testnet.bscscan.com/address/0x49D6844cbcef64952E6793677eeaBae324f895aD): 0x49D6844cbcef64952E6793677eeaBae324f895aD
+- [mockFBTC](https://testnet.bscscan.com/address/0xc87E37848B913f289Aee0E2A9d3Ed94bA98D2A60): 0xc87E37848B913f289Aee0E2A9d3Ed94bA98D2A60
 - [mockWBTC](https://testnet.bscscan.com/address/0xe7431fc992a54faa435125ca94e00b4a8c89095c): 0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
 - [uniBTC](https://testnet.bscscan.com/address/0x2c914ba874d94090ba0e6f56790bb8eb6d4c7e5f): 0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f
 - [Vault](https://testnet.bscscan.com/address/0x85792f60633dbcf7c2414675bcc0a790b1b65cbb): 0x85792f60633DBCF7c2414675bcC0a790B1b65CbB
@@ -48,6 +51,7 @@ After all submodules updated as required, you can run the following command from
 **Fantom Testnet Deployment**
 
 - [ProxyAdmin](https://testnet.ftmscan.com/address/0x8746649B65eA03A22e559Eb03059018baEDFBA9e): 0x8746649B65eA03A22e559Eb03059018baEDFBA9e
+- [mockFBTC](https://testnet.ftmscan.com/address/0xeb74bb04ad28b9b7ec1f2fd1812e7242170c6d1b): 0xEB74BB04aD28b9b7ec1f2fd1812e7242170C6d1B
 - [mockWBTC](https://testnet.ftmscan.com/address/0x49d6844cbcef64952e6793677eeabae324f895ad): 0x49D6844cbcef64952E6793677eeaBae324f895aD
 - [uniBTC](https://testnet.ftmscan.com/address/0x802d4900209b2292bf7f07ecae187f836040a709): 0x802d4900209b2292bF7f07ecAE187f836040A709
 - [Vault](https://testnet.ftmscan.com/address/0x06c186ff3a0da2ce668e5b703015f3134f4a88ad): 0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad
