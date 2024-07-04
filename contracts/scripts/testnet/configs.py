@@ -1,6 +1,15 @@
 # Reference: https://im-docs.celer.network/developer/contract-addresses-and-rpc-info#testnet
 
 contracts = {
+    "holesky-test": {
+        "chain_id": 17000,
+        "proxy_admin": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89",
+        "message_bus": "",
+        "wbtc": "0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0",
+        "uni_btc": "0x16221CaD160b441db008eF6DA2d3d89a32A05859",
+        "vault": "0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823",
+        "peer": ""
+    },
     "avax-test": {
         "chain_id": 43113,
         "proxy_admin": "0x8746649B65eA03A22e559Eb03059018baEDFBA9e",

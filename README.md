@@ -4,10 +4,10 @@
 ### 1. Compile Contracts
 You need to update the submodules that this repository depends on to the required commits before building contracts with the following steps:
 
-(1) Clone all submodules before checking out any tags or commits. From the `uniBTC/` directory, run `git submodule update --init --recursive`. <br>
-(2) Checkout the celer-network commit. From the `uniBTC/contracts/lib/celer-network/sgn-v2-contracts-main/`, run `git checkout 0b4c531c52fd4f23cbb4397440da1cc42f837a12`. <br>
-(3) Checkout openzeppelin-contracts. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3/`, run `git checkout v4.8.3`. <br>
-(4) Checkout openzeppelin-contracts-upgradeable. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/`, run `git checkout v4.8.3`. <br>
+- (1) Clone all submodules before checking out any tags or commits. From the `uniBTC/` directory, run `git submodule update --init --recursive`. <br>
+- (2) Checkout the celer-network commit. From the `uniBTC/contracts/lib/celer-network/sgn-v2-contracts-main/`, run `git checkout 0b4c531c52fd4f23cbb4397440da1cc42f837a12`. <br>
+- (3) Checkout openzeppelin-contracts. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3/`, run `git checkout v4.8.3`. <br>
+- (4) Checkout openzeppelin-contracts-upgradeable. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/`, run `git checkout v4.8.3`. <br>
 
 After all submodules updated as required, you can run the following command from the `uniBTC/contracts/` to build contracts: `brownie compile`
 
@@ -20,9 +20,11 @@ After all submodules updated as required, you can run the following command from
 
 **Holesky Testnet Deployment**
 
-- [mockWBTC](https://holesky.etherscan.io/address/0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a): 0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a
-- [uniBTC](https://holesky.etherscan.io/address/0x02e3e2c644601b18ad67a6f09155fe5581af25ea): 0x02e3E2c644601b18Ad67a6F09155fe5581AF25ea
-- [Vault](https://holesky.etherscan.io/address/0x98169228cb99ed26c1043ed8ca53a5cb371d3b8d): 0x98169228cB99Ed26c1043eD8Ca53A5Cb371D3B8D
+- [ProxyAdmin](https://holesky.etherscan.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89): 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
+- [mockWBTC](https://holesky.etherscan.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0): 0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0
+- [uniBTC](https://holesky.etherscan.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859): 0x16221CaD160b441db008eF6DA2d3d89a32A05859
+- [Vault](https://holesky.etherscan.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
+- [Peer](): No deployment because [Celer](https://im-docs.celer.network/developer/contract-addresses-and-rpc-info) Network doesn't support the [Holesky](https://holesky.etherscan.io/) Testnet currently.
 
 
 **Avalanche C-Chain Fuji Testnet Deployment**
