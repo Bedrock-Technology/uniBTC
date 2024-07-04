@@ -169,17 +169,14 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev mint uniBTC with native BTC tokens
      */
     function _mintNative(address sender, uint256 _maxAmount) internal {
-        (uint256 actualAmount, uint256 uniBTCAmount) = _amountsNative(_maxAmount);
+        (, uint256 uniBTCAmount) = _amountsNative(_maxAmount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(address(this).balance + actualAmount <= caps[NATIVE_BTC], "USR003");
+        require(address(this).balance + _maxAmount <= caps[NATIVE_BTC], "USR003");
 
-        uint256 remainingAmount = _maxAmount - actualAmount;
         IMintableContract(uniBTC).mint(msg.sender, uniBTCAmount);
 
-        if (remainingAmount > 0) payable(sender).sendValue(remainingAmount);
-
-        emit Minted(NATIVE_BTC, actualAmount);
+        emit Minted(NATIVE_BTC, _maxAmount);
     }
 
     /**
