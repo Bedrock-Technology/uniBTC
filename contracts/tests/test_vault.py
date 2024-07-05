@@ -98,7 +98,7 @@ def test_redeem(fn_isolation, contracts, owner, alice):
 
 
 def test_setCap(fn_isolation, contracts, owner, alice, zero_address):
-    wbtc, vault = contracts[5], contracts[6]
+    fbtc, wbtc, xbtc, vault = contracts[7], contracts[5], contracts[8], contracts[6]
 
     cap = 10e8
 
@@ -112,14 +112,28 @@ def test_setCap(fn_isolation, contracts, owner, alice, zero_address):
     with brownie .reverts("SYS003"):
         vault.setCap(zero_address, 0, {'from': owner})
 
-    # Scenario 3: The decimals of the given token must be equal to 8
-    # Note: Skip codes here for conciseness.
+    # Scenario 3: The decimals of the given token must be equal to 8 or 18
+    assert xbtc.decimals() == 12
+    with brownie .reverts("SYS004"):
+        vault.setCap(xbtc, 0, {'from': owner})
 
     # ---Happy Path Testing---
 
-    # Scenario 4: Set cap successfully with valid inputs.
+    # Scenario 4: Successfully set cap for native BTC with 18 decimals
+    native_btc = vault.NATIVE_BTC()
+    vault.setCap(native_btc, cap, {'from': owner})
+    assert vault.NATIVE_BTC_DECIMALS() == 18
+    assert vault.caps(native_btc) == cap
+
+    # Scenario 5: Successfully set cap for wrapped BTC with 8 decimals
+    assert wbtc.decimals() == 8
     vault.setCap(wbtc, cap, {'from': owner})
     assert vault.caps(wbtc) == cap
+
+    # Scenario 6: Successfully set cap for wrapped BTC with 18 decimals
+    assert fbtc.decimals() == 18
+    vault.setCap(fbtc, cap, {'from': owner})
+    assert vault.caps(fbtc) == cap
 
 
 def test_adminWithdraw(fn_isolation, contracts, owner, alice, bob, zero_address):
