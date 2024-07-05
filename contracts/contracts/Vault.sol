@@ -133,7 +133,15 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev withdraw token
+     * @dev withdraw native BTC
+     */
+    function adminWithdraw(uint256 _amount, address _target) external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+        emit Withdrawed(NATIVE_BTC, _amount, _target);
+        payable(_target).sendValue(_amount);
+    }
+
+    /**
+     * @dev withdraw wrapped BTC
      */
     function adminWithdraw(address _token, uint256 _amount, address _target) external onlyRole(DEFAULT_ADMIN_ROLE) {
         IERC20(_token).safeTransfer(_target, _amount);
