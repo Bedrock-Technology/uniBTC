@@ -147,7 +147,7 @@ def test_adminWithdraw(fn_isolation, contracts, owner, alice, bob, zero_address)
     vault.setCap(wbtc, cap, {'from': owner})
     wbtc.mint(alice, cap, {'from': owner})
     wbtc.approve(vault, cap, {'from': alice})
-    vault.mint(cap, {'from': alice})
+    vault.mint(wbtc, cap, {'from': alice})
     tx = vault.adminWithdraw(wbtc, cap, bob, {'from': owner})
     assert "Withdrawed" in tx.events
     assert wbtc.balanceOf(vault) == 0
