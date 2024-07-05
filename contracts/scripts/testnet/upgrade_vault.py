@@ -18,7 +18,8 @@ def main(deployer="deployer", owner="owner", network="avax-test"):
     proxy_admin = ProxyAdmin.at(contracts[network]["proxy_admin"])
     vault_proxy = TransparentUpgradeableProxy.at(contracts[network]["vault"])
 
-    vault_impl = Vault.deploy({'from': deployer})
+    # vault_impl = Vault.deploy({'from': deployer})
+    vault_impl = "0x3ffce70735626B13B5F36863665520628E895ECC"
     proxy_admin.upgrade(vault_proxy, vault_impl, {'from': owner})
 
     assert proxy_admin.getProxyImplementation(vault_proxy) == vault_impl
@@ -27,11 +28,13 @@ def main(deployer="deployer", owner="owner", network="avax-test"):
     print("Deployed Vault Proxy: ", vault_proxy)
     print("Deployed Vault implementation: ", vault_impl)
 
-    # Deployed Vault implementation on avax-test: 0x409dF0Ee22F057A88c1F98743c2e42D0c45DaDda
+    # Deployed Vault implementation on holesky-test: 0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf
 
-    # Deployed Vault implementation on bsc-test: 0x409dF0Ee22F057A88c1F98743c2e42D0c45DaDda
+    # Deployed Vault implementation on avax-test: 0x9cb04A403c6691AdEE14cE43D19aF1fE96C5ab91
 
-    # Deployed Vault implementation on ftm-test: 0x9cb04A403c6691AdEE14cE43D19aF1fE96C5ab91
+    # Deployed Vault implementation on bsc-test: 0x9cb04A403c6691AdEE14cE43D19aF1fE96C5ab91
+
+    # Deployed Vault implementation on ftm-test: 0x3ffce70735626B13B5F36863665520628E895ECC
 
 
 
