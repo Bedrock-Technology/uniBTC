@@ -109,7 +109,7 @@ def test_setCap(fn_isolation, contracts, owner, alice, zero_address):
         vault.setCap(wbtc, 0, {'from': alice})
 
     # Scenario 2: Setting a cap for the zero address is not permitted
-    with brownie .reverts("SYS005"):
+    with brownie .reverts("SYS003"):
         vault.setCap(zero_address, 0, {'from': owner})
 
     # Scenario 3: The decimals of the given token must be equal to 8
