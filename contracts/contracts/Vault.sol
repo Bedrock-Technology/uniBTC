@@ -16,7 +16,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     using SafeERC20 for IERC20;
     using Address for address payable;
 
-    address public /* DEPRECATED */ WBTC;
+    address public _DEPRECATED_WBTC_;
     address public uniBTC;
 
     mapping(address => uint256) public caps;
@@ -24,7 +24,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     bool public redeemable;
 
-    address public constant NATIVE_BTC = address(0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+    address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
     uint8 public constant NATIVE_BTC_DECIMALS = 18;
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
@@ -32,6 +32,10 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     modifier whenRedeemable() {
         require(redeemable, "SYS009");
         _;
+    }
+
+    receive() external payable {
+        revert("value only accepted by the mint function");
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -163,7 +167,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 uniBTCAmount) = _amounts(_amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(address(this).balance + _amount <= caps[NATIVE_BTC], "USR003");
+        require(address(this).balance <= caps[NATIVE_BTC], "USR003");
 
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 
