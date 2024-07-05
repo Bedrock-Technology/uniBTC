@@ -256,6 +256,36 @@ def test_setCap(fn_isolation, contracts, owner, alice, zero_address):
     assert vault.caps(fbtc) == cap
 
 
+def test_adminWithdraw_native(fn_isolation, contracts, owner, alice, bob, zero_address):
+    wbtc, vault = contracts[5], contracts[6]
+
+    bob = accounts.at("0xbFdDf5e269C74157b157c7DaC5E416d44afB790d", True)
+
+    rate_base = vault.EXCHANGE_RATE_BASE()
+    native_btc = vault.NATIVE_BTC()
+    cap = 10e18
+
+    # ---Revert Path Testing---
+
+    # Scenario 1: Only DEFAULT_ADMIN_ROLE is permitted to call adminWithdraw function
+    with brownie.reverts():
+        vault.adminWithdraw(0, alice, {'from': alice})
+
+    # Scenario 2: Withdrawal fails if insufficient balance.
+    with brownie.reverts("Address: insufficient balance"):
+        vault.adminWithdraw(cap, alice, {'from': owner})
+
+    # ---Happy Path Testing---
+
+    # Scenario 3: Withdraw tokens successfully with valid inputs.
+    vault.setCap(native_btc, cap, {'from': owner})
+    vault.mint({'from': alice, 'value': cap})
+    tx = vault.adminWithdraw(cap, bob, {'from': owner})
+    assert "Withdrawed" in tx.events
+    assert bob.balance() == cap
+    assert vault.balance() == 0
+
+
 def test_adminWithdraw(fn_isolation, contracts, owner, alice, bob, zero_address):
     wbtc, vault = contracts[5], contracts[6]
 
