@@ -24,7 +24,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     bool public redeemable;
 
-    address public constant NATIVE_BTC = address(0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+    address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
     uint8 public constant NATIVE_BTC_DECIMALS = 18;
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
