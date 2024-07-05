@@ -66,7 +66,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev burn uniBTC and redeem native BTC
      */
-    function redeemNative(uint256 _amount) external whenRedeemable {
+    function redeemNative(uint256 _amount) external nonReentrant whenRedeemable {
         _redeemNative(msg.sender, _amount);
     }
 
