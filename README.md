@@ -25,7 +25,7 @@ After all submodules updated as required, you can run the following command from
 - [mockWBTC](https://holesky.etherscan.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0): 0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0
 - [uniBTC](https://holesky.etherscan.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859): 0x16221CaD160b441db008eF6DA2d3d89a32A05859
 - [Vault](https://holesky.etherscan.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
-- [Peer](): No deployment because [Celer](https://im-docs.celer.network/developer/contract-addresses-and-rpc-info) Network doesn't support the [Holesky](https://holesky.etherscan.io/) Testnet currently.
+- [Peer](https://holesky.etherscan.io/address/0x6EFc200c769E54DAab8fcF2d339b79F92cFf4EC9): 0x6EFc200c769E54DAab8fcF2d339b79F92cFf4EC9
 
 
 **Avalanche C-Chain Fuji Testnet Deployment**
