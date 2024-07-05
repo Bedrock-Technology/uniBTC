@@ -34,6 +34,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         _;
     }
 
+    receive() external payable { }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
