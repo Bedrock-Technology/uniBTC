@@ -31,7 +31,7 @@ def main():
 
     # initialize vault
     transparent_vault = Contract.from_abi("vault",vault_proxy.address, Vault.abi)
-    transparent_vault.initialize(owner, WBTC, uniBTC_proxy, {'from': owner})
+    transparent_vault.initialize(owner, uniBTC_proxy, {'from': owner})
 
     # initialize token
     transparent_uniBTC = Contract.from_abi("uniBTC",uniBTC_proxy.address, uniBTC.abi)

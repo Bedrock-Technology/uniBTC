@@ -100,18 +100,18 @@ def test_configurePeers(fn_isolation, chain_id, contracts, executor, owner, zero
         peer_sender.configurePeers([], [], {'from': executor})
 
     # Scenario 2: The lengths of inputs must be equal and greater than zero.
-    with brownie .reverts("SYS008"):
+    with brownie .reverts("SYS006"):
         peer_sender.configurePeers([], [], {'from': owner})
 
-    with brownie .reverts("SYS008"):
+    with brownie .reverts("SYS006"):
         peer_sender.configurePeers([chain_id, chain_id+1], [], {'from': owner})
 
     # Scenario 3: Zero chain ID not accepted
-    with brownie .reverts("SYS009"):
+    with brownie .reverts("SYS007"):
         peer_sender.configurePeers([0], [peer_sender], {'from': owner})
 
     # Scenario 4: Zero Peer address not accepted
-    with brownie .reverts("SYS010"):
+    with brownie .reverts("SYS008"):
         peer_sender.configurePeers([chain_id], [zero_address], {'from': owner})
 
     # ---Happy Path Testing---
@@ -136,7 +136,7 @@ def test_setMinTransferAmt(fn_isolation, contracts, owner, executor):
 
     # Scenario 2: The minimum amount to set must be a positive multiple of 10000
     for amt in [0, 1000, 10001]:
-        with brownie .reverts("SYS007"):
+        with brownie .reverts("SYS005"):
             peer_sender.setMinTransferAmt(amt, {'from': owner})
 
     # ---Happy Path Testing---

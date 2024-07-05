@@ -7,14 +7,16 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 import "../interfaces/iface.sol";
 
 contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     using SafeERC20 for IERC20;
+    using Address for address payable;
 
-    address public WBTC;
+    address public /* DEPRECATED */ WBTC;
     address public uniBTC;
 
     mapping(address => uint256) public caps;
@@ -22,8 +24,13 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     bool public redeemable;
 
+    address public constant NATIVE_BTC = address(0x00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF);
+    uint8 public constant NATIVE_BTC_DECIMALS = 18;
+
+    uint256 public constant EXCHANGE_RATE_BASE = 1e10;
+
     modifier whenRedeemable() {
-        require(redeemable, "SYS011");
+        require(redeemable, "SYS009");
         _;
     }
 
@@ -31,34 +38,35 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     constructor() {
         _disableInitializers();
     }
+
     /**
-     * @dev mint uniBTC with WBTC
+     * @dev mint uniBTC with native BTC
      */
-    function mint(uint256 _amount) external {
-        require(!paused[WBTC], "SYS003");
-        _mint(WBTC, _amount);
+    function mint() external payable {
+        require(!paused[NATIVE_BTC], "SYS002");
+        _mint(msg.sender, msg.value);
     }
 
     /**
      * @dev mint uniBTC with the given type of wrapped BTC
      */
     function mint(address _token, uint256 _amount) external {
-        require(!paused[_token], "SYS004");
-        _mint(_token, _amount);
+        require(!paused[_token], "SYS002");
+        _mint(msg.sender, _token, _amount);
     }
 
     /**
-     * @dev burn uniBTC and redeem WBTC
+     * @dev burn uniBTC and redeem native BTC
      */
-    function redeem(uint256 _amount) external whenRedeemable {
-        _redeem(WBTC, _amount);
+    function redeem(uint256 _amount) external nonReentrant whenRedeemable {
+        _redeem(msg.sender, _amount);
     }
 
     /**
      * @dev burn uniBTC and redeem the given type of wrapped BTC
      */
     function redeem(address _token, uint256 _amount) external whenRedeemable {
-        _redeem(_token, _amount);
+        _redeem(msg.sender, _token, _amount);
     }
 
     /**
@@ -68,18 +76,16 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      *
      * ======================================================================================
      */
-    function initialize(address _defaultAdmin, address _WBTC, address _uniBTC) initializer public {
+    function initialize(address _defaultAdmin, address _uniBTC) initializer public {
         __AccessControl_init();
         __Pausable_init();
         __ReentrancyGuard_init();
 
-        require(_WBTC != address(0x0), "SYS001");
-        require(_uniBTC != address(0x0), "SYS002");
+        require(_uniBTC != address(0x0), "SYS001");
 
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         _grantRole(PAUSER_ROLE, _defaultAdmin);
 
-        WBTC = _WBTC;
         uniBTC = _uniBTC;
     }
 
@@ -115,13 +121,27 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev set cap for a specific type of wrapped BTC
      */
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_token != address(0x0), "SYS005");
-        require(ERC20(_token).decimals() == 8, "SYS006");
+        require(_token != address(0x0), "SYS003");
+
+        uint8 decs = NATIVE_BTC_DECIMALS;
+
+        if (_token != NATIVE_BTC) decs = ERC20(_token).decimals();
+
+        require(decs == 8 || decs == 18, "SYS004");
+
         caps[_token] = _cap;
     }
 
     /**
-     * @dev withdraw token
+     * @dev withdraw native BTC
+     */
+    function adminWithdraw(uint256 _amount, address _target) external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+        emit Withdrawed(NATIVE_BTC, _amount, _target);
+        payable(_target).sendValue(_amount);
+    }
+
+    /**
+     * @dev withdraw wrapped BTC
      */
     function adminWithdraw(address _token, uint256 _amount, address _target) external onlyRole(DEFAULT_ADMIN_ROLE) {
         IERC20(_token).safeTransfer(_target, _amount);
@@ -135,25 +155,83 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      *
      * ======================================================================================
      */
+
     /**
-     * @dev mint internal 
+     * @dev mint uniBTC with native BTC tokens
      */
-    function _mint(address _token, uint256 _amount) internal {
+    function _mint(address _sender, uint256 _amount) internal {
+        (, uint256 uniBTCAmount) = _amounts(_amount);
+        require(uniBTCAmount > 0, "USR010");
+
+        require(address(this).balance + _amount <= caps[NATIVE_BTC], "USR003");
+
+        IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
+
+        emit Minted(NATIVE_BTC, _amount);
+    }
+
+    /**
+     * @dev mint uniBTC with wrapped BTC tokens
+     */
+    function _mint(address _sender, address _token, uint256 _amount) internal {
+        (, uint256 uniBTCAmount) = _amounts(_token, _amount);
+        require(uniBTCAmount > 0, "USR010");
+
         require(IERC20(_token).balanceOf(address(this)) + _amount <= caps[_token], "USR003");
 
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
-        IMintableContract(uniBTC).mint(msg.sender, _amount);
+        IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
+        IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
+
         emit Minted(_token, _amount);
     }
 
     /**
-     * @dev redeem internal
+     * @dev burn uniBTC and return native BTC tokens
      */
-    function _redeem(address _token, uint256 _amount) internal {
-        IERC20(_token).safeTransfer(msg.sender, _amount);
-        IMintableContract(uniBTC).burnFrom(msg.sender, _amount);
+    function _redeem(address _sender, uint256 _amount) internal {
+        (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_amount);
+        require(uniBTCAmount > 0, "USR010");
+
+        IMintableContract(uniBTC).burnFrom(_sender, uniBTCAmount);
+        emit Redeemed(NATIVE_BTC, _amount);
+
+        payable(_sender).sendValue(actualAmount);
+    }
+
+    /**
+     * @dev burn uniBTC and return wrapped BTC tokens
+     */
+    function _redeem(address _sender, address _token, uint256 _amount) internal {
+        (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_token, _amount);
+        require(uniBTCAmount > 0, "USR010");
+
+        IMintableContract(uniBTC).burnFrom(_sender, uniBTCAmount);
+        IERC20(_token).safeTransfer(_sender, actualAmount);
+
         emit Redeemed(_token, _amount);
     }
+
+    /**
+     * @dev determine the valid native BTC amount and the corresponding uniBTC amount.
+     */
+    function _amounts(uint256 _amount) internal returns (uint256, uint256) {
+        uint256 uniBTCAmt = _amount /EXCHANGE_RATE_BASE;
+        return (uniBTCAmt * EXCHANGE_RATE_BASE, uniBTCAmt);
+    }
+
+    /**
+     * @dev determine the valid wrapped BTC amount and the corresponding uniBTC amount.
+     */
+    function _amounts(address _token, uint256 _amount) internal returns (uint256, uint256) {
+        uint8 decs = ERC20(_token).decimals();
+        if (decs == 8) return (_amount, _amount);
+        if (decs == 18) {
+            uint256 uniBTCAmt = _amount /EXCHANGE_RATE_BASE;
+            return (uniBTCAmt * EXCHANGE_RATE_BASE, uniBTCAmt);
+        }
+        return (0, 0);
+    }
+
 
     /**
      * ======================================================================================
