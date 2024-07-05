@@ -52,7 +52,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function mint(uint256 _amount) external {
         require(!paused[WBTC], "SYS003");
-        _mint(WBTC, _amount);
+        _mint(msg.sender, WBTC, _amount);
     }
 
     /**
@@ -60,7 +60,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function mint(address _token, uint256 _amount) external {
         require(!paused[_token], "SYS004");
-        _mint(_token, _amount);
+        _mint(msg.sender, _token, _amount);
     }
 
     /**
@@ -74,14 +74,14 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev burn uniBTC and redeem WBTC
      */
     function redeem(uint256 _amount) external whenRedeemable {
-        _redeem(WBTC, _amount);
+        _redeem(msg.sender, WBTC, _amount);
     }
 
     /**
      * @dev burn uniBTC and redeem the given type of wrapped BTC
      */
     function redeem(address _token, uint256 _amount) external whenRedeemable {
-        _redeem(_token, _amount);
+        _redeem(msg.sender, _token, _amount);
     }
 
     /**
@@ -174,7 +174,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
         require(address(this).balance + _amount <= caps[NATIVE_BTC], "USR003");
 
-        IMintableContract(uniBTC).mint(msg.sender, uniBTCAmount);
+        IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 
         emit Minted(NATIVE_BTC, _amount);
     }
@@ -182,14 +182,14 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev mint uniBTC with wrapped BTC tokens
      */
-    function _mint(address _token, uint256 _amount) internal {
+    function _mint(address _sender, address _token, uint256 _amount) internal {
         (, uint256 uniBTCAmount) = _amounts(_token, _amount);
         require(uniBTCAmount > 0, "USR010");
 
         require(IERC20(_token).balanceOf(address(this)) + _amount <= caps[_token], "USR003");
 
-        IERC20(_token).safeTransferFrom(msg.sender, address(this), _amount);
-        IMintableContract(uniBTC).mint(msg.sender, uniBTCAmount);
+        IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
+        IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 
         emit Minted(_token, _amount);
     }
@@ -201,7 +201,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (uint256 actualAmount, uint256 uniBTCAmount) = _amountsNative(_amount);
         require(uniBTCAmount > 0, "USR010");
 
-        IMintableContract(uniBTC).burnFrom(msg.sender, uniBTCAmount);
+        IMintableContract(uniBTC).burnFrom(_sender, uniBTCAmount);
         payable(_sender).sendValue(actualAmount);
 
         emit Redeemed(NATIVE_BTC, _amount);
@@ -210,12 +210,12 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev burn uniBTC and return wrapped BTC tokens
      */
-    function _redeem(address _token, uint256 _amount) internal {
+    function _redeem(address _sender, address _token, uint256 _amount) internal {
         (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_token, _amount);
         require(uniBTCAmount > 0, "USR010");
 
-        IMintableContract(uniBTC).burnFrom(msg.sender, uniBTCAmount);
-        IERC20(_token).safeTransfer(msg.sender, actualAmount);
+        IMintableContract(uniBTC).burnFrom(_sender, uniBTCAmount);
+        IERC20(_token).safeTransfer(_sender, actualAmount);
 
         emit Redeemed(_token, _amount);
     }
