@@ -16,7 +16,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     using SafeERC20 for IERC20;
     using Address for address payable;
 
-    address public /* DEPRECATED */ WBTC;
+    address public _DEPRECATED_WBTC_;
     address public uniBTC;
 
     mapping(address => uint256) public caps;
