@@ -159,7 +159,7 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
      * @dev Set the minimum amount to make a cross-chain transfer.
      */
     function setMinTransferAmt(uint256 _minimalAmt) external onlyRole(MANAGER_ROLE) {
-        require(_minimalAmt > 0 && _minimalAmt % MIN_AMT_UNIT == 0, "SYS007");
+        require(_minimalAmt > 0 && _minimalAmt % MIN_AMT_UNIT == 0, "SYS005");
         minTransferAmt = _minimalAmt;
         emit MinTransferAmtSet(_minimalAmt);
     }
@@ -168,14 +168,14 @@ contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
      * @dev Configure peers to chain ID so that they can communicate with each other and avoid illegal minting requests.
      */
     function configurePeers(uint64[] calldata _chainIds, address[] calldata _peers) external onlyRole(MANAGER_ROLE) {
-        require(_chainIds.length > 0 && _chainIds.length == _peers.length, "SYS008");
+        require(_chainIds.length > 0 && _chainIds.length == _peers.length, "SYS006");
 
         for (uint256 i = 0; i < _chainIds.length; i++) {
             uint64 chainId = _chainIds[i];
             address peer = _peers[i];
 
-            require(chainId != 0, "SYS009");
-            require(peer != address(0), "SYS010");
+            require(chainId != 0, "SYS007");
+            require(peer != address(0), "SYS008");
 
             peers[chainId] = peer;
         }

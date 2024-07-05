@@ -16,7 +16,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     using SafeERC20 for IERC20;
     using Address for address payable;
 
-    address public WBTC;
+    address public /* DEPRECATED */ WBTC;
     address public uniBTC;
 
     mapping(address => uint256) public caps;
@@ -30,7 +30,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
     modifier whenRedeemable() {
-        require(redeemable, "SYS011");
+        require(redeemable, "SYS009");
         _;
     }
 
@@ -43,7 +43,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev mint uniBTC with native BTC
      */
     function mint() external payable {
-        require(!paused[NATIVE_BTC], "SYS004");
+        require(!paused[NATIVE_BTC], "SYS002");
         _mint(msg.sender, msg.value);
     }
 
@@ -51,7 +51,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev mint uniBTC with the given type of wrapped BTC
      */
     function mint(address _token, uint256 _amount) external {
-        require(!paused[_token], "SYS004");
+        require(!paused[_token], "SYS002");
         _mint(msg.sender, _token, _amount);
     }
 
@@ -76,18 +76,16 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      *
      * ======================================================================================
      */
-    function initialize(address _defaultAdmin, address _WBTC, address _uniBTC) initializer public {
+    function initialize(address _defaultAdmin, address _uniBTC) initializer public {
         __AccessControl_init();
         __Pausable_init();
         __ReentrancyGuard_init();
 
-        require(_WBTC != address(0x0), "SYS001");
-        require(_uniBTC != address(0x0), "SYS002");
+        require(_uniBTC != address(0x0), "SYS001");
 
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         _grantRole(PAUSER_ROLE, _defaultAdmin);
 
-        WBTC = _WBTC;
         uniBTC = _uniBTC;
     }
 
@@ -123,13 +121,13 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * @dev set cap for a specific type of wrapped BTC
      */
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_token != address(0x0), "SYS005");
+        require(_token != address(0x0), "SYS003");
 
         uint8 decs = NATIVE_BTC_DECIMALS;
 
         if (_token != NATIVE_BTC) decs = ERC20(_token).decimals();
 
-        require(decs == 8 || decs == 18, "SYS006");
+        require(decs == 8 || decs == 18, "SYS004");
 
         caps[_token] = _cap;
     }
