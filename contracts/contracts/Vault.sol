@@ -34,7 +34,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         _;
     }
 
-    receive() external payable { }
+    receive() external payable {
+        revert("value only accepted by the mint function");
+    }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
