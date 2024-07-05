@@ -42,17 +42,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev mint uniBTC with native BTC
      */
-    function mintNative() external payable {
+    function mint() external payable {
         require(!paused[NATIVE_BTC], "SYS004");
-        _mintNative(msg.sender, msg.value);
-    }
-
-    /**
-     * @dev mint uniBTC with WBTC
-     */
-    function mint(uint256 _amount) external {
-        require(!paused[WBTC], "SYS003");
-        _mint(msg.sender, WBTC, _amount);
+        _mint(msg.sender, msg.value);
     }
 
     /**
@@ -66,15 +58,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev burn uniBTC and redeem native BTC
      */
-    function redeemNative(uint256 _amount) external nonReentrant whenRedeemable {
-        _redeemNative(msg.sender, _amount);
-    }
-
-    /**
-     * @dev burn uniBTC and redeem WBTC
-     */
-    function redeem(uint256 _amount) external whenRedeemable {
-        _redeem(msg.sender, WBTC, _amount);
+    function redeem(uint256 _amount) external nonReentrant whenRedeemable {
+        _redeem(msg.sender, _amount);
     }
 
     /**
@@ -168,8 +153,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev mint uniBTC with native BTC tokens
      */
-    function _mintNative(address _sender, uint256 _amount) internal {
-        (, uint256 uniBTCAmount) = _amountsNative(_amount);
+    function _mint(address _sender, uint256 _amount) internal {
+        (, uint256 uniBTCAmount) = _amounts(_amount);
         require(uniBTCAmount > 0, "USR010");
 
         require(address(this).balance + _amount <= caps[NATIVE_BTC], "USR003");
@@ -197,8 +182,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev burn uniBTC and return native BTC tokens
      */
-    function _redeemNative(address _sender, uint256 _amount) internal {
-        (uint256 actualAmount, uint256 uniBTCAmount) = _amountsNative(_amount);
+    function _redeem(address _sender, uint256 _amount) internal {
+        (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_amount);
         require(uniBTCAmount > 0, "USR010");
 
         IMintableContract(uniBTC).burnFrom(_sender, uniBTCAmount);
@@ -223,7 +208,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev determine the valid native BTC amount and the corresponding uniBTC amount.
      */
-    function _amountsNative(uint256 _amount) internal returns (uint256, uint256) {
+    function _amounts(uint256 _amount) internal returns (uint256, uint256) {
         uint256 uniBTCAmt = _amount /EXCHANGE_RATE_BASE;
         return (uniBTCAmt * EXCHANGE_RATE_BASE, uniBTCAmt);
     }
