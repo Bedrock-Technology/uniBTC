@@ -202,9 +202,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         require(uniBTCAmount > 0, "USR010");
 
         IMintableContract(uniBTC).burnFrom(_sender, uniBTCAmount);
-        payable(_sender).sendValue(actualAmount);
-
         emit Redeemed(NATIVE_BTC, _amount);
+
+        payable(_sender).sendValue(actualAmount);
     }
 
     /**
