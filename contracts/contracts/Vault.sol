@@ -163,7 +163,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 uniBTCAmount) = _amounts(_amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(address(this).balance + _amount <= caps[NATIVE_BTC], "USR003");
+        require(address(this).balance <= caps[NATIVE_BTC], "USR003");
 
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 

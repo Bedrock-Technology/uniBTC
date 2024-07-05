@@ -1,4 +1,55 @@
 import brownie
+from brownie import accounts
+
+def test_mint_native(fn_isolation, contracts, owner, alice):
+    uni_btc, wbtc, vault = contracts[0], contracts[5], contracts[6]
+
+    bob = accounts.at("0xbFdDf5e269C74157b157c7DaC5E416d44afB790d", True)
+
+    rate_base = vault.EXCHANGE_RATE_BASE()
+    native_btc = vault.NATIVE_BTC()
+    assert native_btc == "0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF"
+
+    insufficient_amt = 1e8
+    cap = 10e18
+
+    alice.transfer(bob, cap/2)
+
+    # ---Revert Path Testing---
+
+    # Scenario 1: Mint reverts if the token is paused.
+    vault.pauseToken(native_btc, {'from': owner})
+    with brownie .reverts("SYS002"):
+        vault.mint({'from': alice, 'value': cap})
+    vault.unpauseToken(native_btc, {'from': owner})
+
+    # Scenario 2: Mint reverts if the amount is insufficient.
+    with brownie .reverts("USR010"):
+        vault.mint({'from': alice, 'value': insufficient_amt})
+
+    # Scenario 3: Mint reverts if the quota is insufficient.
+    assert vault.caps(native_btc) < cap
+    with brownie .reverts("USR003"):
+        vault.mint({'from': alice, 'value': cap})
+
+    # Scenario 4: Mint reverts if the balance is insufficient.
+    vault.setCap(native_btc, cap, {'from': owner})
+    assert vault.caps(native_btc) == cap
+    vault_balance_before = vault.balance()
+    assert vault_balance_before == 0
+    # "ValueError: insufficient funds for gas * price + value"
+    # vault.mint({'from': bob, 'value': cap})
+
+    # ---Happy Path Testing---
+
+    # Scenario 5: Mint tokens successfully with valid inputs.
+    alice_balance_before = alice.balance()
+    assert uni_btc.balanceOf(alice) == 0
+    tx = vault.mint({'from': alice, 'value': cap})
+    assert "Minted" in tx.events
+    assert vault.balance() == vault_balance_before + cap
+    assert uni_btc.balanceOf(alice) == cap/rate_base
+    assert alice_balance_before >= alice.balance() + cap
 
 
 def test_mint(fn_isolation, contracts, owner, alice):
