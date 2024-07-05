@@ -77,7 +77,7 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
     for peer in peers:
         uni_btc_transparent.grantRole(roles[1], peer, {'from': owner})
         peer.configurePeers([chain_id, chain_id + 1], [peer_sender, peer_receiver], {'from': owner})
-    vault_transparent.initialize(owner, wbtc, uni_btc_transparent, {'from': owner})
+    vault_transparent.initialize(owner, uni_btc_transparent, {'from': owner})
     uni_btc_transparent.grantRole(roles[1], vault_transparent, {'from': owner})
 
     return [uni_btc_transparent, peer_sender, peer_receiver, message_bus_sender, message_bus_receiver, wbtc, vault_transparent]
