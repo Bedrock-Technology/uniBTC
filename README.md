@@ -12,6 +12,11 @@ You need to update the submodules that this repository depends on to the require
 After all submodules updated as required, you can run the following command from the `uniBTC/contracts/` to build contracts: `brownie compile`
 
 ### 2. Deployed Contracts
+**Optimism Mainnet Deployment**
+- [ProxyAdmin](https://optimistic.etherscan.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
+- [uniBTC](https://optimistic.etherscan.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
+- [Vault](https://optimistic.etherscan.io/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
+
 **Ethereum Mainnet Deployment**
 
 - [ProxyAdmin](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6): 0x029E4FbDAa31DE075dD74B2238222A08233978f6
