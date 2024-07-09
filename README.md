@@ -26,7 +26,7 @@ After all submodules updated as required, you can run the following command from
 **Holesky Testnet Deployment**
 
 - [ProxyAdmin](https://holesky.etherscan.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89): 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
-- [mockFBTC](https://holesky.etherscan.io/address/0x087133ECddD986Da71e9b055d58964d3d7d8dc03): 0x087133ECddD986Da71e9b055d58964d3d7d8dc03
+- [mockFBTC](https://holesky.etherscan.io/address/0x5C367C804ce9F00464Cba3199d6Fb646E8287146): 0x5C367C804ce9F00464Cba3199d6Fb646E8287146
 - [mockWBTC](https://holesky.etherscan.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0): 0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0
 - [uniBTC](https://holesky.etherscan.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859): 0x16221CaD160b441db008eF6DA2d3d89a32A05859
 - [Vault](https://holesky.etherscan.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823

@@ -12,11 +12,11 @@ def main(owner="owner"):
 
     # Check status
     assert fbtc.mintableGroup(owner)
-    assert fbtc.decimals() == 18
+    assert fbtc.decimals() == 8
 
     print("Deployed FBTC address: ", fbtc)
 
-    # Deployed contract on holesky-test: 0x087133ECddD986Da71e9b055d58964d3d7d8dc03
+    # Deployed contract on holesky-test: 0x5C367C804ce9F00464Cba3199d6Fb646E8287146
 
     # Deployed contract on avax-test: 0xEB74BB04aD28b9b7ec1f2fd1812e7242170C6d1B
 

@@ -5,7 +5,7 @@ contracts = {
         "chain_id": 17000,
         "proxy_admin": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89",
         "message_bus": "0xbB161Bcc64A320A085E08A8AaE2ba40e9bB2D47C",
-        "fbtc": "0x087133ECddD986Da71e9b055d58964d3d7d8dc03",
+        "fbtc": "0x5C367C804ce9F00464Cba3199d6Fb646E8287146",
         "wbtc": "0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0",
         "uni_btc": "0x16221CaD160b441db008eF6DA2d3d89a32A05859",
         "vault": "0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823",
