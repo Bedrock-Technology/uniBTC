@@ -22,6 +22,8 @@ After all submodules updated as required, you can run the following command from
 - [uniBTC](https://optimistic.etherscan.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://optimistic.etherscan.io/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
 
+- [wBTC](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095): 0x68f180fcCe6836688e9084f035309E29Bf0A2095
+
 **Ethereum Mainnet Deployment**
 
 - [ProxyAdmin](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6): 0x029E4FbDAa31DE075dD74B2238222A08233978f6
