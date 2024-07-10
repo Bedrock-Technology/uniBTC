@@ -1,7 +1,7 @@
 import pytest
 from web3 import Web3
 from pathlib import Path
-from brownie import FBTC, WBTC, XBTC, Vault, uniBTC, Peer, MessageBus, accounts, Contract, project, config, network
+from brownie import FBTC, WBTC, XBTC, Vault, uniBTC, Peer, MessageBus, AirDropper, accounts, Contract, project, config, network
 
 # Web3 client
 @pytest.fixture(scope="session", autouse=True)
@@ -74,6 +74,8 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
     peer_receiver = Peer.deploy(message_bus_receiver, uni_btc_transparent, {'from': owner})
     peers = [peer_sender, peer_receiver]
 
+    air_dropper = AirDropper.deploy({'from': owner})
+
     # Configure contracts
     uni_btc_transparent.initialize(owner, owner, {'from': owner})
     for peer in peers:
@@ -82,4 +84,4 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
     vault_transparent.initialize(owner, uni_btc_transparent, {'from': owner})
     uni_btc_transparent.grantRole(roles[1], vault_transparent, {'from': owner})
 
-    return [uni_btc_transparent, peer_sender, peer_receiver, message_bus_sender, message_bus_receiver, wbtc, vault_transparent, fbtc, xbtc]
+    return [uni_btc_transparent, peer_sender, peer_receiver, message_bus_sender, message_bus_receiver, wbtc, vault_transparent, fbtc, xbtc, air_dropper]

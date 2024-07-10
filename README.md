@@ -38,6 +38,7 @@ After all submodules updated as required, you can run the following command from
 - [uniBTC](https://holesky.etherscan.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859): 0x16221CaD160b441db008eF6DA2d3d89a32A05859
 - [Vault](https://holesky.etherscan.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
 - [Peer](https://holesky.etherscan.io/address/0x6EFc200c769E54DAab8fcF2d339b79F92cFf4EC9): 0x6EFc200c769E54DAab8fcF2d339b79F92cFf4EC9
+- [AirDropper](https://holesky.etherscan.io/address/0xd59677a6eFe9151c0131E8cF174C8BBCEB536005): 0xd59677a6eFe9151c0131E8cF174C8BBCEB536005
 
 
 **Avalanche C-Chain Fuji Testnet Deployment**
