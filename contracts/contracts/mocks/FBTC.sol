@@ -20,6 +20,10 @@ contract FBTC is ERC20, Ownable {
         _;
     }
 
+    function decimals() public view virtual override returns (uint8) {
+        return 8;
+    }
+
     /**
      * @dev set or remove address to mintable group
      */
