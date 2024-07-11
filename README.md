@@ -4,7 +4,7 @@
 ### 1. Compile Contracts
 You need to update the submodules that this repository depends on to the required commits before building contracts with the following steps:
 
-- (1) Clone all submodules before checking out any tags or commits. From the `uniBTC/` directory, run `git submodule update --init --recursive`. <br>
+- (1) Clone all submodules before checking out any tags or commits with this command: `git clone --recurse-submodules git@github.com:Bedrock-Technology/uniBTC.git`. If you have already cloned, from the `uniBTC/` directory, run `git submodule update --init --recursive`. <br>
 - (2) Checkout the celer-network commit. From the `uniBTC/contracts/lib/celer-network/sgn-v2-contracts-main/`, run `git checkout 0b4c531c52fd4f23cbb4397440da1cc42f837a12`. <br>
 - (3) Checkout openzeppelin-contracts. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3/`, run `git checkout v4.8.3`. <br>
 - (4) Checkout openzeppelin-contracts-upgradeable. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/`, run `git checkout v4.8.3`. <br>
@@ -17,10 +17,19 @@ After all submodules updated as required, you can run the following command from
 - [uniBTC](https://explorer.bsquared.network/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://explorer.bsquared.network/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
 
+**Merlin Mainnet Deployment**
+- [ProxyAdmin](https://scan.merlinchain.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
+- [uniBTC](https://scan.merlinchain.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
+- [Vault](https://scan.merlinchain.io/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
+
+**Mantle Mainnet Deployment**
+- [FBTC](https://mantlescan.xyz/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
+
 **Optimism Mainnet Deployment**
 - [ProxyAdmin](https://optimistic.etherscan.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
 - [uniBTC](https://optimistic.etherscan.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://optimistic.etherscan.io/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
+
 
 - [wBTC](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095): 0x68f180fcCe6836688e9084f035309E29Bf0A2095
 
@@ -29,6 +38,9 @@ After all submodules updated as required, you can run the following command from
 - [ProxyAdmin](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6): 0x029E4FbDAa31DE075dD74B2238222A08233978f6
 - [uniBTC](https://etherscan.io/address/0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568): 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
 - [Vault](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da): 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
+
+
+- [FBTC](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
 
 **Holesky Testnet Deployment**
 
