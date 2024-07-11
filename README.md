@@ -17,6 +17,11 @@ After all submodules updated as required, you can run the following command from
 - [uniBTC](https://explorer.bsquared.network/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://explorer.bsquared.network/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
 
+**Merlin Mainnet Deployment**
+- [ProxyAdmin](https://scan.merlinchain.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
+- [uniBTC](https://scan.merlinchain.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
+- [Vault](https://scan.merlinchain.io/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
+
 **Optimism Mainnet Deployment**
 - [ProxyAdmin](https://optimistic.etherscan.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
 - [uniBTC](https://optimistic.etherscan.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
