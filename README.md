@@ -51,6 +51,15 @@ After all submodules updated as required, you can run the following command from
 
 ### 3. Testnet Deployed Contracts
 #### 3.1 Bitcoin Ecosystem
+**B² Testnet Deployment**
+- [ProxyAdmin](https://testnet-explorer.bsquared.network/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4): 0x56c3024eB229Ca0570479644c78Af9D53472B3e4
+- [mockFBTC](https://testnet-explorer.bsquared.network/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89): 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
+- [mockWBTC](https://testnet-explorer.bsquared.network/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0): 0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0
+- [mockWBTC18](https://testnet-explorer.bsquared.network/address/0x4ed4739E6F6820f2357685592168f6C6c003714f): 0x4ed4739E6F6820f2357685592168f6C6c003714f
+- [uniBTC](https://testnet-explorer.bsquared.network/address/0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894): 0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894
+- [Vault](https://testnet-explorer.bsquared.network/address/0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf): 0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf
+- [Peer]():
+
 **Bitlayer Testnet Deployment**
 - [ProxyAdmin](https://testnet.btrscan.com/address/0x56c3024eb229ca0570479644c78af9d53472b3e4?tab=Transactions): 0x56c3024eB229Ca0570479644c78Af9D53472B3e4
 - [mockFBTC](https://testnet.btrscan.com/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89?tab=Transactions): 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
