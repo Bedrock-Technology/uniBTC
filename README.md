@@ -11,7 +11,8 @@ You need to update the submodules that this repository depends on to the require
 
 After all submodules updated as required, you can run the following command from the `uniBTC/contracts/` to build contracts: `brownie compile`
 
-### 2. Deployed Contracts
+### 2. Mainnet Deployed Contracts
+#### 2.1 Bitcoin Ecosystem
 **B² Mainnet Deployment**
 - [ProxyAdmin](https://explorer.bsquared.network/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
 - [uniBTC](https://explorer.bsquared.network/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
@@ -21,6 +22,15 @@ After all submodules updated as required, you can run the following command from
 - [ProxyAdmin](https://scan.merlinchain.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
 - [uniBTC](https://scan.merlinchain.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://scan.merlinchain.io/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
+
+#### 2.2 Ethereum Ecosystem
+**Ethereum Mainnet Deployment**
+- [ProxyAdmin](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6): 0x029E4FbDAa31DE075dD74B2238222A08233978f6
+- [uniBTC](https://etherscan.io/address/0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568): 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
+- [Vault](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da): 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
+
+
+- [FBTC](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
 
 **Mantle Mainnet Deployment**
 - [FBTC](https://mantlescan.xyz/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
@@ -33,15 +43,10 @@ After all submodules updated as required, you can run the following command from
 
 - [wBTC](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095): 0x68f180fcCe6836688e9084f035309E29Bf0A2095
 
-**Ethereum Mainnet Deployment**
 
-- [ProxyAdmin](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6): 0x029E4FbDAa31DE075dD74B2238222A08233978f6
-- [uniBTC](https://etherscan.io/address/0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568): 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
-- [Vault](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da): 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
-
-
-- [FBTC](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
-
+### 3. Testnet Deployed Contracts
+#### 3.1 Bitcoin Ecosystem
+#### 3.2 Ethereum Ecosystem
 **Holesky Testnet Deployment**
 
 - [ProxyAdmin](https://holesky.etherscan.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89): 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
@@ -59,7 +64,7 @@ After all submodules updated as required, you can run the following command from
 - [mockWBTC](https://testnet.snowtrace.io/address/0x49D6844cbcef64952E6793677eeaBae324f895aD): 0x49D6844cbcef64952E6793677eeaBae324f895aD
 - [uniBTC](https://testnet.snowtrace.io/address/0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f): 0x2c914Ba874D94090Ba0E6F56790bb8Eb6D4C7e5f
 - [Vault](https://testnet.snowtrace.io/address/0x85792f60633DBCF7c2414675bcC0a790B1b65CbB): 0x85792f60633DBCF7c2414675bcC0a790B1b65CbB
-- [Peer](https://testnet.snowtrace.io/address/0xe7431fc992a54fAA435125Ca94E00B4a8c89095c): 0xe7431fc992a54fAA435125Ca94E00B4a8c89095c        
+- [Peer](https://testnet.snowtrace.io/address/0xe7431fc992a54fAA435125Ca94E00B4a8c89095c): 0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
 
 
 **BSC Testnet Deployment**
@@ -81,8 +86,7 @@ After all submodules updated as required, you can run the following command from
 - [Vault](https://testnet.ftmscan.com/address/0x06c186ff3a0da2ce668e5b703015f3134f4a88ad): 0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad
 - [Peer](https://testnet.ftmscan.com/address/0xe7431fc992a54faa435125ca94e00b4a8c89095c): 0xe7431fc992a54fAA435125Ca94E00B4a8c89095c
 
-
-### 3. Error Codes from contracts
+### 4. Error Codes from contracts
 1. SYS001: INVALID_UNIBTC_ADDRESS
 1. SYS002: TOKEN_PAUSED
 1. SYS003: INVALID_TOKEN_ADDRESS
