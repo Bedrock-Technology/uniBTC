@@ -1,14 +1,14 @@
-from brownie import FBTC, WBTC, uniBTC, Vault, Peer, accounts, Contract, project, config
+from brownie import FBTC, WBTC, WBTC18, uniBTC, Vault, Peer, accounts, Contract, project, config
 from pathlib import Path
 from web3 import Web3
 
-from scripts.testnet.configs import contracts
+from scripts.testnet.configs import contracts, recipients, caps
 
 # Execution Command Format:
-# `brownie run scripts/testnet/deploy_holesky.py main "deployer" "owner" "holesky-test" --network=holesky-rpc-public`
+# `brownie run scripts/testnet/deploy_bitlayer.py main "deployer" "owner" "bitlayer-test" --network=bitlayer-testnet`
 
 
-def main(deployer="deployer", owner="owner", network="holesky-test"):
+def main(deployer="deployer", owner="owner", network="bitlayer-test"):
     # Reference: https://docs.openzeppelin.com/contracts/4.x/api/proxy#TransparentUpgradeableProxy
     deps = project.load(Path.home() / ".brownie" / "packages" / config["dependencies"][0])
     proxy = deps.TransparentUpgradeableProxy
@@ -17,7 +17,7 @@ def main(deployer="deployer", owner="owner", network="holesky-test"):
     w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
     minter_role = w3.keccak(text='MINTER_ROLE')
 
-    message_bus = contracts[network]["message_bus"]
+    # message_bus = contracts[network]["message_bus"]
 
     deployer = accounts.load(deployer)
     owner = accounts.load(owner)
@@ -27,6 +27,7 @@ def main(deployer="deployer", owner="owner", network="holesky-test"):
 
     fbtc = FBTC.deploy({'from': owner})
     wbtc = WBTC.deploy({'from': owner})
+    wbtc18 = WBTC18.deploy({'from': owner})
 
     uni_btc = uniBTC.deploy({'from': deployer})
     uni_btc_proxy = proxy.deploy(uni_btc, proxy_admin, b'', {'from': deployer})
@@ -36,16 +37,35 @@ def main(deployer="deployer", owner="owner", network="holesky-test"):
     vault_proxy = proxy.deploy(vault, proxy_admin, b'', {'from': deployer})
     vault_transparent = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
 
-    peer = Peer.deploy(message_bus, uni_btc_transparent, {'from': owner})
+    # peer = Peer.deploy(message_bus, uni_btc_transparent, {'from': owner})
 
     # Initialize contracts
     uni_btc_transparent.initialize(owner, owner, {'from': owner})
     vault_transparent.initialize(owner, uni_btc_transparent, {'from': owner})
 
     # Grant MINTER_ROLE
-    minters = [vault_transparent, peer]
+    minters = [vault_transparent]  # [vault_transparent, peer]
     for minter in minters:
         uni_btc_transparent.grantRole(minter_role, minter, {'from': owner})
+
+    # Set caps
+    native_btc = vault_transparent.NATIVE_BTC()
+    vault_transparent.setCap(native_btc, caps[1], {'from': owner})
+    vault_transparent.setCap(fbtc, caps[0], {'from': owner})
+    vault_transparent.setCap(wbtc, caps[0], {'from': owner})
+    vault_transparent.setCap(wbtc18, caps[1], {'from': owner})
+
+
+    # Mint tokens
+    tokens = [fbtc, wbtc, wbtc18]
+    amt = caps[0]
+    for tk in tokens:
+        if tk.decimals() == 18:
+            amt = caps[1]
+
+        for recipient in recipients:
+            tk.mint(recipient, amt, {'from': owner})
+
 
     # Check status
     assert fbtc.mintableGroup(owner)
@@ -53,19 +73,27 @@ def main(deployer="deployer", owner="owner", network="holesky-test"):
 
     assert fbtc.decimals() == 8
     assert wbtc.decimals() == 8
+    assert wbtc18.decimals() == 18
+    assert wbtc.NATIVE_BTC_DECIMALS() == 18
+
+    assert vault_transparent.caps(native_btc) == caps[1]
+    assert vault_transparent.caps(fbtc) == caps[0]
+    assert vault_transparent.caps(wbtc) == caps[0]
+    assert vault_transparent.caps(wbtc18) == caps[1]
 
     assert vault_transparent.uniBTC() == uni_btc_transparent
 
-    assert peer.messageBus() == message_bus
-    assert peer.uniBTC() == uni_btc_transparent
+    # assert peer.messageBus() == message_bus
+    # assert peer.uniBTC() == uni_btc_transparent
 
     assert uni_btc_transparent.hasRole(minter_role, vault_transparent)
-    assert uni_btc_transparent.hasRole(minter_role, peer)
+    # assert uni_btc_transparent.hasRole(minter_role, peer)
 
     print("Deployed ProxyAdmin address: ", proxy_admin)
     print("Deployed FBTC address: ", fbtc)
     print("Deployed WBTC address: ", wbtc)
-    print("Deployed Peer address: ", peer)
+    print("Deployed WBTC18 address: ", wbtc18)
+    # print("Deployed Peer address: ", peer)
     print("Deployed uniBTC proxy address: ", uni_btc_transparent)
     print("Deployed Vault proxy address: ", vault_transparent)
 
@@ -74,11 +102,12 @@ def main(deployer="deployer", owner="owner", network="holesky-test"):
     print("Deployed uniBTC address: ", uni_btc)
     print("Deployed Vault address: ", vault)
 
-    # Deployed contracts on holesky-test
-    # Deployed ProxyAdmin address: 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
-    # Deployed FBTC address: 0x5C367C804ce9F00464Cba3199d6Fb646E8287146
+    # Deployed contracts on bitlayer-test
+    # Deployed ProxyAdmin address: 0x56c3024eB229Ca0570479644c78Af9D53472B3e4
+    # Deployed FBTC address: 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
     # Deployed WBTC address: 0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0
-    # Deployed Peer address: 0x6EFc200c769E54DAab8fcF2d339b79F92cFf4EC9
+    # Deployed WBTC18 address: 0x1d481E87C3f3C967Ad8F17156A99D69D0052dC67
+    # Deployed Peer address:
     # Deployed uniBTC proxy address: 0x16221CaD160b441db008eF6DA2d3d89a32A05859
     # Deployed Vault proxy address: 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
     #

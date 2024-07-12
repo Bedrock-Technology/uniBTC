@@ -1,6 +1,7 @@
 ProxyAdmin.get_verification_info(); print(ProxyAdmin._flattener.flattened_source)
 TransparentUpgradeableProxy.get_verification_info(); print(TransparentUpgradeableProxy._flattener.flattened_source)
 WBTC.get_verification_info(); print(WBTC._flattener.flattened_source)
+WBTC18.get_verification_info(); print(WBTC18._flattener.flattened_source)
 FBTC.get_verification_info(); print(FBTC._flattener.flattened_source)
 uniBTC.get_verification_info(); print(uniBTC._flattener.flattened_source)
 Vault.get_verification_info(); print(Vault._flattener.flattened_source)
