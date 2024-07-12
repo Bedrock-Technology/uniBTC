@@ -38,6 +38,10 @@ After all submodules updated as required, you can run the following command from
 - [FBTC](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
 
 **Mantle Mainnet Deployment**
+- [ProxyAdmin](): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
+- [uniBTC](): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
+- [Vault](): 0xF9775085d726E782E83585033B58606f7731AB18
+- 
 - [FBTC](https://mantlescan.xyz/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
 
 **Optimism Mainnet Deployment**
