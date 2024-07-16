@@ -29,7 +29,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
-    bool public immutable isNativeBTC;
+    bool public isNativeBTC;
 
     modifier whenRedeemable() {
         require(redeemable, "SYS009");
@@ -46,8 +46,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor(bool _isNativeBTC) {
-        isNativeBTC = _isNativeBTC;
+    constructor() {
         _disableInitializers();
     }
 
@@ -88,7 +87,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      *
      * ======================================================================================
      */
-    function initialize(address _defaultAdmin, address _uniBTC) initializer public {
+    function initialize(address _defaultAdmin, address _uniBTC, bool _isNativeBTC) public reinitializer(2) {
         __AccessControl_init();
         __Pausable_init();
         __ReentrancyGuard_init();
@@ -99,6 +98,16 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         _grantRole(PAUSER_ROLE, _defaultAdmin);
 
         uniBTC = _uniBTC;
+
+        isNativeBTC = _isNativeBTC;
+    }
+
+    /**
+     * @dev This is called when a Vault already has `version 1` installed and updates to `version 2`.
+     * For these Vaults, this `setIsNativeBTC` can only be called once which is achieved by `reinitializer(2)`.
+     */
+    function setIsNativeBTC(bool _isNativeBTC) public reinitializer(2) {
+        isNativeBTC = _isNativeBTC;
     }
 
     /**

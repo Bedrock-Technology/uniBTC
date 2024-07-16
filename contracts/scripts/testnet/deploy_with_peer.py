@@ -32,7 +32,7 @@ def main(deployer="deployer", owner="owner", network="avax-test", isNativeBTC="F
     uni_btc_proxy = proxy.deploy(uni_btc, proxy_admin, b'', {'from': deployer})
     uni_btc_transparent = Contract.from_abi("uniBTC", uni_btc_proxy.address, uniBTC.abi)
 
-    vault = Vault.deploy(is_native_btc, {'from': deployer})
+    vault = Vault.deploy({'from': deployer})
     vault_proxy = proxy.deploy(vault, proxy_admin, b'', {'from': deployer})
     vault_transparent = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
 
@@ -40,7 +40,7 @@ def main(deployer="deployer", owner="owner", network="avax-test", isNativeBTC="F
 
     # Initialize contracts
     uni_btc_transparent.initialize(owner, owner, {'from': owner})
-    vault_transparent.initialize(owner, uni_btc_transparent, {'from': owner})
+    vault_transparent.initialize(owner, uni_btc_transparent, is_native_btc, {'from': owner})
 
     # Grant MINTER_ROLE
     minters = [vault_transparent, peer]

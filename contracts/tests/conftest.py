@@ -67,11 +67,11 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
     uni_btc_proxy = proxy.deploy(uni_btc, deployer, b'', {'from': deployer})
     uni_btc_transparent = Contract.from_abi("uniBTC", uni_btc_proxy.address, uniBTC.abi)
 
-    vault_eth = Vault.deploy(False, {'from': deployer})
+    vault_eth = Vault.deploy({'from': deployer})
     vault_eth_proxy = proxy.deploy(vault_eth, deployer, b'', {'from': deployer})
     vault_eth_transparent = Contract.from_abi("Vault", vault_eth_proxy.address, Vault.abi)
 
-    vault_btc = Vault.deploy(True, {'from': deployer})
+    vault_btc = Vault.deploy({'from': deployer})
     vault_btc_proxy = proxy.deploy(vault_btc, deployer, b'', {'from': deployer})
     vault_btc_transparent = Contract.from_abi("Vault", vault_btc_proxy.address, Vault.abi)
 
@@ -87,8 +87,9 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
         uni_btc_transparent.grantRole(roles[1], peer, {'from': owner})
         peer.configurePeers([chain_id, chain_id + 1], [peer_sender, peer_receiver], {'from': owner})
 
+    vault_eth_transparent.initialize(owner, uni_btc_transparent, False, {'from': owner})
+    vault_btc_transparent.initialize(owner, uni_btc_transparent, True, {'from': owner})
     for vault in vaults:
-        vault.initialize(owner, uni_btc_transparent, {'from': owner})
         uni_btc_transparent.grantRole(roles[1], vault, {'from': owner})
 
     return [uni_btc_transparent,

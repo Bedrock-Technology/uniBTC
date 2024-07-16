@@ -15,9 +15,6 @@ def main(deployer="deployer", owner="owner", isNativeBTC="False"):
     w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
     minter_role = w3.keccak(text='MINTER_ROLE')
 
-    deployer = accounts[0]
-    owner = accounts[1]
-
     is_native_btc = True
     if isNativeBTC != "True":
         is_native_btc = False
@@ -29,13 +26,13 @@ def main(deployer="deployer", owner="owner", isNativeBTC="False"):
     uni_btc_proxy = proxy.deploy(uni_btc, proxy_admin, b'', {'from': deployer})
     uni_btc_transparent = Contract.from_abi("uniBTC", uni_btc_proxy.address, uniBTC.abi)
 
-    vault = Vault.deploy(is_native_btc, {'from': deployer})
+    vault = Vault.deploy({'from': deployer})
     vault_proxy = proxy.deploy(vault, proxy_admin, b'', {'from': deployer})
     vault_transparent = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
 
     # Initialize contracts
     uni_btc_transparent.initialize(owner, owner, {'from': owner})
-    vault_transparent.initialize(owner, uni_btc_transparent, {'from': owner})
+    vault_transparent.initialize(owner, uni_btc_transparent, is_native_btc, {'from': owner})
 
     # Grant MINTER_ROLE
     minters = [vault_transparent]

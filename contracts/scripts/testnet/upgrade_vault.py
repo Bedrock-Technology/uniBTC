@@ -22,12 +22,13 @@ def main(deployer="deployer", owner="owner", network="avax-test", isNativeBTC="F
     proxy_admin = ProxyAdmin.at(contracts[network]["proxy_admin"])
     vault_proxy = TransparentUpgradeableProxy.at(contracts[network]["vault"])
 
-    vault_impl = Vault.deploy(is_native_btc, {'from': deployer})
+    vault_impl = Vault.deploy({'from': deployer})
     proxy_admin.upgrade(vault_proxy, vault_impl, {'from': owner})
 
     assert proxy_admin.getProxyImplementation(vault_proxy) == vault_impl
 
     vault_transparent = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
+    vault_transparent.setIsNativeBTC(is_native_btc, {'from': owner})
     assert vault_transparent.isNativeBTC() == is_native_btc
 
     print("Deployed Vault ProxyAdmin: ", proxy_admin)

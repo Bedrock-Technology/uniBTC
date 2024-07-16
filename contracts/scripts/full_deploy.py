@@ -35,7 +35,7 @@ def main(isNativeBTC="False"):
     uniBTC_proxy = TransparentUpgradeableProxy.deploy(uniBTC_impl, proxyAdmin, b'', {'from': deployer})
 
     # deploy vault
-    vault_impl = Vault.deploy(is_native_btc, {'from': deployer})
+    vault_impl = Vault.deploy({'from': deployer})
     vault_proxy = TransparentUpgradeableProxy.deploy(vault_impl, proxyAdmin, b'', {'from': deployer})
 
     # initialize vault
@@ -44,7 +44,7 @@ def main(isNativeBTC="False"):
 
     # initialize token
     transparent_uniBTC = Contract.from_abi("uniBTC",uniBTC_proxy.address, uniBTC.abi)
-    transparent_uniBTC.initialize(owner, vault_proxy, {'from': owner})
+    transparent_uniBTC.initialize(owner, vault_proxy, is_native_btc, {'from': owner})
 
     assert transparent_vault.isNativeBTC() == is_native_btc
 

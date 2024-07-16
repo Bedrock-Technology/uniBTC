@@ -30,10 +30,12 @@ def main(isNativeBTC="False"):
     fbtc = "0xC96dE26018A54D51c097160568752c4E3BD6C364"
 
     # deploy vault
-    vault_impl = Vault.deploy(is_native_btc, {'from': deployer})
+    vault_impl = Vault.deploy({'from': deployer})
     proxyAdmin.upgrade(vault_proxy, vault_impl, {'from': multisig})
 
     transparent_vault = Contract.from_abi("Vault",vault_proxy.address, Vault.abi)
+    transparent_vault.setIsNativeBTC(is_native_btc, {'from': owner})
+
     transparent_vault.setCap(WBTC, 1e8 * 5000, {'from':multisig})
     transparent_vault.setCap(fbtc, 1e8 * 5000, {'from':multisig})
 
