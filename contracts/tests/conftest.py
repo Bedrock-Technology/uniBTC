@@ -1,7 +1,7 @@
 import pytest
 from web3 import Web3
 from pathlib import Path
-from brownie import FBTC, WBTC, XBTC, Vault, uniBTC, Peer, MessageBus, accounts, Contract, project, config, network
+from brownie import FBTC, WBTC, WBTC18, XBTC, Vault, uniBTC, Peer, MessageBus, accounts, Contract, project, config, network
 
 # Web3 client
 @pytest.fixture(scope="session", autouse=True)
@@ -60,26 +60,45 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
     message_bus_receiver = MessageBus.deploy({'from': owner})
     fbtc = FBTC.deploy({'from': owner})
     wbtc = WBTC.deploy({'from': owner})
+    wbtc18 = WBTC18.deploy({'from': owner})
     xbtc = XBTC.deploy({'from': owner})
 
     uni_btc = uniBTC.deploy({'from': deployer})
     uni_btc_proxy = proxy.deploy(uni_btc, deployer, b'', {'from': deployer})
     uni_btc_transparent = Contract.from_abi("uniBTC", uni_btc_proxy.address, uniBTC.abi)
 
-    vault = Vault.deploy({'from': deployer})
-    vault_proxy = proxy.deploy(vault, deployer, b'', {'from': deployer})
-    vault_transparent = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
+    vault_eth = Vault.deploy(False, {'from': deployer})
+    vault_eth_proxy = proxy.deploy(vault_eth, deployer, b'', {'from': deployer})
+    vault_eth_transparent = Contract.from_abi("Vault", vault_eth_proxy.address, Vault.abi)
+
+    vault_btc = Vault.deploy(True, {'from': deployer})
+    vault_btc_proxy = proxy.deploy(vault_btc, deployer, b'', {'from': deployer})
+    vault_btc_transparent = Contract.from_abi("Vault", vault_btc_proxy.address, Vault.abi)
 
     peer_sender = Peer.deploy(message_bus_sender, uni_btc_transparent, {'from': owner})
     peer_receiver = Peer.deploy(message_bus_receiver, uni_btc_transparent, {'from': owner})
     peers = [peer_sender, peer_receiver]
+
+    vaults = [vault_eth_transparent, vault_btc_transparent]
 
     # Configure contracts
     uni_btc_transparent.initialize(owner, owner, {'from': owner})
     for peer in peers:
         uni_btc_transparent.grantRole(roles[1], peer, {'from': owner})
         peer.configurePeers([chain_id, chain_id + 1], [peer_sender, peer_receiver], {'from': owner})
-    vault_transparent.initialize(owner, uni_btc_transparent, {'from': owner})
-    uni_btc_transparent.grantRole(roles[1], vault_transparent, {'from': owner})
 
-    return [uni_btc_transparent, peer_sender, peer_receiver, message_bus_sender, message_bus_receiver, wbtc, vault_transparent, fbtc, xbtc]
+    for vault in vaults:
+        vault.initialize(owner, uni_btc_transparent, {'from': owner})
+        uni_btc_transparent.grantRole(roles[1], vault, {'from': owner})
+
+    return [uni_btc_transparent,
+            peer_sender,
+            peer_receiver,
+            message_bus_sender,
+            message_bus_receiver,
+            wbtc,
+            vault_eth_transparent,
+            fbtc,
+            xbtc,
+            vault_btc_transparent,
+            wbtc18]

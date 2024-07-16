@@ -29,8 +29,15 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
+    bool public immutable isNativeBTC;
+
     modifier whenRedeemable() {
         require(redeemable, "SYS009");
+        _;
+    }
+
+    modifier onlyNativeBTC() {
+        require(isNativeBTC, "SYS010");
         _;
     }
 
@@ -39,14 +46,15 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
+    constructor(bool _isNativeBTC) {
+        isNativeBTC = _isNativeBTC;
         _disableInitializers();
     }
 
     /**
-     * @dev mint uniBTC with native BTC
+     * @dev mint uniBTC with native BTC, available only in the Bitcoin ecosystem
      */
-    function mint() external payable {
+    function mint() external payable onlyNativeBTC {
         require(!paused[NATIVE_BTC], "SYS002");
         _mint(msg.sender, msg.value);
     }
@@ -60,9 +68,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev burn uniBTC and redeem native BTC
+     * @dev burn uniBTC and redeem native BTC, available only in the Bitcoin ecosystem
      */
-    function redeem(uint256 _amount) external nonReentrant whenRedeemable {
+    function redeem(uint256 _amount) external onlyNativeBTC nonReentrant whenRedeemable {
         _redeem(msg.sender, _amount);
     }
 
@@ -126,6 +134,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_token != address(0x0), "SYS003");
+        if (!isNativeBTC) require(_token != NATIVE_BTC, "SYS010");
 
         uint8 decs = NATIVE_BTC_DECIMALS;
 
@@ -137,9 +146,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev withdraw native BTC
+     * @dev withdraw native BTC, available only in the Bitcoin ecosystem
      */
-    function adminWithdraw(uint256 _amount, address _target) external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+    function adminWithdraw(uint256 _amount, address _target) external onlyNativeBTC nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
         emit Withdrawed(NATIVE_BTC, _amount, _target);
         payable(_target).sendValue(_amount);
     }

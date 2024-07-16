@@ -4,7 +4,11 @@ from pathlib import Path
 import time
 import pytest
 
-def main():
+
+# Execution Command Format:
+# `brownie run scripts/full_deploy.py main "False" --network=eth-mainnet`
+
+def main(isNativeBTC="False"):
     deps = project.load(  Path.home() / ".brownie" / "packages" / config["dependencies"][0])
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
     TimelockController = deps.TimelockController
@@ -18,6 +22,11 @@ def main():
     btcWhaleAccount = "0x5Ee5bf7ae06D1Be5997A1A72006FE6C607eC6DE8"
     nullAddress = "0x0000000000000000000000000000000000000000"
 
+
+    is_native_btc = True
+    if isNativeBTC != "True":
+        is_native_btc = False
+
     # deploy proxy admin
     proxyAdmin = ProxyAdmin.deploy({'from': owner})
 
@@ -26,16 +35,18 @@ def main():
     uniBTC_proxy = TransparentUpgradeableProxy.deploy(uniBTC_impl, proxyAdmin, b'', {'from': deployer})
 
     # deploy vault
-    vault_impl = Vault.deploy({'from': deployer})
+    vault_impl = Vault.deploy(is_native_btc, {'from': deployer})
     vault_proxy = TransparentUpgradeableProxy.deploy(vault_impl, proxyAdmin, b'', {'from': deployer})
 
     # initialize vault
-    transparent_vault = Contract.from_abi("vault",vault_proxy.address, Vault.abi)
+    transparent_vault = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
     transparent_vault.initialize(owner, uniBTC_proxy, {'from': owner})
 
     # initialize token
     transparent_uniBTC = Contract.from_abi("uniBTC",uniBTC_proxy.address, uniBTC.abi)
     transparent_uniBTC.initialize(owner, vault_proxy, {'from': owner})
+
+    assert transparent_vault.isNativeBTC() == is_native_btc
 
 """
     # deploy timelock and set proposer to a gnosis multisig wallet
