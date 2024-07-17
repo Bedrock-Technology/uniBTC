@@ -40,7 +40,38 @@ contracts = {
         "uni_btc": "0x802d4900209b2292bF7f07ecAE187f836040A709",
         "vault": "0x06c186Ff3a0dA2ce668E5B703015f3134F4a88Ad",
         "peer": "0xe7431fc992a54fAA435125Ca94E00B4a8c89095c"
-    }
+    },
+    "b2-test": {
+        "chain_id": 1123,
+        "proxy_admin": "0x56c3024eB229Ca0570479644c78Af9D53472B3e4",
+        "message_bus": "",
+        "fbtc": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89",
+        "wbtc": "0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0",
+        "wbtc18": "0x4ed4739E6F6820f2357685592168f6C6c003714f",
+        "uni_btc": "0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894",
+        "vault": "0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf",
+        "peer": ""
+    },
+    "bitlayer-test": {
+        "chain_id": 200810,
+        "proxy_admin": "0x56c3024eB229Ca0570479644c78Af9D53472B3e4",
+        "message_bus": "",
+        "fbtc": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89",
+        "wbtc": "0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0",
+        "wbtc18": "0x1d481E87C3f3C967Ad8F17156A99D69D0052dC67",
+        "uni_btc": "0x16221CaD160b441db008eF6DA2d3d89a32A05859",
+        "vault": "0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823",
+        "peer": ""
+    },
+    "merlin-test": {
+        "chain_id": 686868,
+        "proxy_admin": "0x56c3024eB229Ca0570479644c78Af9D53472B3e4",
+        "message_bus": "",
+        "mbtc": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89",
+        "uni_btc": "0x16221CaD160b441db008eF6DA2d3d89a32A05859",
+        "vault": "0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823",
+        "peer": ""
+    },
 }
 
 amount = 1e8
