@@ -67,7 +67,7 @@ contracts = {
         "chain_id": 686868,
         "proxy_admin": "0x56c3024eB229Ca0570479644c78Af9D53472B3e4",
         "message_bus": "",
-        "mbtc": "0xC0c9E78BfC3996E8b68D872b29340816495D7e89",
+        "mbtc": "0x2F9Ae77C5955c68c2Fbbca2b5b9F917e90929f7b",
         "uni_btc": "0x16221CaD160b441db008eF6DA2d3d89a32A05859",
         "vault": "0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823",
         "peer": ""

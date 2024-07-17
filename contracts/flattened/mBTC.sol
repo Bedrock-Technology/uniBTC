@@ -1016,7 +1016,7 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
 
 contract mBTC is ERC20, Ownable {
     constructor()
-    ERC20("WBTC", "WBTC")
+    ERC20("mBTC", "mBTC")
     Ownable()
     {
         setMintable(msg.sender, true);
