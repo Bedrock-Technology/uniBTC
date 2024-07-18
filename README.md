@@ -73,6 +73,13 @@ After all submodules updated as required, you can run the following command from
 - [Vault](https://testnet.btrscan.com/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823?tab=Transactions): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
 - [Peer](): 
 
+**Merlin Testnet Deployment**
+- [ProxyAdmin](https://testnet-scan.merlinchain.io/address/0x56c3024eb229ca0570479644c78af9d53472b3e4): 0x56c3024eB229Ca0570479644c78Af9D53472B3e4
+- [mockmBTC](https://testnet-scan.merlinchain.io/address/0x2F9Ae77C5955c68c2Fbbca2b5b9F917e90929f7b):  0x2F9Ae77C5955c68c2Fbbca2b5b9F917e90929f7b
+- [uniBTC](https://testnet-scan.merlinchain.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859): 0x16221CaD160b441db008eF6DA2d3d89a32A05859
+- [Vault](https://testnet-scan.merlinchain.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
+- [Peer]():
+
 #### 3.2 Ethereum Ecosystem
 **Holesky Testnet Deployment**
 - [ProxyAdmin](https://holesky.etherscan.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89): 0xC0c9E78BfC3996E8b68D872b29340816495D7e89
@@ -119,6 +126,7 @@ After all submodules updated as required, you can run the following command from
 1. SYS007: CHAIN_ID_CANNOT_BE_ZERO
 1. SYS008: INVALID_PEER_ADDRESS
 1. SYS009: IRREDEEMABLE_STATUS
+2. SYS010: ONLY_AVAILABLE_IN_BITCOIN_ECOSYSTEM
 1. USR001: UNIBTC: LEAST_ONE_RECIPIENT_ADDRESS
 1. USR002: UNIBTC: NUMBER_OF_RECIPIENT_ADDRESSES_DOES_NOT_MATCH_THE_NUMBER_OF_TOKENS
 1. USR003: INSUFFICIENT_QUOTA
