@@ -42,6 +42,7 @@ After all submodules updated as required, you can run the following command from
 - [Vault](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da): 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
 -
 - [FBTC](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
+- [WBTC](https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599): 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
 
 **Mantle Mainnet Deployment**
 - [ProxyAdmin](https://mantlescan.xyz/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
