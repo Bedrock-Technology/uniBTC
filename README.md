@@ -17,40 +17,46 @@ After all submodules updated as required, you can run the following command from
 - [ProxyAdmin](https://explorer.bsquared.network/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
 - [uniBTC](https://explorer.bsquared.network/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://explorer.bsquared.network/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
+-
+- [WBTC](https://explorer.bsquared.network/address/0x4200000000000000000000000000000000000006): 0x4200000000000000000000000000000000000006
 
 **Bitlayer Mainnet Deployment**
 - [ProxyAdmin](https://www.btrscan.com/address/0x0a3f2582ff649fcaf67d03483a8ed1a82745ea19?tab=Transactions): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
 - [uniBTC](https://www.btrscan.com/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e?tab=Transactions): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://www.btrscan.com/address/0xF9775085d726E782E83585033B58606f7731AB18?tab=Transactions): 0xF9775085d726E782E83585033B58606f7731AB18
+-
+- [WBTC](https://www.btrscan.com/address/0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F?tab=Transactions): 0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F
 
 **Merlin Mainnet Deployment**
 - [ProxyAdmin](https://scan.merlinchain.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
 - [uniBTC](https://scan.merlinchain.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://scan.merlinchain.io/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
+-
+- [M-BTC](https://scan.merlinchain.io/address/0xB880fd278198bd590252621d4CD071b1842E9Bcd): 0xB880fd278198bd590252621d4CD071b1842E9Bcd
+- [WBTC](https://scan.merlinchain.io/address/0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA): 0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA
 
 #### 2.2 Ethereum Ecosystem
 **Ethereum Mainnet Deployment**
 - [ProxyAdmin](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6): 0x029E4FbDAa31DE075dD74B2238222A08233978f6
 - [uniBTC](https://etherscan.io/address/0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568): 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
 - [Vault](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da): 0x047D41F2544B7F63A8e991aF2068a363d210d6Da
-
-
+-
 - [FBTC](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
+- [WBTC](https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599): 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
 
 **Mantle Mainnet Deployment**
-- [ProxyAdmin](): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
-- [uniBTC](): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
-- [Vault](): 0xF9775085d726E782E83585033B58606f7731AB18
-- 
+- [ProxyAdmin](https://mantlescan.xyz/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
+- [uniBTC](https://mantlescan.xyz/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
+- [Vault](https://mantlescan.xyz/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
+-
 - [FBTC](https://mantlescan.xyz/address/0xc96de26018a54d51c097160568752c4e3bd6c364): 0xC96dE26018A54D51c097160568752c4E3BD6C364
 
 **Optimism Mainnet Deployment**
 - [ProxyAdmin](https://optimistic.etherscan.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19): 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
 - [uniBTC](https://optimistic.etherscan.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e): 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
 - [Vault](https://optimistic.etherscan.io/address/0xF9775085d726E782E83585033B58606f7731AB18): 0xF9775085d726E782E83585033B58606f7731AB18
-
-
-- [wBTC](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095): 0x68f180fcCe6836688e9084f035309E29Bf0A2095
+-
+- [WBTC](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095): 0x68f180fcCe6836688e9084f035309E29Bf0A2095
 
 
 ### 3. Testnet Deployed Contracts
@@ -62,7 +68,6 @@ After all submodules updated as required, you can run the following command from
 - [mockWBTC18](https://testnet-explorer.bsquared.network/address/0x4ed4739E6F6820f2357685592168f6C6c003714f): 0x4ed4739E6F6820f2357685592168f6C6c003714f
 - [uniBTC](https://testnet-explorer.bsquared.network/address/0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894): 0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894
 - [Vault](https://testnet-explorer.bsquared.network/address/0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf): 0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf
-- [Peer]():
 
 **Bitlayer Testnet Deployment**
 - [ProxyAdmin](https://testnet.btrscan.com/address/0x56c3024eb229ca0570479644c78af9d53472b3e4?tab=Transactions): 0x56c3024eB229Ca0570479644c78Af9D53472B3e4
@@ -71,7 +76,12 @@ After all submodules updated as required, you can run the following command from
 - [mockWBTC18](https://testnet.btrscan.com/address/0x1d481E87C3f3C967Ad8F17156A99D69D0052dC67?tab=Transactions): 0x1d481E87C3f3C967Ad8F17156A99D69D0052dC67
 - [uniBTC](https://testnet.btrscan.com/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859?tab=Transactions): 0x16221CaD160b441db008eF6DA2d3d89a32A05859
 - [Vault](https://testnet.btrscan.com/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823?tab=Transactions): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
-- [Peer](): 
+
+**Merlin Testnet Deployment**
+- [ProxyAdmin](https://testnet-scan.merlinchain.io/address/0x56c3024eb229ca0570479644c78af9d53472b3e4): 0x56c3024eB229Ca0570479644c78Af9D53472B3e4
+- [mockmBTC](https://testnet-scan.merlinchain.io/address/0x2F9Ae77C5955c68c2Fbbca2b5b9F917e90929f7b):  0x2F9Ae77C5955c68c2Fbbca2b5b9F917e90929f7b
+- [uniBTC](https://testnet-scan.merlinchain.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859): 0x16221CaD160b441db008eF6DA2d3d89a32A05859
+- [Vault](https://testnet-scan.merlinchain.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823): 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
 
 #### 3.2 Ethereum Ecosystem
 **Holesky Testnet Deployment**
