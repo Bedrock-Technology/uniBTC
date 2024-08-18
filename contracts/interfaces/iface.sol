@@ -16,8 +16,6 @@ interface ISGNFeeQuerier {
 
 interface IVault {
     function execute(address target, bytes memory data, uint256 value) external returns(bytes memory);
-    function adminWithdraw(uint256 _amount, address _target) external;
-    function adminWithdraw(address _token, uint256 _amount, address _target) external;
 }
 
 // Reference: https://github.com/fbtc-com/fbtcX-contract/blob/main/src/LockedFBTC.sol
