@@ -79,9 +79,7 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
     locked_fbtc_proxy = proxy.deploy(locked_fbtc, deployer, b'', {'from': deployer})
     locked_fbtc_transparent = Contract.from_abi("LockedFBTC", locked_fbtc_proxy.address, LockedFBTC.abi)
 
-    fbtc_proxy = FBTCProxy.deploy({'from': deployer})
-    fbtc_proxy_proxy = proxy.deploy(fbtc_proxy, deployer, b'', {'from': deployer})
-    fbtc_proxy_transparent = Contract.from_abi("FBTCProxy", fbtc_proxy_proxy.address, FBTCProxy.abi)
+    fbtc_proxy = FBTCProxy.deploy(vault_transparent, locked_fbtc_transparent, {'from': owner})
 
     # Configure contracts
     uni_btc_transparent.initialize(owner, owner, {'from': owner})
@@ -92,7 +90,6 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
     uni_btc_transparent.grantRole(roles[1], vault_transparent, {'from': owner})
 
     locked_fbtc_transparent.initialize(fbtc, owner, owner, vault_transparent, {'from': owner})
-    fbtc_proxy_transparent.initialize(vault_transparent, locked_fbtc_transparent, {'from': owner})
 
     return [uni_btc_transparent,          # index = 0
             peer_sender,                  # index = 1
@@ -103,6 +100,6 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
             vault_transparent,            # index = 6
             fbtc,                         # index = 7
             xbtc,                         # index = 8
-            fbtc_proxy_transparent,      # index = 9
+            fbtc_proxy,                   # index = 9
             locked_fbtc_transparent,      # index = 10
             wbtc18]                       # index = 11

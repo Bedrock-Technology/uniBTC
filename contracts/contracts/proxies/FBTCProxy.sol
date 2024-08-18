@@ -1,31 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "../../interfaces/iface.sol";
 
 // Reference: https://github.com/fbtc-com/fbtcX-contract/blob/main/src/LockedFBTC.sol
-contract FBTCProxy is Initializable, OwnableUpgradeable {
-    address public vault;
-    address public lockedFBTC;
+contract FBTCProxy is Ownable {
+    address public immutable vault;
+    address public immutable lockedFBTC;
 
-    receive() external payable {
-        revert("value only accepted by the Vault contract");
-    }
-
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
-        _disableInitializers();
-    }
-
-    function initialize(address _vault, address _lockedFBTC) initializer public {
-        __Ownable_init();
-
+    constructor(address _vault, address _lockedFBTC) {
         vault = _vault;
         lockedFBTC = _lockedFBTC;
+    }
+
+    receive() external payable {
+    revert("value only accepted by the Vault contract");
     }
 
     /**
