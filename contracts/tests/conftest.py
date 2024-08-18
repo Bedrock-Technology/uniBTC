@@ -1,7 +1,7 @@
 import pytest
 from web3 import Web3
 from pathlib import Path
-from brownie import FBTC, WBTC, WBTC18, XBTC, LockedFBTC, FBTCFacade, GenericFacade, Vault, uniBTC, Peer, MessageBus, accounts, Contract, project, config, network
+from brownie import FBTC, WBTC, WBTC18, XBTC, LockedFBTC, FBTCFacade, Vault, uniBTC, Peer, MessageBus, accounts, Contract, project, config, network
 
 # Web3 client
 @pytest.fixture(scope="session", autouse=True)
@@ -15,7 +15,8 @@ def roles(w3):
     minter_role = w3.keccak(text='MINTER_ROLE')  # index = 1
     manager_role = w3.keccak(text='MANAGER_ROLE')  # index = 2
     default_admin_role = w3.to_bytes(hexstr='0x00')  # index = 3
-    return [pauser_role, minter_role, manager_role, default_admin_role]
+    operator_role = w3.keccak(text='OPERATOR_ROLE')  # index = 4
+    return [pauser_role, minter_role, manager_role, default_admin_role, operator_role]
 
 # Predefined Accounts
 @pytest.fixture(scope="session", autouse=True)
@@ -87,10 +88,6 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
     fbtc_facade_proxy = proxy.deploy(fbtc_facade, deployer, b'', {'from': deployer})
     fbtc_facade_transparent = Contract.from_abi("FBTCFacade", fbtc_facade_proxy.address, FBTCFacade.abi)
 
-    generic_facade = GenericFacade.deploy({'from': deployer})
-    generic_facade_proxy = proxy.deploy(generic_facade, deployer, b'', {'from': deployer})
-    generic_facade_transparent = Contract.from_abi("GenericFacade", generic_facade_proxy.address, GenericFacade.abi)
-
     vaults = [vault_eth_transparent, vault_btc_transparent]
 
     # Configure contracts
@@ -106,7 +103,6 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
 
     locked_fbtc_transparent.initialize(fbtc, owner, owner, vault_btc_transparent, {'from': owner})
     fbtc_facade_transparent.initialize(vault_btc_transparent, locked_fbtc_transparent, {'from': owner})
-    generic_facade_transparent.initialize(vault_btc_transparent, {'from': owner})
 
     return [uni_btc_transparent,        # index = 0
             peer_sender,                # index = 1
@@ -120,5 +116,4 @@ def contracts(w3, proxy, chain_id, roles, owner, deployer):
             vault_btc_transparent,      # index = 9
             wbtc18,                     # index = 10
             fbtc_facade_transparent,    # index = 11
-            locked_fbtc_transparent,    # index = 12
-            generic_facade_transparent] # index = 13
+            locked_fbtc_transparent]    # index = 12

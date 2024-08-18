@@ -13,7 +13,7 @@ def test_mintLockedFbtcRequest(fn_isolation, contracts, owner, alice):
     # Configuration
     vault.setCap(fbtc, amt*10, {'from': owner})
 
-    vault.grantRole(vault.DEFAULT_ADMIN_ROLE(), fbtc_facade, {'from': owner})
+    vault.grantRole(vault.OPERATOR_ROLE(), fbtc_facade, {'from': owner})
 
     # User mints FBTC
     fbtc.mint(alice, amt, {'from': owner})
@@ -45,7 +45,7 @@ def test_redeemFbtcRequest(fn_isolation, contracts, owner, alice):
     # Configuration
     vault.setCap(fbtc, amt*10, {'from': owner})
 
-    vault.grantRole(vault.DEFAULT_ADMIN_ROLE(), fbtc_facade, {'from': owner})
+    vault.grantRole(vault.OPERATOR_ROLE(), fbtc_facade, {'from': owner})
 
     # User mints FBTC
     fbtc.mint(alice, amt, {'from': owner})
@@ -82,7 +82,7 @@ def test_confirmRedeemFbtc(fn_isolation, contracts, owner, alice):
     # Configuration
     vault.setCap(fbtc, amt*10, {'from': owner})
 
-    vault.grantRole(vault.DEFAULT_ADMIN_ROLE(), fbtc_facade, {'from': owner})
+    vault.grantRole(vault.OPERATOR_ROLE(), fbtc_facade, {'from': owner})
 
     # User mints FBTC
     fbtc.mint(alice, amt, {'from': owner})
@@ -124,7 +124,7 @@ def test_burn(fn_isolation, contracts, owner, alice):
     # Configuration
     vault.setCap(fbtc, amt*10, {'from': owner})
 
-    vault.grantRole(vault.DEFAULT_ADMIN_ROLE(), fbtc_facade, {'from': owner})
+    vault.grantRole(vault.OPERATOR_ROLE(), fbtc_facade, {'from': owner})
 
     # User mints FBTC
     fbtc.mint(alice, amt, {'from': owner})
