@@ -218,7 +218,7 @@ def test_redeem(fn_isolation, contracts, owner, alice):
 
 
 def test_setCap(fn_isolation, contracts, owner, alice, zero_address):
-    fbtc, wbtc, xbtc, vault = contracts[7], contracts[5], contracts[8], contracts[6]
+    fbtc, wbtc, wbtc18, xbtc, vault = contracts[7], contracts[5], contracts[11], contracts[8], contracts[6]
 
     cap = 10e8
 
@@ -251,9 +251,9 @@ def test_setCap(fn_isolation, contracts, owner, alice, zero_address):
     assert vault.caps(wbtc) == cap
 
     # Scenario 6: Successfully set cap for wrapped BTC with 18 decimals
-    assert fbtc.decimals() == 18
-    vault.setCap(fbtc, cap, {'from': owner})
-    assert vault.caps(fbtc) == cap
+    assert wbtc18.decimals() == 18
+    vault.setCap(wbtc18, cap, {'from': owner})
+    assert vault.caps(wbtc18) == cap
 
 
 def test_adminWithdraw_native(fn_isolation, contracts, owner, alice, bob, zero_address):
