@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../interfaces/iface.sol";
 
 // Reference: https://github.com/fbtc-com/fbtcX-contract/blob/main/src/LockedFBTC.sol
-contract FBTCFacade is Initializable, OwnableUpgradeable {
+contract FBTCProxy is Initializable, OwnableUpgradeable {
     address public vault;
     address public lockedFBTC;
 

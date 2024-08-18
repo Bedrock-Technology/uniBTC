@@ -314,8 +314,6 @@ interface ISGNFeeQuerier {
 
 interface IVault {
     function execute(address target, bytes memory data, uint256 value) external returns(bytes memory);
-    function adminWithdraw(uint256 _amount, address _target) external;
-    function adminWithdraw(address _token, uint256 _amount, address _target) external;
 }
 
 // Reference: https://github.com/fbtc-com/fbtcX-contract/blob/main/src/LockedFBTC.sol
@@ -645,10 +643,10 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
     uint256[49] private __gap;
 }
 
-// File: contracts/contracts/facades/FBTCFacade.sol
+// File: contracts/contracts/proxies/FBTCProxy.sol
 
 // Reference: https://github.com/fbtc-com/fbtcX-contract/blob/main/src/LockedFBTC.sol
-contract FBTCFacade is Initializable, OwnableUpgradeable {
+contract FBTCProxy is Initializable, OwnableUpgradeable {
     address public vault;
     address public lockedFBTC;
 
