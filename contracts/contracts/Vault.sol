@@ -14,6 +14,7 @@ import "../interfaces/iface.sol";
 contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     using SafeERC20 for IERC20;
+    using Address for address;
     using Address for address payable;
 
     address private _DEPRECATED_WBTC_;
@@ -78,6 +79,11 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function redeem(address _token, uint256 _amount) external whenRedeemable {
         _redeem(msg.sender, _token, _amount);
+    }
+
+    // @dev execute a contract call that also transfers '_value' wei to '_target'
+    function execute(address _target, bytes memory _data, uint256 _value) external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) returns(bytes memory) {
+        return _target.functionCallWithValue(_data, _value);
     }
 
     /**
