@@ -33,7 +33,7 @@ contract MBTCProxy is Ownable {
     /**
      * @dev swap '_amount' M-BTC on the Merlin network (layer 2) to '_amount - getBridgeFee()' BTC on the Bitcoin network (layer 1).
      */
-    function swapMBTCToBTC(uint256 _amount, string memory destBtcAddr) external onlyOwner {
+    function swapMBTCToBTC(uint256 _amount, string memory _destBtcAddr) external onlyOwner {
         // 1. Approve '_amount' M-BTC to MTokenSwap contract
         bytes memory data;
         if (IERC20(mBTC).allowance(vault, mTokenSwap) < _amount) {
@@ -46,8 +46,8 @@ contract MBTCProxy is Ownable {
         data = abi.encodeWithSelector(IMTokenSwap.swapMBtc.selector, getNextTxHash(), _amount);
         IVault(vault).execute(mTokenSwap, data, 0);
 
-        // 3. Lock native BTC with bridge fee on BTCLayer2Bridge contract.
-        data = abi.encodeWithSelector(IBTCLayer2Bridge.lockNativeToken.selector, destBtcAddr);
+        // 3. Lock native BTC of Vault contract with bridge fee on BTCLayer2Bridge contract.
+        data = abi.encodeWithSelector(IBTCLayer2Bridge.lockNativeToken.selector, _destBtcAddr);
         IVault(vault).execute(btcLayer2Bridge, data, _amount - getBridgeFee());
 
         // 4. Address 'destBtcAddr' receives '_amount - getBridgeFee()' BTC on the Bitcoin network (beyond the Merlin network).
