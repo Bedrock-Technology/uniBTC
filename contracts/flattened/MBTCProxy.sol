@@ -241,6 +241,13 @@ interface ILockedFBTC {
 
 // Reference: https://scan.merlinchain.io/address/0x72A817715f174a32303e8C33cDCd25E0dACfE60b
 interface IMTokenSwap {
+    event SwapMBtc( // Emitted by swapMBtc function.
+        address msgSender,
+        bytes32 txHash,
+        address tokenMBtc,
+        uint256 amount
+    );
+
     function swapMBtc(bytes32 _txHash, uint256 _amount) external;
     function bridgeAddress() external returns (address);
 }
@@ -249,6 +256,19 @@ interface IMTokenSwap {
 //    1. https://scan.merlinchain.io/address/0x28AD6b7dfD79153659cb44C2155cf7C0e1CeEccC
 //    2. https://github.com/MerlinLayer2/BTCLayer2BridgeContract/blob/main/contracts/BTCLayer2Bridge.sol
 interface IBTCLayer2Bridge {
+    event UnlockNativeToken(    // Emitted by the unlockNativeToken function (which is called by the MTokenSwap.swapMBtc function).
+        bytes32 txHash,
+        address account,
+        uint256 amount
+    );
+
+    event LockNativeTokenWithBridgeFee( // Emitted by lockNativeToken function.
+        address account,
+        uint256 amount,
+        string destBtcAddr,
+        uint256 bridgeFee
+    );
+
     function lockNativeToken(string memory destBtcAddr) external payable;
     function getBridgeFee(address msgSender, address token) external view returns(uint256);
 }
@@ -256,7 +276,7 @@ interface IBTCLayer2Bridge {
 
 contract MBTCProxy is Ownable {
     address private constant EMPTY_TOKEN = address(0);
-    bytes32 private constant BASE_HASH = 0x4000000000000000000000000000000000000000000000000000000000000000;
+    bytes32 private constant BASE_HASH = 0xbeD0000000000000000000000000000000000000000000000000000000000000;
 
     address public immutable vault;
     address public immutable mBTC;
@@ -294,7 +314,7 @@ contract MBTCProxy is Ownable {
 
         // 3. Lock native BTC of Vault contract with bridge fee on BTCLayer2Bridge contract.
         data = abi.encodeWithSelector(IBTCLayer2Bridge.lockNativeToken.selector, _destBtcAddr);
-        IVault(vault).execute(btcLayer2Bridge, data, _amount - getBridgeFee());
+        IVault(vault).execute(btcLayer2Bridge, data, _amount);
 
         // 4. Address 'destBtcAddr' receives '_amount - getBridgeFee()' BTC on the Bitcoin network (beyond the Merlin network).
     }
