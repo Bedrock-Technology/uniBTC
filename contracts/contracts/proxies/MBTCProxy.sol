@@ -9,7 +9,7 @@ import "../../interfaces/iface.sol";
 
 contract MBTCProxy is Ownable {
     address private constant EMPTY_TOKEN = address(0);
-    bytes32 private constant BASE_HASH = 0x4000000000000000000000000000000000000000000000000000000000000000;
+    bytes32 private constant BASE_HASH = 0xbeD0000000000000000000000000000000000000000000000000000000000000;
 
     address public immutable vault;
     address public immutable mBTC;
