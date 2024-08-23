@@ -48,7 +48,7 @@ contract MBTCProxy is Ownable {
 
         // 3. Lock native BTC of Vault contract with bridge fee on BTCLayer2Bridge contract.
         data = abi.encodeWithSelector(IBTCLayer2Bridge.lockNativeToken.selector, _destBtcAddr);
-        IVault(vault).execute(btcLayer2Bridge, data, _amount - getBridgeFee());
+        IVault(vault).execute(btcLayer2Bridge, data, _amount);
 
         // 4. Address 'destBtcAddr' receives '_amount - getBridgeFee()' BTC on the Bitcoin network (beyond the Merlin network).
     }
