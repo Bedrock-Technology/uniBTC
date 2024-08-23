@@ -3,6 +3,7 @@ from brownie import interface, accounts, Vault, MBTCProxy, Contract
 
 
 # NOTE: This test designed to run on the fork Merlin network
+# Command to run test: `brownie test tests/test_MBTCProxy.py --network=merlin-mainnet-fork`
 def test_swapMBTCToBTC(fn_isolation, deps, deployer):
     # Upgrade Vault
     ProxyAdmin = deps.ProxyAdmin
