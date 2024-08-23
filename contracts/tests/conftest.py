@@ -47,14 +47,16 @@ def chain_id(w3):
     return w3.eth.chain_id
 
 @pytest.fixture(scope="session", autouse=True)
-def proxy():
+def deps():
     # Reference: https://docs.openzeppelin.com/contracts/4.x/api/proxy#TransparentUpgradeableProxy
     deps = project.load(  Path.home() / ".brownie" / "packages" / config["dependencies"][0])
-    return deps.TransparentUpgradeableProxy
+    return deps
 
 # Contracts
 @pytest.fixture()
-def contracts(w3, proxy, chain_id, roles, owner, deployer):
+def contracts(w3, deps, chain_id, roles, owner, deployer):
+    proxy = deps.TransparentUpgradeableProxy
+
     # Deploy contracts
     message_bus_sender = MessageBus.deploy({'from': owner})
     message_bus_receiver = MessageBus.deploy({'from': owner})
