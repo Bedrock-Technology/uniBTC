@@ -45,7 +45,7 @@ def test_swapMBTCToBTC(fn_isolation, deps, deployer):
     amount = bridge_fee * 2
     dest_btc_addr = "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2"
     tx = m_btc_proxy.swapMBTCToBTC(amount, dest_btc_addr, {'from': owner})
-    assert 'SwapBtc' in tx.events   # Emitted by MTokenSwap.swapMBtc function
+    assert 'SwapMBtc' in tx.events   # Emitted by MTokenSwap.swapMBtc function
     assert 'UnlockNativeToken' in tx.events   # Emitted by BTCLayer2Bridge.unlockNativeToken function
     assert 'LockNativeTokenWithBridgeFee' in tx.events   # Emitted by BTCLayer2Bridge.lockNativeToken function
     assert m_btc.balanceOf(vault) == m_btc_balance_before - amount
