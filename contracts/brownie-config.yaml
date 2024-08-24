@@ -29,3 +29,9 @@ networks:
   mainnet-fork:
     cmd_settings:
       #    evm_version: "shanghai"
+  merlin-mainnet-fork:
+    cmd_settings:
+      default_balance: "1000000000000 ether"
+      unlock:
+        - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # ProxyAdmin owner address
+        - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault default admin address
