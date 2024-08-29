@@ -66,7 +66,7 @@ After all submodules updated as required, you can run the following command from
 
 
 #### 2.3 Hybrid L2 Ecosystem
-**Ethereum Mainnet Deployment**
+**BOB Mainnet Deployment**
 - [ProxyAdmin](https://explorer.gobob.xyz/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4): 0x56c3024eB229Ca0570479644c78Af9D53472B3e4
 - [uniBTC](https://explorer.gobob.xyz/address/0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894): 0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894
 - [Vault](https://explorer.gobob.xyz/address/0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf): 0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf
