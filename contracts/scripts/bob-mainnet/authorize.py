@@ -6,9 +6,6 @@ from web3 import Web3
 # `brownie run scripts/bob-mainnet/authorize.py main "owner" --network=bob-mainnet -I`
 
 
-# The command to run this script: `brownie run scripts/authorize/mainnet.py  --network=iotex-mainnet`
-
-
 def main(owner="owner"):
     deps = project.load(  Path.home() / ".brownie" / "packages" / config["dependencies"][0])
     ProxyAdmin = deps.ProxyAdmin
