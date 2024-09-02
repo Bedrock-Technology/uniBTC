@@ -73,6 +73,16 @@ After all submodules updated as required, you can run the following command from
 -
 - [WBTC](https://explorer.gobob.xyz/address/0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3): 0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3
 
+
+#### 2.4 L1 Blockchains
+**ZetaChain Mainnet Deployment**
+- [ProxyAdmin](https://zetachain.blockscout.com/address/0xb3f925B430C60bA467F7729975D5151c8DE26698): 0xb3f925B430C60bA467F7729975D5151c8DE26698
+- [uniBTC](https://zetachain.blockscout.com/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a): 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a
+- [Vault](https://zetachain.blockscout.com/address/0x84E5C854A7fF9F49c888d69DECa578D406C26800): 0x84E5C854A7fF9F49c888d69DECa578D406C26800
+-
+- [zBTC](https://zetachain.blockscout.com/address/0x13A0c5930C028511Dc02665E7285134B6d11A5f4): 0x13A0c5930C028511Dc02665E7285134B6d11A5f4
+
+
 ### 3. Testnet Deployed Contracts
 #### 3.1 Bitcoin Ecosystem
 **B² Testnet Deployment**
