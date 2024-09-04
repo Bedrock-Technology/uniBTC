@@ -58,6 +58,12 @@ After all submodules updated as required, you can run the following command from
 | Vault | [0x84E5C854A7fF9F49c888d69DECa578D406C26800](https://zetachain.blockscout.com/address/0x84E5C854A7fF9F49c888d69DECa578D406C26800) |
 | zBTC | [0x13A0c5930C028511Dc02665E7285134B6d11A5f4](https://zetachain.blockscout.com/address/0x13A0c5930C028511Dc02665E7285134B6d11A5f4) |
 
+#### 2.5 uniBTCRate Deployment
+
+| Ethereum Mainnet | Optimism Mainnet |
+|------------|-------------|
+| [0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA](https://etherscan.io/address/0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) |
+
 
 ### 3. Testnet Deployed Contracts
 #### 3.1 Bitcoin Ecosystem
