@@ -105,3 +105,6 @@ def contracts(w3, deps, chain_id, roles, owner, deployer):
             fbtc_proxy,                   # index = 9
             locked_fbtc_transparent,      # index = 10
             wbtc18]                       # index = 11
+
+def pytest_addoption(parser):
+    parser.addoption("--case", action="store", default="default_slippage", help="case for the test")
