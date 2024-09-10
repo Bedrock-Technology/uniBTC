@@ -35,9 +35,7 @@ After all submodules updated as required, you can run the following command from
 | WBTC | [0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599](https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599) | - | [0x68f180fcCe6836688e9084f035309E29Bf0A2095](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095) |
 
 
-
 #### 2.3 Hybrid L2 Ecosystem
-**BOB Mainnet Deployment**
 
 | Contract | BOB Mainnet |
 |------------|-------------|
@@ -47,9 +45,7 @@ After all submodules updated as required, you can run the following command from
 | WBTC | [0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3](https://explorer.gobob.xyz/address/0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3) |
 
 
-
 #### 2.4 L1 Blockchains
-**ZetaChain Mainnet Deployment**
 
 | Contract   | ZetaChain Mainnet                                                                                                                 | BSC Mainnet                                                                                                           |
 |------------|-----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
@@ -86,6 +82,16 @@ After all submodules updated as required, you can run the following command from
 | mockFBTC | [0x5C367C804ce9F00464Cba3199d6Fb646E8287146](https://holesky.etherscan.io/address/0x5C367C804ce9F00464Cba3199d6Fb646E8287146) | [0xEB74BB04aD28b9b7ec1f2fd1812e7242170C6d1B](https://testnet.snowtrace.io/address/0xEB74BB04aD28b9b7ec1f2fd1812e7242170C6d1B) | [0xc87E37848B913f289Aee0E2A9d3Ed94bA98D2A60](https://testnet.bscscan.com/address/0xc87E37848B913f289Aee0E2A9d3Ed94bA98D2A60) | [0xeb74bb04ad28b9b7ec1f2fd1812e7242170c6d1b](https://testnet.ftmscan.com/address/0xeb74bb04ad28b9b7ec1f2fd1812e7242170c6d1b) |
 | mockWBTC | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://holesky.etherscan.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0) | [0x49D6844cbcef64952E6793677eeaBae324f895aD](https://testnet.snowtrace.io/address/0x49D6844cbcef64952E6793677eeaBae324f895aD) | [0xe7431fc992a54faa435125ca94e00b4a8c89095c](https://testnet.bscscan.com/address/0xe7431fc992a54faa435125ca94e00b4a8c89095c) | [0x49d6844cbcef64952e6793677eeabae324f895ad](https://testnet.ftmscan.com/address/0x49d6844cbcef64952e6793677eeabae324f895ad) |
 
+
+#### 3.2 L1 Blockchains
+
+| Contract   | Berachain Testnet                                                                                                             |
+|------------|-------------------------------------------------------------------------------------------------------------------------------|
+| ProxyAdmin | [0xC0c9E78BfC3996E8b68D872b29340816495D7e89](https://bartio.beratrail.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89)  |
+| uniBTC     | [0x16221CaD160b441db008eF6DA2d3d89a32A05859](https://bartio.beratrail.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859)  | 
+| Vault      | [0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823](https://bartio.beratrail.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823)  | 
+| mockedWBTC | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://bartio.beratrail.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0)  |
+| WBTC | [0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae](https://bartio.beratrail.io/address/0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae)  |
 
 ### 4. Error Codes from contracts
 1. SYS001: INVALID_UNIBTC_ADDRESS
