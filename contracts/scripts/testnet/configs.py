@@ -49,4 +49,5 @@ caps = [1e4 * 1e8, 1e4 * 1e18]
 
 recipients = ["0xe8A335a8502625Fb6c6e900a547694770D764484",  # Zhong Jian
               "0xF69F4471C7EdF4299bc16dbE829F57942f90572f",  # Calvin Zhou
-              "0xdc4A11eEcea1E2e7Aa92161909cD7fa6b667a9cd"]  # Vincent Liu
+              "0xdc4A11eEcea1E2e7Aa92161909cD7fa6b667a9cd",  # Vincent Liu
+              "0x249eD03175f3C86c1A7efa40cFa1f5e75d902a42"]  # Murphy
