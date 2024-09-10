@@ -85,13 +85,13 @@ After all submodules updated as required, you can run the following command from
 
 #### 3.2 L1 Blockchains
 
-| Contract   | Berachain Testnet                                                                                                                   |
-|------------|-------------------------------------------------------------------------------------------------------------------------------------|
-| ProxyAdmin | [0xC0c9E78BfC3996E8b68D872b29340816495D7e89](https://bartio.beratrail.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89) |
-| uniBTC     | [0x16221CaD160b441db008eF6DA2d3d89a32A05859](https://bartio.beratrail.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859) | 
-| Vault      | [0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823](https://bartio.beratrail.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823) | 
-| WBTC       | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://bartio.beratrail.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0)                                           |                                                                                                                  
-
+| Contract   | Berachain Testnet                                                                                                             |
+|------------|-------------------------------------------------------------------------------------------------------------------------------|
+| ProxyAdmin | [0xC0c9E78BfC3996E8b68D872b29340816495D7e89](https://bartio.beratrail.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89)  |
+| uniBTC     | [0x16221CaD160b441db008eF6DA2d3d89a32A05859](https://bartio.beratrail.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859)  | 
+| Vault      | [0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823](https://bartio.beratrail.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823)  | 
+| mockedWBTC | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://bartio.beratrail.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0)  |
+| WBTC | [0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae](https://bartio.beratrail.io/address/0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae)  |
 
 ### 4. Error Codes from contracts
 1. SYS001: INVALID_UNIBTC_ADDRESS
