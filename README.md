@@ -36,6 +36,7 @@ After all submodules updated as required, you can run the following command from
 
 
 #### 2.3 Hybrid L2 Ecosystem
+**BOB Mainnet Deployment**
 
 | Contract | BOB Mainnet |
 |------------|-------------|
@@ -46,6 +47,7 @@ After all submodules updated as required, you can run the following command from
 
 
 #### 2.4 L1 Blockchains
+**ZetaChain Mainnet Deployment**
 
 | Contract   | ZetaChain Mainnet                                                                                                                 | BSC Mainnet                                                                                                           |
 |------------|-----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
@@ -55,6 +57,12 @@ After all submodules updated as required, you can run the following command from
 | zBTC       | [0x13A0c5930C028511Dc02665E7285134B6d11A5f4](https://zetachain.blockscout.com/address/0x13A0c5930C028511Dc02665E7285134B6d11A5f4) | -                                                                                                                     |
 | FBTC       | -                                                                                                                                 | [0xC96dE26018A54D51c097160568752c4E3BD6C364](https://bscscan.com/address/0xC96dE26018A54D51c097160568752c4E3BD6C364)  |                                                                                                                    
 | BTCB       | -                                                                                                                                 | [0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c](https://bscscan.com/address/0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c)  |                                                                                                                    
+
+#### 2.5 uniBTCRate Deployment
+
+| Ethereum Mainnet | Optimism Mainnet |
+|------------|-------------|
+| [0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA](https://etherscan.io/address/0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) |
 
 
 ### 3. Testnet Deployed Contracts
