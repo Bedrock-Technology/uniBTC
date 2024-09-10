@@ -35,7 +35,6 @@ After all submodules updated as required, you can run the following command from
 | WBTC | [0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599](https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599) | - | [0x68f180fcCe6836688e9084f035309E29Bf0A2095](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095) |
 
 
-
 #### 2.3 Hybrid L2 Ecosystem
 **BOB Mainnet Deployment**
 
@@ -47,16 +46,17 @@ After all submodules updated as required, you can run the following command from
 | WBTC | [0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3](https://explorer.gobob.xyz/address/0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3) |
 
 
-
 #### 2.4 L1 Blockchains
 **ZetaChain Mainnet Deployment**
 
-| Contract | ZetaChain Mainnet |
-|------------|-------------|
-| ProxyAdmin | [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://zetachain.blockscout.com/address/0xb3f925B430C60bA467F7729975D5151c8DE26698) |
-| uniBTC | [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://zetachain.blockscout.com/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a) |
-| Vault | [0x84E5C854A7fF9F49c888d69DECa578D406C26800](https://zetachain.blockscout.com/address/0x84E5C854A7fF9F49c888d69DECa578D406C26800) |
-| zBTC | [0x13A0c5930C028511Dc02665E7285134B6d11A5f4](https://zetachain.blockscout.com/address/0x13A0c5930C028511Dc02665E7285134B6d11A5f4) |
+| Contract   | ZetaChain Mainnet                                                                                                                 | BSC Mainnet                                                                                                           |
+|------------|-----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| ProxyAdmin | [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://zetachain.blockscout.com/address/0xb3f925B430C60bA467F7729975D5151c8DE26698) | [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://bscscan.com/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)  |
+| uniBTC     | [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://zetachain.blockscout.com/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a) | [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://bscscan.com/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a)  |
+| Vault      | [0x84E5C854A7fF9F49c888d69DECa578D406C26800](https://zetachain.blockscout.com/address/0x84E5C854A7fF9F49c888d69DECa578D406C26800) | [0x84E5C854A7fF9F49c888d69DECa578D406C26800](https://bscscan.com/address/0x84E5C854A7fF9F49c888d69DECa578D406C26800)  |
+| zBTC       | [0x13A0c5930C028511Dc02665E7285134B6d11A5f4](https://zetachain.blockscout.com/address/0x13A0c5930C028511Dc02665E7285134B6d11A5f4) | -                                                                                                                     |
+| FBTC       | -                                                                                                                                 | [0xC96dE26018A54D51c097160568752c4E3BD6C364](https://bscscan.com/address/0xC96dE26018A54D51c097160568752c4E3BD6C364)  |                                                                                                                    
+| BTCB       | -                                                                                                                                 | [0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c](https://bscscan.com/address/0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c)  |                                                                                                                    
 
 #### 2.5 uniBTCRate Deployment
 
@@ -91,6 +91,16 @@ After all submodules updated as required, you can run the following command from
 | mockWBTC | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://holesky.etherscan.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0) | [0x49D6844cbcef64952E6793677eeaBae324f895aD](https://testnet.snowtrace.io/address/0x49D6844cbcef64952E6793677eeaBae324f895aD) | [0xe7431fc992a54faa435125ca94e00b4a8c89095c](https://testnet.bscscan.com/address/0xe7431fc992a54faa435125ca94e00b4a8c89095c) | [0x49d6844cbcef64952e6793677eeabae324f895ad](https://testnet.ftmscan.com/address/0x49d6844cbcef64952e6793677eeabae324f895ad) |
 
 
+#### 3.2 L1 Blockchains
+
+| Contract   | Berachain Testnet                                                                                                             |
+|------------|-------------------------------------------------------------------------------------------------------------------------------|
+| ProxyAdmin | [0xC0c9E78BfC3996E8b68D872b29340816495D7e89](https://bartio.beratrail.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89)  |
+| uniBTC     | [0x16221CaD160b441db008eF6DA2d3d89a32A05859](https://bartio.beratrail.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859)  | 
+| Vault      | [0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823](https://bartio.beratrail.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823)  | 
+| mockedWBTC | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://bartio.beratrail.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0)  |
+| WBTC | [0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae](https://bartio.beratrail.io/address/0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae)  |
+
 ### 4. Error Codes from contracts
 1. SYS001: INVALID_UNIBTC_ADDRESS
 1. SYS002: TOKEN_PAUSED
@@ -101,13 +111,14 @@ After all submodules updated as required, you can run the following command from
 1. SYS007: CHAIN_ID_CANNOT_BE_ZERO
 1. SYS008: INVALID_PEER_ADDRESS
 1. SYS009: IRREDEEMABLE_STATUS
-1. USR001: UNIBTC: LEAST_ONE_RECIPIENT_ADDRESS
-1. USR002: UNIBTC: NUMBER_OF_RECIPIENT_ADDRESSES_DOES_NOT_MATCH_THE_NUMBER_OF_TOKENS
-1. USR003: INSUFFICIENT_QUOTA
-1. USR004: INVALID_CHAINID
-1. USR005: DESTINATION_PEER_DOES_NOT_EXIST
-1. USR006: INVALID_AMOUNT_TO_TRANSFER
-1. USR007: TRANSFER_TO_THE_ZERO_ADDRESS
-1. USR008: INCORRECT_FEE
-1. USR009: ILLEGAL_REMOTE_CALLER
+2. USR001: UNIBTC: LEAST_ONE_RECIPIENT_ADDRESS
+2. USR002: UNIBTC: NUMBER_OF_RECIPIENT_ADDRESSES_DOES_NOT_MATCH_THE_NUMBER_OF_TOKENS
+2. USR003: INSUFFICIENT_QUOTA
+2. USR004: INVALID_CHAINID
+2. USR005: DESTINATION_PEER_DOES_NOT_EXIST
+2. USR006: INVALID_AMOUNT_TO_TRANSFER
+2. USR007: TRANSFER_TO_THE_ZERO_ADDRESS
+2. USR008: INCORRECT_FEE
+2. USR009: ILLEGAL_REMOTE_CALLER
 2. USR010: INSUFFICIENT_AMOUNT
+2. USR011: INVALID_SLIPPAGE
