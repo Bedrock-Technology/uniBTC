@@ -61,9 +61,9 @@ After all submodules updated as required, you can run the following command from
 
 #### 2.5 uniBTCRate Deployment
 
-| Ethereum Mainnet | Optimism Mainnet |
-|------------|-------------|
-| [0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA](https://etherscan.io/address/0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) |
+| Ethereum Mainnet | Optimism Mainnet | Arbitrum Mainnet |
+|------------|-------------|------------------|
+| [0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA](https://etherscan.io/address/0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) | [0xBE43aE6E89c2c74B49cfAB956a9E36a35B5fdE06](https://arbiscan.io/address/0xBE43aE6E89c2c74B49cfAB956a9E36a35B5fdE06)             |
 
 
 ### 3. Testnet Deployed Contracts
