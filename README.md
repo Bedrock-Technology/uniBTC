@@ -24,15 +24,16 @@ After all submodules updated as required, you can run the following command from
 
 #### 2.2 Ethereum Ecosystem
 
-| Contract | Ethereum Mainnet | Mantle Mainnet | Optimism Mainnet |
-|------------|-------------|--------|-------|
-| ProxyAdmin | [0x029E4FbDAa31DE075dD74B2238222A08233978f6](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6) | [0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19](https://mantlescan.xyz/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19) | [0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19](https://optimistic.etherscan.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19)  |
-| uniBTC | [0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568](https://etherscan.io/address/0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568) | [0x93919784C523f39CACaa98Ee0a9d96c3F32b593e](https://mantlescan.xyz/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e) | [0x93919784C523f39CACaa98Ee0a9d96c3F32b593e](https://optimistic.etherscan.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e) |
-| Vault | [0x047d41f2544b7f63a8e991af2068a363d210d6da](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da) | [0xF9775085d726E782E83585033B58606f7731AB18](https://mantlescan.xyz/address/0xF9775085d726E782E83585033B58606f7731AB18) | [0xF9775085d726E782E83585033B58606f7731AB18](https://optimistic.etherscan.io/address/0xF9775085d726E782E83585033B58606f7731AB18) |
-| FBTCProxy | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://explorer.mantle.xyz/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) | - |
-| LockedFBTC | [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://etherscan.io/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c) | [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://explorer.mantle.xyz/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c) | - |
-| FBTC | [0xc96de26018a54d51c097160568752c4e3bd6c364](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364) | [0xc96de26018a54d51c097160568752c4e3bd6c364](https://mantlescan.xyz/address/0xc96de26018a54d51c097160568752c4e3bd6c364) | - |
-| WBTC | [0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599](https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599) | - | [0x68f180fcCe6836688e9084f035309E29Bf0A2095](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095) |
+| Contract | Ethereum Mainnet | Mantle Mainnet | Optimism Mainnet | Mode Mainnet | Arbitrum Mainnet                                                                                                     |
+|------------|-------------|--------|-------|-------|----------------------------------------------------------------------------------------------------------------------|
+| ProxyAdmin | [0x029E4FbDAa31DE075dD74B2238222A08233978f6](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6) | [0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19](https://mantlescan.xyz/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19) | [0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19](https://optimistic.etherscan.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19)  | [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://modescan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698) | [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://arbiscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698) |
+| uniBTC | [0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568](https://etherscan.io/address/0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568) | [0x93919784C523f39CACaa98Ee0a9d96c3F32b593e](https://mantlescan.xyz/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e) | [0x93919784C523f39CACaa98Ee0a9d96c3F32b593e](https://optimistic.etherscan.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e) | [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://modescan.io/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a) | [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://arbiscan.io/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a) |
+| Vault | [0x047d41f2544b7f63a8e991af2068a363d210d6da](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da) | [0xF9775085d726E782E83585033B58606f7731AB18](https://mantlescan.xyz/address/0xF9775085d726E782E83585033B58606f7731AB18) | [0xF9775085d726E782E83585033B58606f7731AB18](https://optimistic.etherscan.io/address/0xF9775085d726E782E83585033B58606f7731AB18) | [0x84E5C854A7fF9F49c888d69DECa578D406C26800](https://modescan.io/token/0x84E5C854A7fF9F49c888d69DECa578D406C26800) | [0x84E5C854A7fF9F49c888d69DECa578D406C26800](https://arbiscan.io/address/0x84E5C854A7fF9F49c888d69DECa578D406C26800) |
+| FBTCProxy | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://explorer.mantle.xyz/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) | - | - | -                                                                                                                    |
+| LockedFBTC | [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://etherscan.io/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c) | [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://explorer.mantle.xyz/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c) | - | - | -                                                                                                                    |
+| FBTC | [0xc96de26018a54d51c097160568752c4e3bd6c364](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364) | [0xc96de26018a54d51c097160568752c4e3bd6c364](https://mantlescan.xyz/address/0xc96de26018a54d51c097160568752c4e3bd6c364) | - | - | -                                                                                                                    |
+| WBTC | [0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599](https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599) | - | [0x68f180fcCe6836688e9084f035309E29Bf0A2095](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095) | [0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF](https://modescan.io/token/0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF) | [0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f](https://arbiscan.io/address/0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f) |
+| M-BTC | - | - | - | [0x59889b7021243dB5B1e065385F918316cD90D46c](https://modescan.io/token/0x59889b7021243dB5B1e065385F918316cD90D46c) | -                                                                                                                    |
 
 
 #### 2.3 Hybrid L2 Ecosystem
@@ -60,9 +61,9 @@ After all submodules updated as required, you can run the following command from
 
 #### 2.5 uniBTCRate Deployment
 
-| Ethereum Mainnet | Optimism Mainnet |
-|------------|-------------|
-| [0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA](https://etherscan.io/address/0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) |
+| Ethereum Mainnet | Optimism Mainnet | Arbitrum Mainnet |
+|------------|-------------|------------------|
+| [0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA](https://etherscan.io/address/0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) | [0xBE43aE6E89c2c74B49cfAB956a9E36a35B5fdE06](https://arbiscan.io/address/0xBE43aE6E89c2c74B49cfAB956a9E36a35B5fdE06)             |
 
 
 ### 3. Testnet Deployed Contracts
@@ -91,7 +92,7 @@ After all submodules updated as required, you can run the following command from
 | mockWBTC | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://holesky.etherscan.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0) | [0x49D6844cbcef64952E6793677eeaBae324f895aD](https://testnet.snowtrace.io/address/0x49D6844cbcef64952E6793677eeaBae324f895aD) | [0xe7431fc992a54faa435125ca94e00b4a8c89095c](https://testnet.bscscan.com/address/0xe7431fc992a54faa435125ca94e00b4a8c89095c) | [0x49d6844cbcef64952e6793677eeabae324f895ad](https://testnet.ftmscan.com/address/0x49d6844cbcef64952e6793677eeabae324f895ad) |
 
 
-#### 3.2 L1 Blockchains
+#### 3.3 L1 Blockchains
 
 | Contract   | Berachain Testnet                                                                                                             |
 |------------|-------------------------------------------------------------------------------------------------------------------------------|
