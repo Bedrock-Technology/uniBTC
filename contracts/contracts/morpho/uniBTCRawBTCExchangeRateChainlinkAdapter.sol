@@ -8,7 +8,7 @@ import "../../interfaces/IMorphoMinimalAggregatorV3.sol";
 contract uniBTCRawBTCExchangeRateChainlinkAdapter is IMorphoMinimalAggregatorV3 {
     uint8 public constant decimals = 8;
 
-    string public constant description = "uniBTC/RawBTC exchange rate";
+    string public constant description = "uniBTC/BTC exchange rate";
 
     address public immutable uniBTCRate;
 
