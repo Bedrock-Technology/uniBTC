@@ -59,11 +59,12 @@ After all submodules updated as required, you can run the following command from
 | FBTC       | -                                                                                                                                 | [0xC96dE26018A54D51c097160568752c4E3BD6C364](https://bscscan.com/address/0xC96dE26018A54D51c097160568752c4E3BD6C364)  |                                                                                                                    
 | BTCB       | -                                                                                                                                 | [0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c](https://bscscan.com/address/0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c)  |                                                                                                                    
 
-#### 2.5 uniBTCRate Deployment
+#### 2.5 Chainlink Adapters Deployment
 
-| Ethereum Mainnet | Optimism Mainnet | Arbitrum Mainnet |
-|------------|-------------|------------------|
-| [0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA](https://etherscan.io/address/0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4) | [0xBE43aE6E89c2c74B49cfAB956a9E36a35B5fdE06](https://arbiscan.io/address/0xBE43aE6E89c2c74B49cfAB956a9E36a35B5fdE06)             |
+| Contract    | Ethereum Mainnet                                                                                                      | Optimism Mainnet                                                                                                                  | Arbitrum Mainnet                                                                                                 |
+|-------------|-----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| uniBTCRate  | [0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA](https://etherscan.io/address/0xf6f6F27A38e5CFb94954200b01B1c4Bf621A56EA) | [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4)  | [0xBE43aE6E89c2c74B49cfAB956a9E36a35B5fdE06](https://arbiscan.io/address/0xBE43aE6E89c2c74B49cfAB956a9E36a35B5fdE06) |
+| uniBTCRawBTCExchangeRateChainlinkAdapter| [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)                                                                                                                  | [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://optimistic.etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)  | [0x4DFfCaf5d0B3B83a31405443bF5A4D6a3F9903F5](https://arbiscan.io/address/0x4DFfCaf5d0B3B83a31405443bF5A4D6a3F9903F5) |                                                                                                                |                                                                                                                    |
 
 
 ### 3. Testnet Deployed Contracts
