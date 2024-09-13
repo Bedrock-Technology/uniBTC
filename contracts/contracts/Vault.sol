@@ -9,14 +9,13 @@ import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
-import "../interfaces/iface.sol";
+import "../interfaces/IMintableContract.sol";
 
 contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     using SafeERC20 for IERC20;
     using Address for address;
-    using Address for address payable;
 
     address private _DEPRECATED_WBTC_;
     address public uniBTC;
@@ -24,17 +23,12 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     mapping(address => uint256) public caps;
     mapping(address => bool) public paused;
 
-    bool public redeemable;
+    bool private _DEPRECATED_redeemable_;
 
     address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
     uint8 public constant NATIVE_BTC_DECIMALS = 18;
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
-
-    modifier whenRedeemable() {
-        require(redeemable, "SYS009");
-        _;
-    }
 
     receive() external payable {}
 
@@ -59,19 +53,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         _mint(msg.sender, _token, _amount);
     }
 
-    /**
-     * @dev burn uniBTC and redeem native BTC
-     */
-    function redeem(uint256 _amount) external nonReentrant whenRedeemable {
-        _redeem(msg.sender, _amount);
-    }
-
-    /**
-     * @dev burn uniBTC and redeem the given type of wrapped BTC
-     */
-    function redeem(address _token, uint256 _amount) external whenRedeemable {
-        _redeem(msg.sender, _token, _amount);
-    }
 
     // @dev execute a contract call that also transfers '_value' wei to '_target'
     function execute(address _target, bytes memory _data, uint256 _value) external nonReentrant onlyRole(OPERATOR_ROLE) returns(bytes memory) {
@@ -114,17 +95,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         emit TokenUnpaused(_token);
     }
 
-    /**
-     * @dev enable or disable redemption feature
-     */
-    function toggleRedemption() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        redeemable = !redeemable;
-        if (redeemable) {
-            emit RedemptionOn();
-        } else {
-            emit RedemptionOff();
-        }
-    }
 
     /**
      * @dev set cap for a specific type of wrapped BTC
@@ -141,21 +111,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         caps[_token] = _cap;
     }
 
-    /**
-     * @dev withdraw native BTC
-     */
-    function adminWithdraw(uint256 _amount, address _target) external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
-        emit Withdrawed(NATIVE_BTC, _amount, _target);
-        payable(_target).sendValue(_amount);
-    }
-
-    /**
-     * @dev withdraw wrapped BTC
-     */
-    function adminWithdraw(address _token, uint256 _amount, address _target) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        IERC20(_token).safeTransfer(_target, _amount);
-        emit Withdrawed(_token, _amount, _target);
-    }
 
     /**
      * ======================================================================================
@@ -195,32 +150,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev burn uniBTC and return native BTC tokens
-     */
-    function _redeem(address _sender, uint256 _amount) internal {
-        (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_amount);
-        require(uniBTCAmount > 0, "USR010");
-
-        IMintableContract(uniBTC).burnFrom(_sender, uniBTCAmount);
-        emit Redeemed(NATIVE_BTC, _amount);
-
-        payable(_sender).sendValue(actualAmount);
-    }
-
-    /**
-     * @dev burn uniBTC and return wrapped BTC tokens
-     */
-    function _redeem(address _sender, address _token, uint256 _amount) internal {
-        (uint256 actualAmount, uint256 uniBTCAmount) = _amounts(_token, _amount);
-        require(uniBTCAmount > 0, "USR010");
-
-        IMintableContract(uniBTC).burnFrom(_sender, uniBTCAmount);
-        IERC20(_token).safeTransfer(_sender, actualAmount);
-
-        emit Redeemed(_token, _amount);
-    }
-
-    /**
      * @dev determine the valid native BTC amount and the corresponding uniBTC amount.
      */
     function _amounts(uint256 _amount) internal returns (uint256, uint256) {
@@ -249,11 +178,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      *
      * ======================================================================================
      */
-    event Withdrawed(address token, uint256 amount, address target);
     event Minted(address token, uint256 amount);
-    event Redeemed(address token, uint256 amount);
     event TokenPaused(address token);
     event TokenUnpaused(address token);
-    event RedemptionOn();
-    event RedemptionOff();
 }
