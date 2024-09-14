@@ -1,7 +1,7 @@
 import pytest
 from web3 import Web3
 from pathlib import Path
-from brownie import FBTC, WBTC, WBTC18, XBTC, LockedFBTC, FBTCProxy, Vault, uniBTC, Peer, MessageBus, accounts, Contract, project, config, network
+from brownie import FBTC, WBTC, WBTC18, XBTC, LockedFBTC, FBTCProxy, Vault, uniBTC, accounts, Contract, project, config, network
 
 # Web3 client
 @pytest.fixture(scope="session", autouse=True)
