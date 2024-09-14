@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "../../interfaces/IUniswap.sol";
+import "../../interfaces/IVault.sol";
 
 contract WBTCSwapFBTCProxy is Ownable {
     address public immutable BEDROCK_VAULT;

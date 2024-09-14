@@ -2,14 +2,13 @@
 
 
 ### 1. Compile Contracts
-You need to update the submodules that this repository depends on to the required commits before building contracts with the following steps:
+This repository uses submodules to manage dependencies on other repositories.
 
-- (1) Clone all submodules before checking out any tags or commits with this command: `git clone --recurse-submodules git@github.com:Bedrock-Technology/uniBTC.git`. If you have already cloned, from the `uniBTC/` directory, run `git submodule update --init --recursive`. <br>
-- (2) Checkout the celer-network commit. From the `uniBTC/contracts/lib/celer-network/sgn-v2-contracts-main/`, run `git checkout 0b4c531c52fd4f23cbb4397440da1cc42f837a12`. <br>
-- (3) Checkout openzeppelin-contracts. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3/`, run `git checkout v4.8.3`. <br>
-- (4) Checkout openzeppelin-contracts-upgradeable. From the `uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/`, run `git checkout v4.8.3`. <br>
+- Command to clone this repository: `git clone --recurse-submodules git@github.com:Bedrock-Technology/uniBTC.git`.
 
-After all submodules updated as required, you can run the following command from the `uniBTC/contracts/` to build contracts: `brownie compile`
+- If you have already cloned, from the `uniBTC/` directory, run `git submodule update --init --recursive`.
+
+After all submodules are updated as required, you can build contracts with this Brownie command: `brownie compile`.
 
 ### 2. Mainnet Deployed Contracts
 #### 2.1 Bitcoin Ecosystem

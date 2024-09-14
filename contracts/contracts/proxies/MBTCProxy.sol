@@ -4,8 +4,9 @@ pragma solidity ^0.8.12;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "../../interfaces/iface.sol";
-
+import "../../interfaces/IVault.sol";
+import "../../interfaces/IMTokenSwap.sol";
+import "../../interfaces/IBTCLayer2Bridge.sol";
 
 contract MBTCProxy is Ownable {
     address private constant EMPTY_TOKEN = address(0);

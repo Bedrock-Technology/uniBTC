@@ -5,9 +5,12 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
 import "@celer-network/contracts/message/framework/MessageApp.sol";
 import "@celer-network/contracts/message/interfaces/IMessageBus.sol";
-import "../interfaces/iface.sol";
+
+import "../interfaces/ISGNFeeQuerier.sol";
+import "../interfaces/IMintableContract.sol";
 
 contract Peer is MessageApp, Pausable, ReentrancyGuard, AccessControl {
     using SafeERC20 for IERC20;
