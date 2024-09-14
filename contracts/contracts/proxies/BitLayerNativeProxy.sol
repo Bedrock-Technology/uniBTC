@@ -8,8 +8,7 @@ import "../../interfaces/iface.sol";
 contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
     address private constant NATIVE_TOKEN = address(0);
     uint256 private nonce;
-    address public  vault;
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    address public vault;
     bytes32 public constant BITLAYER_ROLE = keccak256("BITLAYER_ROLE");
     uint256 public withdrawPendingAmount;
     mapping(uint256 => uint256) public withdrawPendingQueue;
@@ -28,11 +27,12 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         vault = _vault;
+        nonce = uint256(keccak256("BEDROCK_BITLAYER"));
     }
 
     receive() external payable {}
 
-    function stake(uint256 _amount) external onlyRole(OPERATOR_ROLE) {
+    function stake(uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_amount > 0, "amount needs bigger than 0");
         require(_amount <= vault.balance, "amount exceeds vault's balance");
         nonce += 1;
@@ -40,7 +40,7 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         emit TokenStaked(nonce, address(this), _amount, NATIVE_TOKEN, 0, 0, "");
     }
 
-    function unStake(uint256 _amount) external onlyRole(OPERATOR_ROLE) {
+    function unStake(uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_amount > 0, "amount needs bigger than 0");
         require(_amount + withdrawPendingAmount <= address(this).balance, "amount exceeds staked balance");
         nonce += 1;
