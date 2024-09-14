@@ -1,41 +1,3 @@
-// File: contracts/interfaces/ILockedFBTC.sol
-
-// Reference: https://github.com/fbtc-com/fbtcX-contract/blob/main/src/LockedFBTC.sol
-interface ILockedFBTC {
-    enum Operation {
-        Nop, // starts from 1.
-        Mint,
-        Burn,
-        CrosschainRequest,
-        CrosschainConfirm
-    }
-
-    enum Status {
-        Unused,
-        Pending,
-        Confirmed,
-        Rejected
-    }
-
-    struct Request {
-        Operation op;
-        Status status;
-        uint128 nonce; // Those can be packed into one slot in evm storage.
-        bytes32 srcChain;
-        bytes srcAddress;
-        bytes32 dstChain;
-        bytes dstAddress;
-        uint256 amount; // Transfer value without fee.
-        uint256 fee;
-        bytes extra;
-    }
-
-    function mintLockedFbtcRequest(uint256 _amount) external returns (uint256 realAmount);
-    function redeemFbtcRequest(uint256 _amount, bytes32 _depositTxid, uint256 _outputIndex) external returns (bytes32 _hash, Request memory _r);
-    function confirmRedeemFbtc(uint256 _amount) external;
-    function burn(uint256 _amount) external;
-    function fbtc() external returns (address);
-}
 // File: contracts/interfaces/IVault.sol
 
 interface IVault {
@@ -233,57 +195,147 @@ abstract contract Ownable is Context {
     }
 }
 
-// File: contracts/contracts/proxies/FBTCProxy.sol
+// File: contracts/interfaces/IUniswap.sol
 
-// Reference: https://github.com/fbtc-com/fbtcX-contract/blob/main/src/LockedFBTC.sol
-contract FBTCProxy is Ownable {
-    address public immutable vault;
-    address public immutable lockedFBTC;
-
-    constructor(address _vault, address _lockedFBTC) {
-        vault = _vault;
-        lockedFBTC = _lockedFBTC;
+// Reference: https://etherscan.io/address/0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45
+interface IUniswapV3Router02 {
+    struct ExactInputSingleParams {
+        address tokenIn;
+        address tokenOut;
+        uint24 fee;
+        address recipient;
+        uint256 amountIn;
+        uint256 amountOutMinimum;
+        uint160 sqrtPriceLimitX96;
     }
+
+    function exactInputSingle(
+        ExactInputSingleParams calldata params
+    ) external payable returns (uint256 amountOut);
+}
+
+//Reference: https://etherscan.io/address/0x9dbe5dFfAEB4Ac2e0ac14F8B4e08b3bc55De5232
+interface IUniswapWbtcFbtcPool {
+    function fee() external view returns (uint24);
+    function token0() external view returns (address);
+    function token1() external view returns (address);
+}
+
+// File: contracts/contracts/proxies/WBTCSwapFBTCProxy.sol
+
+contract WBTCSwapFBTCProxy is Ownable {
+    address public immutable BEDROCK_VAULT;
+    address public immutable WBTC;
+    address public immutable FBTC;
+    address public immutable UNISWAP_V3_ROUTER_02;
+    address public immutable UNISWAP_WBTC_FBTC_POOL;
+    uint24 public immutable UNISWAP_WBTC_FBTC_FEE;
+    uint256 public constant SLIPPAGE_RANGE = 10000;
+    uint256 public constant SLIPPAGE_DEFAULT = 10;
 
     receive() external payable {
         revert("value only accepted by the Vault contract");
     }
 
+    constructor(address _vault, address _router, address _pool) {
+        BEDROCK_VAULT = _vault;
+        UNISWAP_V3_ROUTER_02 = _router;
+        UNISWAP_WBTC_FBTC_POOL = _pool;
+        WBTC = IUniswapWbtcFbtcPool(_pool).token0();
+        FBTC = IUniswapWbtcFbtcPool(_pool).token1();
+        UNISWAP_WBTC_FBTC_FEE = IUniswapWbtcFbtcPool(_pool).fee();
+    }
+
     /**
-     * @dev  mint lockedFBTC in response to a burn FBTC request on the FBTC bridge.
+     * ======================================================================================
+     *
+     * EXTERNAL FUNCTIONS
+     *
+     * ======================================================================================
      */
-    function mintLockedFbtcRequest(uint256 _amount) external onlyOwner {
-        address fbtc = ILockedFBTC(lockedFBTC).fbtc();
-        if (IERC20(fbtc).allowance(vault, lockedFBTC) < _amount) {
-            bytes memory data = abi.encodeWithSelector(IERC20.approve.selector, lockedFBTC, _amount);
-            IVault(vault).execute(fbtc, data, 0);
+    /**
+     * @dev Receive an exact amount of fbtc token for as few input wbtc tokens as possible,
+     * along the wbtc-fbtc route determined by the path.The first element of path is the input token(wbtc),
+     * the last is the output token(fbtc).
+     * @param amountIn The amount of wbtc to send.
+     * @param slippage The custom slippage for the swap.
+     */
+    function swapWBTCForFBTC(
+        uint256 amountIn,
+        uint256 slippage
+    ) external onlyOwner {
+        require(slippage < SLIPPAGE_RANGE, "USR011");
+        _swap(amountIn, slippage);
+    }
+
+    /**
+     * @dev Receive an exact amount of fbtc token for as few input wbtc tokens as possible,
+     * along the wbtc-fbtc route determined by the path.The first element of path is the input token(wbtc),
+     * the last is the output token(fbtc).
+     * @param amountIn The amount of input tokens to send.
+     * @notice default slippage is 0.1%
+     */
+    function swapWBTCForFBTC(uint256 amountIn) external onlyOwner {
+        _swap(amountIn, SLIPPAGE_DEFAULT);
+    }
+
+    /**
+     * @dev get the wbtc and fbtc balance from uniswap v3 router  wbtc-fbtc pool
+     */
+    function getUniswapWbtcForFbtcDepth()
+    external
+    view
+    returns (uint256, uint256)
+    {
+        uint256 wbtcBalance = IERC20(WBTC).balanceOf(UNISWAP_WBTC_FBTC_POOL);
+        uint256 fBTCBalance = IERC20(FBTC).balanceOf(UNISWAP_WBTC_FBTC_POOL);
+        return (wbtcBalance, fBTCBalance);
+    }
+
+    /**
+     * ======================================================================================
+     *
+     * INTERNAL FUNCTIONS
+     *
+     * ======================================================================================
+     */
+    /**
+     * @dev call uniswap v3 router to swap wbtc to fbtc
+     */
+    function _swap(uint256 amountIn, uint256 slippage) internal {
+        require(IERC20(WBTC).balanceOf(BEDROCK_VAULT) >= amountIn, "USR010");
+        uint256 amountOutMin = (amountIn * (SLIPPAGE_RANGE - slippage)) /
+        SLIPPAGE_RANGE;
+        // 1. Approve '_amount' wBTC to uniswapV3Router02 contract
+        bytes memory data;
+        if (
+            IERC20(WBTC).allowance(BEDROCK_VAULT, UNISWAP_V3_ROUTER_02) <
+            amountIn
+        ) {
+            data = abi.encodeWithSelector(
+                IERC20.approve.selector,
+                UNISWAP_V3_ROUTER_02,
+                amountIn
+            );
+            IVault(BEDROCK_VAULT).execute(WBTC, data, 0);
         }
 
-        bytes memory data = abi.encodeWithSelector(ILockedFBTC.mintLockedFbtcRequest.selector, _amount);
-        IVault(vault).execute(lockedFBTC, data, 0);
-    }
+        // 2. swap wbtc to fbtc using uniswapV3Router02 contract.
+        IUniswapV3Router02.ExactInputSingleParams
+        memory params = IUniswapV3Router02.ExactInputSingleParams({
+            tokenIn: WBTC,
+            tokenOut: FBTC,
+            fee: UNISWAP_WBTC_FBTC_FEE,
+            recipient: BEDROCK_VAULT,
+            amountIn: amountIn,
+            amountOutMinimum: amountOutMin,
+            sqrtPriceLimitX96: 0
+        });
 
-    /**
-     * @dev initiate a FBTC redemption request on the FBTC bridge with the corresponding BTC deposit tx details.
-     */
-    function redeemFbtcRequest(uint256 _amount, bytes32 _depositTxid, uint256 _outputIndex) external onlyOwner {
-        bytes memory data = abi.encodeWithSelector(ILockedFBTC.redeemFbtcRequest.selector, _amount, _depositTxid, _outputIndex);
-        IVault(vault).execute(lockedFBTC, data, 0);
-    }
-
-    /**
-     * @dev burn Vault's locked FBTC and transfer back the equivalent FBTC to Vault.
-     */
-    function confirmRedeemFbtc(uint256 _amount) external onlyOwner {
-        bytes memory data = abi.encodeWithSelector(ILockedFBTC.confirmRedeemFbtc.selector, _amount);
-        IVault(vault).execute(lockedFBTC, data, 0);
-    }
-
-    /**
-     * @dev burn Vault's lockedFBTC
-     */
-    function burn(uint256 _amount) external onlyOwner {
-        bytes memory data = abi.encodeWithSelector(ILockedFBTC.burn.selector, _amount);
-        IVault(vault).execute(lockedFBTC, data, 0);
+        data = abi.encodeWithSelector(
+            IUniswapV3Router02.exactInputSingle.selector,
+            params
+        );
+        IVault(BEDROCK_VAULT).execute(UNISWAP_V3_ROUTER_02, data, 0);
     }
 }
