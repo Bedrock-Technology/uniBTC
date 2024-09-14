@@ -1,9 +1,15 @@
-[submodule "contracts/lib/celer-network/sgn-v2-contracts-main"]
-	path = contracts/lib/celer-network/sgn-v2-contracts-main
+[submodule "celer/lib/celer-network/sgn-v2-contracts-main"]
+	path = celer/lib/celer-network/sgn-v2-contracts-main
 	url = git@github.com:celer-network/sgn-v2-contracts.git
+[submodule "celer/lib/OpenZeppelin/openzeppelin-contracts@4.8.3"]
+	path = celer/lib/OpenZeppelin/openzeppelin-contracts@4.8.3
+	url = git@github.com:OpenZeppelin/openzeppelin-contracts.git
 [submodule "contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3"]
 	path = contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3
 	url = git@github.com:OpenZeppelin/openzeppelin-contracts.git
 [submodule "contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3"]
 	path = contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3
+	url = git@github.com:OpenZeppelin/openzeppelin-contracts-upgradeable.git
+[submodule "celer/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3"]
+	path = celer/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3
 	url = git@github.com:OpenZeppelin/openzeppelin-contracts-upgradeable.git

@@ -1,7 +1,7 @@
 import pytest
 from web3 import Web3
 from pathlib import Path
-from brownie import FBTC, WBTC, WBTC18, XBTC, LockedFBTC, FBTCProxy, Vault, uniBTC, accounts, Contract, project, config, network
+from brownie import uniBTC, Peer, MessageBus, accounts, Contract, project, config, network
 
 # Web3 client
 @pytest.fixture(scope="session", autouse=True)
@@ -60,51 +60,24 @@ def contracts(w3, deps, chain_id, roles, owner, deployer):
     # Deploy contracts
     message_bus_sender = MessageBus.deploy({'from': owner})
     message_bus_receiver = MessageBus.deploy({'from': owner})
-    fbtc = FBTC.deploy({'from': owner})
-    wbtc = WBTC.deploy({'from': owner})
-    wbtc18 = WBTC18.deploy({'from': owner})
-    xbtc = XBTC.deploy({'from': owner})
 
     uni_btc = uniBTC.deploy({'from': deployer})
     uni_btc_proxy = proxy.deploy(uni_btc, deployer, b'', {'from': deployer})
     uni_btc_transparent = Contract.from_abi("uniBTC", uni_btc_proxy.address, uniBTC.abi)
 
-    vault = Vault.deploy({'from': deployer})
-    vault_proxy = proxy.deploy(vault, deployer, b'', {'from': deployer})
-    vault_transparent = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
-
     peer_sender = Peer.deploy(message_bus_sender, uni_btc_transparent, {'from': owner})
     peer_receiver = Peer.deploy(message_bus_receiver, uni_btc_transparent, {'from': owner})
     peers = [peer_sender, peer_receiver]
-
-    locked_fbtc = LockedFBTC.deploy({'from': deployer})
-    locked_fbtc_proxy = proxy.deploy(locked_fbtc, deployer, b'', {'from': deployer})
-    locked_fbtc_transparent = Contract.from_abi("LockedFBTC", locked_fbtc_proxy.address, LockedFBTC.abi)
-
-    fbtc_proxy = FBTCProxy.deploy(vault_transparent, locked_fbtc_transparent, {'from': owner})
 
     # Configure contracts
     uni_btc_transparent.initialize(owner, owner, {'from': owner})
     for peer in peers:
         uni_btc_transparent.grantRole(roles[1], peer, {'from': owner})
         peer.configurePeers([chain_id, chain_id + 1], [peer_sender, peer_receiver], {'from': owner})
-    vault_transparent.initialize(owner, uni_btc_transparent, {'from': owner})
-    uni_btc_transparent.grantRole(roles[1], vault_transparent, {'from': owner})
-
-    locked_fbtc_transparent.initialize(fbtc, owner, owner, vault_transparent, {'from': owner})
 
     return [uni_btc_transparent,          # index = 0
             peer_sender,                  # index = 1
             peer_receiver,                # index = 2
             message_bus_sender,           # index = 3
-            message_bus_receiver,         # index = 4
-            wbtc,                         # index = 5
-            vault_transparent,            # index = 6
-            fbtc,                         # index = 7
-            xbtc,                         # index = 8
-            fbtc_proxy,                   # index = 9
-            locked_fbtc_transparent,      # index = 10
-            wbtc18]                       # index = 11
+            message_bus_receiver]         # index = 4
 
-def pytest_addoption(parser):
-    parser.addoption("--case", action="store", default="default_slippage", help="case for the test")

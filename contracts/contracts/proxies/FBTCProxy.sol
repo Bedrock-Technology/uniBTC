@@ -4,7 +4,8 @@ pragma solidity ^0.8.12;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "../../interfaces/iface.sol";
+import "../../interfaces/IVault.sol";
+import "../../interfaces/ILockedFBTC.sol";
 
 // Reference: https://github.com/fbtc-com/fbtcX-contract/blob/main/src/LockedFBTC.sol
 contract FBTCProxy is Ownable {
