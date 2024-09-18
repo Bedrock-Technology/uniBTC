@@ -1,0 +1,79 @@
+# Description: Network configuration file for Cobo
+# copy this file to the root of your project and modify it to fit your needs
+live:
+  - name: Ethereum
+    networks:
+    - name: Mainnet
+      chainid: 1
+      id: mainnet
+      host: https://eth.w3node.com/5d80dafaa04237da49ae7208f59ab00b7209826c6d182a0d7966d36c23e3279a/api
+      explorer: https://api.etherscan.io/api
+      provider: rockx
+    - name: Sepolia
+      chainid: 11155111
+      id: sepolia
+      host: https://sepolia-eth.w3node.com/8cc8bc503b8328fce8d440216205585289f7a768f4636a8eddb2cbecbc5e8608/api
+      explorer: https://api-sepolia.etherscan.io/api
+      provider: rockx
+    - name: Holesky
+      chainid: 17000
+      id: holesky
+      host: https://holesky-eth.w3node.com/5e3272be81cb5f1edbbb74085affe1bf3432e7477d100dd2a7f0dfcba812faa2/api
+      explorer: https://api-holesky.etherscan.io/api
+      provider: rockx
+  - name: Arbitrum
+    networks:
+      - name: Mainnet
+        chainid: 42161
+        id: arb-main
+        host: https://full-arbitrum.w3node.com/2187343247bb115c30dd9a17a04b7d79e4242e70994a943fd143a4fd21e24e3a/api
+        explorer: https://api.arbiscan.io/api
+  - name: Binance Smart Chain
+    networks:
+      - name: Testnet
+        chainid: 97
+        id: bsc-test
+        host: https://data-seed-prebsc-1-s1.bnbchain.org:8545
+        explorer: https://api-testnet.bscscan.com/api
+      - name: Mainnet
+        chainid: 56
+        id: bsc-main
+        host: https://bsc-dataseed.binance.org
+        explorer: https://api.bscscan.com/api
+  - name: Optimistic
+    networks:
+      - name: Mainnet
+        chainid: 10
+        id: optimism-main
+        host:  https://full-optimism.w3node.com/a3bde1fa3d32aa618d0cc50a517e06b471495761ae76bad2edc3c4a05ca3dd4f/api
+        explorer: https://api-optimistic.etherscan.io/api
+      - name: Holesky
+        chainid: 420
+        id: optimism-holesky
+        host: https://goerli.optimism.io
+        explorer: https://api-goerli-optimism.etherscan.io/api
+  - name: Polygon
+    networks:
+      - name: Mainnet
+        chainid: 137
+        id: polygon-main
+        host: https://polygon.w3node.com/497bea4cf0c4cd3853658addf09ae0b1b4c85222b31cdbf8e2918330b977f629/api
+        explorer: https://api.polygonscan.com/api
+
+development:
+  name: Holesky Fork
+  id: holesky-fork
+  cmd: ganache-cli
+  host: http://127.0.0.1
+  timeout: 120
+  cmd_settings:
+    port: 8545
+    gas_limit: auto
+    accounts: 10
+    evm_version: istanbul
+    mnemonic: brownie
+    fork: holesky
+    unlock:
+      - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # ProxyAdmin owner address
+      - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault default admin address
+      

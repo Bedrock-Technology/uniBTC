@@ -23,6 +23,7 @@ compiler:
 
 # automatically fetch contract sources from Etherscan
 autofetch_sources: True
+
 networks:
 #  default: mainnet-fork
   mainnet-fork:
@@ -34,3 +35,4 @@ networks:
       unlock:
         - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # ProxyAdmin owner address
         - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault default admin address
+      
