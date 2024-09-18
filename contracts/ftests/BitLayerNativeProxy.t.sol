@@ -4,13 +4,12 @@ pragma solidity ^0.8.13;
 import {Test, console} from "forge-std/Test.sol";
 import {uniBTC} from "../contracts/uniBTC.sol";
 import {Vault} from "../contracts/Vault.sol";
-import {BitLayerNativeProxy} from "../contracts/proxies/BitLayerNativeProxy.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import {BitLayerNativeProxy} from "../contracts/proxies/stateful/BitLayerNativeProxy.sol";
 import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 contract BitLayerNativeProxyTest is Test {
-    ERC1967Proxy public vaultProxy;
-    ERC1967Proxy public bitLayerProxy;
+    TransparentUpgradeableProxy public vaultProxy;
+    TransparentUpgradeableProxy public bitLayerProxy;
     Vault public vault;
     BitLayerNativeProxy public bitLayerNative;
 
@@ -25,12 +24,12 @@ contract BitLayerNativeProxyTest is Test {
 
         // deploy vault
         Vault vaultImplementation = new Vault();
-        vaultProxy = new ERC1967Proxy(address(vaultImplementation), abi.encodeCall(vaultImplementation.initialize, (defaultAdmin, uniBTC)));
+        vaultProxy = new TransparentUpgradeableProxy(address(vaultImplementation), vm.addr(4), abi.encodeCall(vaultImplementation.initialize, (defaultAdmin, uniBTC)));
         vault = Vault(payable(vaultProxy));
 
         // deploy bitLayerProxy
         BitLayerNativeProxy implementation = new BitLayerNativeProxy();
-        bitLayerProxy = new ERC1967Proxy(address(implementation), abi.encodeCall(implementation.initialize, (defaultAdmin, address(vaultProxy))));
+        bitLayerProxy = new TransparentUpgradeableProxy(address(implementation), vm.addr(4), abi.encodeCall(implementation.initialize, (defaultAdmin, address(vaultProxy))));
         bitLayerNative = BitLayerNativeProxy(payable(bitLayerProxy));
 
         vm.startPrank(defaultAdmin);
@@ -76,7 +75,7 @@ contract BitLayerNativeProxyTest is Test {
         bitLayerNative.stake(5 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029971
         // unstake
         bitLayerNative.unStake(3 ether);//nonce 22691434096314749681921707768394077297869339642587417088066835679514310029972
-        vm.expectRevert("amount exceeds staked balance");
+        vm.expectRevert("USR015");
         bitLayerNative.unStake(3 ether);//nonce
         vm.stopPrank();
     }
@@ -129,7 +128,7 @@ contract BitLayerNativeProxyTest is Test {
         assertEq(bitLayerNative.withdrawPendingQueue(22691434096314749681921707768394077297869339642587417088066835679514310029976), 1 ether);
 
         vm.prank(defaultAdmin);
-        vm.expectRevert("amount exceeds staked balance");
+        vm.expectRevert("USR015");
         bitLayerNative.unStake(6 ether);//none
     }
 }

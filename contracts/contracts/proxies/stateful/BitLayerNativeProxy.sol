@@ -2,7 +2,7 @@
 pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "../../interfaces/iface.sol";
+import "../../../interfaces/IVault.sol";
 
 
 contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
@@ -16,13 +16,14 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
     constructor() {
         _disableInitializers();
     }
+
     /**
- * ======================================================================================
- *
- * ADMIN
- *
- * ======================================================================================
- */
+     * ======================================================================================
+     *
+     * ADMIN
+     *
+     * ======================================================================================
+     */
     function initialize(address _defaultAdmin, address _vault) initializer public {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
@@ -33,16 +34,16 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
     receive() external payable {}
 
     function stake(uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_amount > 0, "amount needs bigger than 0");
-        require(_amount <= vault.balance, "amount exceeds vault's balance");
+        require(_amount > 0, "USR014");
+        require(_amount <= vault.balance, "USR015");
         nonce += 1;
         IVault(vault).execute(address(this), "", _amount);
         emit TokenStaked(nonce, address(this), _amount, NATIVE_TOKEN, 0, 0, "");
     }
 
     function unStake(uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_amount > 0, "amount needs bigger than 0");
-        require(_amount + withdrawPendingAmount <= address(this).balance, "amount exceeds staked balance");
+        require(_amount > 0, "USR014");
+        require(_amount + withdrawPendingAmount <= address(this).balance, "USR015");
         nonce += 1;
         withdrawPendingAmount += _amount;
         withdrawPendingQueue[nonce] = _amount;
@@ -56,6 +57,7 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
     }
     //TODO if we can delete this function
     function approveWithdraw(uint256 planId) external onlyRole(BITLAYER_ROLE) {}
+
     /**
      * ======================================================================================
      *
@@ -73,6 +75,7 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         }
         emit UnboundApproved(reqId, "");
     }
+
     /**
      * ======================================================================================
      *
