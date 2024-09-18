@@ -87,11 +87,11 @@ contract coboBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessContr
      * @dev receive the event
     */
     function receiveEvent(address _recipient, bytes32 _txHash, uint256 _amount) public onlyRole(OPERATOR_ROLE) {
-        require(_amount > 0, "USR001");
-        require(_recipient != address(0), "USR001");
-        require(_txHash != bytes32(0), "USR001");
-        require(recipients[_recipient], "USR002");
-        require(events[_txHash].recipient == address(0), "USR003");
+        require(_amount > 0, "USR011");
+        require(_recipient != address(0), "USR011");
+        require(_txHash != bytes32(0), "USR011");
+        require(recipients[_recipient], "USR012");
+        require(events[_txHash].recipient == address(0), "USR013");
 
         events[_txHash] = Event(_recipient, _amount, EventState.Pending);
         eventIndexes.push(_txHash);
@@ -106,7 +106,7 @@ contract coboBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessContr
 
         bytes32 _txHash = eventIndexes[processIdx];
         Event storage e = events[_txHash];
-        require(e.state == EventState.Pending, "USR004");
+        require(e.state == EventState.Pending, "USR014");
 
         e.state = EventState.Accepted;
         processIdx++;
@@ -138,7 +138,7 @@ contract coboBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessContr
 
         bytes32 _txHash = eventIndexes[processIdx];
         Event storage e = events[_txHash];
-        require(e.state == EventState.Pending, "USR004");
+        require(e.state == EventState.Pending, "USR014");
 
         e.state = EventState.Rejected;
         processIdx++;
