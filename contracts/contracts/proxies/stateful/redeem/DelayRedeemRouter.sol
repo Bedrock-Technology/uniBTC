@@ -45,7 +45,7 @@ contract DelayRedeemRouter is
     /**
      * @notice The timestamp at which the redeem functionality was enabled for the first time.
      */
-    uint256 public immutable redeemStartedTimestamp;
+    uint256 public redeemStartedTimestamp;
 
     /**
      * @notice The address of the ERC20 uniBTC token.
@@ -154,7 +154,6 @@ contract DelayRedeemRouter is
      * Also disables the ability to call any other initializer functions.
      */
     constructor() {
-        redeemStartedTimestamp = block.timestamp;
         _disableInitializers();
     }
 
@@ -209,6 +208,7 @@ contract DelayRedeemRouter is
         vault = _vault;
         _totalCap = _dayCap;
         dayCap = _dayCap;
+        redeemStartedTimestamp = block.timestamp;
         _setWhitelistEnabled(_whitelistEnabled);
         _setRedeemDelayTimestamp(_redeemDelayTimestamp);
     }
@@ -228,7 +228,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev set a new delay redeem block for the contract
+     * @dev set a new delay redeem block timestamp for the contract
      */
     function setRedeemDelayTimestamp(
         uint256 _newValue
