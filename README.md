@@ -103,7 +103,7 @@ After all submodules are updated as required, you can build contracts with this 
 | WBTC | [0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae](https://bartio.beratrail.io/address/0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae)  |
 
 ### 4. Error Codes from contracts
-1. SYS001: INVALID_UNIBTC_ADDRESS
+1. SYS001: INVALID_ADDRESS
 1. SYS002: TOKEN_PAUSED
 1. SYS003: INVALID_TOKEN_ADDRESS
 1. SYS004: INCORRECT_DECIMALS
