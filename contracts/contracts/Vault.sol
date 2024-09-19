@@ -136,7 +136,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 uniBTCAmount) = _amounts(_amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(_totalSupply() <= caps[NATIVE_BTC], "USR003");
+        uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(NATIVE_BTC);
+        require(totalSupply <= caps[NATIVE_BTC], "USR003");
 
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 
@@ -150,7 +151,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 uniBTCAmount) = _amounts(_token, _amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(_totalSupply(_token) + _amount <= caps[_token], "USR003");
+        uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(_token);
+        require(totalSupply + _amount <= caps[_token], "USR003");
 
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
@@ -179,23 +181,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         return (0, 0);
     }
 
-    /**
-     * @dev calculate the current total native token asset supplied for the Vault, including the portion locked outside
-     * the Vault for DeFi profit yield.
-     */
-    function _totalSupply() internal view returns (uint256) {
-        uint256 lockedSupply = ISupplyFeeder(supplyFeeder).lockedSupply();
-        return address(this).balance + lockedSupply;
-    }
-
-    /**
-     * @dev calculate the current total wrapped token asset supplied for the Vault, including the portion locked outside
-     * the Vault for DeFi profit yield.
-     */
-    function _totalSupply(address _token) internal view returns (uint256) {
-        uint256 lockedSupply = ISupplyFeeder(supplyFeeder).lockedSupply(_token);
-        return IERC20(_token).balanceOf(address(this)) + lockedSupply;
-    }
 
     /**
      * ======================================================================================
