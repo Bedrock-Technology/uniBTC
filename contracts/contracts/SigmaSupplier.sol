@@ -9,26 +9,79 @@ import "../interfaces/ISupplyFeeder.sol";
 
 contract SigmaSupplier is ISupplyFeeder, Initializable, AccessControlUpgradeable {
     address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
+    uint8 public constant NATIVE_BTC_DECIMALS = 18;
 
-    mapping(address => address[]) public tokenHolders;
-
-    receive() external payable {
-        revert("value only accepted by the Vault contract");
+    /// @dev A Pool represents a group of token holders of the same token.
+    struct Pool {
+        address token;
+        address[] holders;
     }
+
+    /// @dev A list of leadingTokens stores all the tokens that lead groups of Pools.
+    address[] public leadingTokens;
+
+    /**
+     * @dev A mapping of tokenHolders stores the token holders for each token.
+     * The key is the leading token address, and the value is an array of Pools.
+     * The leading token and all corresponding tokens in the Pool array must have the same decimals.
+     */
+    mapping(address => Pool[]) public tokenHolders;
+
+    /**
+     * ======================================================================================
+     *
+     * SYSTEM SETTINGS
+     *
+     * ======================================================================================
+     */
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
+    receive() external payable {
+        revert("value not accepted");
+    }
+
+    function initialize(address _defaultAdmin) initializer public {
+        __AccessControl_init();
+
+        require(_defaultAdmin != address(0x0), "SYS001");
+
+        _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
+    }
+
+
     /**
-     * @dev Calculate the current total supply of assets for 'token'.
+     * ======================================================================================
+     *
+     * VIEW FUNCTIONS
+     *
+     * ======================================================================================
      */
-    function totalSupply(address _token) external view returns(uint256) {
-        if (_token == NATIVE_BTC) {
-            return _totalSupply();
-        }
-        return _totalSupply(_token);
+
+    /**
+     * @dev Calculate the current total supply of assets for '_leadingToken'.
+     */
+    function totalSupply(address _leadingToken) external view returns(uint256) {
+        return _totalSupply(_leadingToken);
+    }
+
+    /**
+     * @dev A helper function to retrieve the token holders for a specified '_leadingToken'.
+     */
+    function getTokenHolders(address _leadingToken) external view returns(Pool[] memory) {
+        return tokenHolders[_leadingToken];
+    }
+
+    /**
+     * @dev A helper function to list all tokens that lead groups of Pools.
+     * The token address returned here is the key in the tokenHolders mapping
+     * and can be used to retrieve the token holders via 'getTokenHolders'.
+     */
+    function ListLeadingTokens() external view returns(address[] memory) {
+        return leadingTokens;
     }
 
     /**
@@ -39,20 +92,29 @@ contract SigmaSupplier is ISupplyFeeder, Initializable, AccessControlUpgradeable
      * ======================================================================================
      */
 
-    function initialize(address _defaultAdmin) initializer public {
-        __AccessControl_init();
-
-        require(_defaultAdmin != address(0x0), "SYS001");
-
-        _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
-    }
-
     /**
-     * @dev set token holder addresses to track the supply of assets.
+     * @dev Set holders to track the total supply of assets, which must have the same decimals.
      */
-    function setTokenHolders(address _token, address[] calldata _tokenHolders) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        tokenHolders[_token] = _tokenHolders;
+    function setTokenHolders(address _leadingToken, Pool[] calldata _pools) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_haveSameDecimals(_leadingToken, _pools), "SYS010");
+
+        delete tokenHolders[_leadingToken];
+
+        for (uint256 i = 0; i < _pools.length; i++) {
+            tokenHolders[_leadingToken].push(_pools[i]);
+        }
+
+        emit TokenHoldersSet(_leadingToken, _pools);
+
+        for (uint256 i = 0; i < leadingTokens.length; i++) {
+                if (leadingTokens[i] == _leadingToken) {
+                    return;
+                }
+        }
+
+        leadingTokens.push(_leadingToken);
     }
+
 
     /**
      * ======================================================================================
@@ -63,38 +125,56 @@ contract SigmaSupplier is ISupplyFeeder, Initializable, AccessControlUpgradeable
      */
 
     /**
-     * @dev calculate the current total native token assets supplied
-     *
-     * TODO: Optimize, especially when multiple tokens should be considered simultaneously.
-     * For example, when the supply of FBTC and FBTC1 for the Vault should be calculated and summed simultaneously.
-     * NOTE: Currently, '_totalSupply' is limited to just one token.
-     *
+     * @dev Calculate the current total assets (native assets and ERC-20 assets) supplied.
      */
-    function _totalSupply() internal view returns (uint256) {
+    function _totalSupply(address _leadingToken) internal view returns (uint256) {
         uint256 total;
-        address[] memory holders = tokenHolders[NATIVE_BTC];
-        for (uint256 i = 0; i < holders.length; i++) {
-            uint256 balance = holders[i].balance;
-            total += balance;
+        Pool[] memory pools = tokenHolders[_leadingToken];
+        for (uint256 i = 0; i < pools.length; i++) {
+            address token = pools[i].token;
+            address[] memory holders = pools[i].holders;
+            if (token == NATIVE_BTC) {
+                for (uint256 j = 0; j < holders.length; j++) {
+                    uint256 balance = holders[j].balance;
+                    total += balance;
+                }
+            } else {
+                for (uint256 j = 0; j < holders.length; j++) {
+                    uint256 balance = ERC20(token).balanceOf(holders[j]);
+                    total += balance;
+                }
+            }
         }
         return total;
     }
 
     /**
-     * @dev calculate the current total ERC-20 token assets supplied
-     *
-     * TODO: Optimize, especially when multiple tokens should be considered simultaneously.
-     * For example, when the supply of FBTC and FBTC1 for the Vault should be calculated and summed simultaneously.
-     * NOTE: Currently, '_totalSupply' is limited to just one token.
-     *
+    * @dev Check if all tokens in the pools have the same decimals as the leading token.
      */
-    function _totalSupply(address _token) internal view returns (uint256) {
-        uint256 total;
-        address[] memory holders = tokenHolders[_token];
-        for (uint256 i = 0; i < holders.length; i++) {
-            uint256 balance = ERC20(_token).balanceOf(holders[i]);
-            total += balance;
+    function _haveSameDecimals(address _leadingToken, Pool[] calldata _pools) internal view returns(bool) {
+        uint8 decimals = _leadingToken == NATIVE_BTC ? NATIVE_BTC_DECIMALS : ERC20(_leadingToken).decimals();
+        for (uint256 i = 0; i < _pools.length; i++) {
+          address poolToken = _pools[i].token;
+            if (poolToken == NATIVE_BTC) {
+                if (decimals != NATIVE_BTC_DECIMALS) {
+                    return false;
+                }
+            } else {
+                if (ERC20(poolToken).decimals() != decimals) {
+                    return false;
+                }
+            }
         }
-        return total;
+        return true;
     }
+
+
+    /**
+     * ======================================================================================
+     *
+     * EVENTS
+     *
+     * ======================================================================================
+     */
+    event TokenHoldersSet(address leadingToken, Pool[] pools);
 }
