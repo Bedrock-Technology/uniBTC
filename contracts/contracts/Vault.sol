@@ -10,6 +10,7 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import "@openzeppelin/contracts/utils/Address.sol";
 
 import "../interfaces/IMintableContract.sol";
+import "../interfaces/ISupplyFeeder.sol";
 
 contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
@@ -29,6 +30,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     uint8 public constant NATIVE_BTC_DECIMALS = 18;
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
+
+    address public supplyFeeder;
 
     receive() external payable {}
 
@@ -111,6 +114,12 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         caps[_token] = _cap;
     }
 
+    /**
+     * @dev set supplyFeeder address to track the locked supply assets of the vault
+     */
+    function setSupplyFeeder(address _supplyFeeder) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        supplyFeeder = _supplyFeeder;
+    }
 
     /**
      * ======================================================================================
@@ -127,7 +136,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 uniBTCAmount) = _amounts(_amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(address(this).balance <= caps[NATIVE_BTC], "USR003");
+        uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(NATIVE_BTC);
+        require(totalSupply <= caps[NATIVE_BTC], "USR003");
 
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 
@@ -141,7 +151,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 uniBTCAmount) = _amounts(_token, _amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(IERC20(_token).balanceOf(address(this)) + _amount <= caps[_token], "USR003");
+        uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(_token);
+        require(totalSupply + _amount <= caps[_token], "USR003");
 
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
