@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "../interfaces/ISupplyFeeder.sol";
 
-contract SigmaSupplier is ISupplyFeeder, Initializable, AccessControlUpgradeable {
+contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
     address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
     uint8 public constant NATIVE_BTC_DECIMALS = 18;
 
