@@ -30,6 +30,11 @@ def main(deployer="deployer", owner="owner"):
     sigma_transparent = Contract.from_abi("Sigma", sigma_proxy, Sigma.abi)
     assert sigma_transparent.hasRole(default_admin_role, owner)
 
+    print("Deployed Sigma proxy address: ", sigma_proxy)  # 0x8Cc6D6135C7088fdb3eBFB39B11e7CB2F9853915
+    print("")
+    print("Deployed Sigma implementation address: ", sigma_impl)  # 0x1F6C2e81F09174D076aA19AFd7C9c67D0e257B5a
+
+
     # --------- Set holders of FBTC, which have 8 decimals. ---------
     fbtc = "0xC96dE26018A54D51c097160568752c4E3BD6C364"
     fbtc_pools = [
@@ -57,11 +62,6 @@ def main(deployer="deployer", owner="owner"):
     # Check supply of BTCB
     BTCB = deps.ERC20.at(btcb)
     assert sigma_transparent.totalSupply(btcb) == BTCB.balanceOf(vault)
-
-
-    print("Deployed Sigma proxy address: ", sigma_proxy)  # 0x8Cc6D6135C7088fdb3eBFB39B11e7CB2F9853915
-    print("")
-    print("Deployed Sigma implementation address: ", sigma_impl)  # 0x1F6C2e81F09174D076aA19AFd7C9c67D0e257B5a
 
 
 

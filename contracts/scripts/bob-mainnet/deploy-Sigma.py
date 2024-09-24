@@ -30,6 +30,11 @@ def main(deployer="deployer", owner="owner"):
     sigma_transparent = Contract.from_abi("Sigma", sigma_proxy, Sigma.abi)
     assert sigma_transparent.hasRole(default_admin_role, owner)
 
+    print("Deployed Sigma proxy address: ", sigma_proxy)  # 0x94C7F81E3B0458daa721Ca5E29F6cEd05CCCE2B3
+    print("")
+    print("Deployed Sigma implementation address: ", sigma_impl)  # 0x12073748B427D2BB7064c3dF120ee04448AA29a0
+
+
     # -------- Set holders of WBTC, which have 8 decimals. ----------
     wbtc = "0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3"
     wbtc_pools = [
@@ -43,7 +48,3 @@ def main(deployer="deployer", owner="owner"):
     # Check supply of WBTC
     WBTC = deps.ERC20.at(wbtc)
     assert sigma_transparent.totalSupply(wbtc) == WBTC.balanceOf(vault)
-
-    print("Deployed Sigma proxy address: ", sigma_proxy)  # 0x94C7F81E3B0458daa721Ca5E29F6cEd05CCCE2B3
-    print("")
-    print("Deployed Sigma implementation address: ", sigma_impl)  # 0x12073748B427D2BB7064c3dF120ee04448AA29a0
