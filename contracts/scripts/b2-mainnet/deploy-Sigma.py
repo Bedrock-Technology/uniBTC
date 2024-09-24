@@ -30,9 +30,9 @@ def main(deployer="deployer", owner="owner"):
     sigma_transparent = Contract.from_abi("Sigma", sigma_proxy, Sigma.abi)
     assert sigma_transparent.hasRole(default_admin_role, owner)
 
-    print("Deployed Sigma proxy address: ", sigma_proxy)  #
+    print("Deployed Sigma proxy address: ", sigma_proxy)  # 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a
     print("")
-    print("Deployed Sigma implementation address: ", sigma_impl)  #
+    print("Deployed Sigma implementation address: ", sigma_impl)  # 0x94C7F81E3B0458daa721Ca5E29F6cEd05CCCE2B3
 
     # ---------- Set holders of native BTC, which have 18 decimals. ----------
     native_btc = "0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF"
