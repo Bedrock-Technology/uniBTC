@@ -4,7 +4,7 @@ from web3 import Web3
 
 
 # Execution Command Format:
-# `brownie run scripts/arbitrum-mainnet/deploy-Sigma.py main "uniBTCMainnetDeployer" "uniBTCMainnetAdmin" --network=arbitrum-main -I`
+# `brownie run scripts/bsc-mainnet/deploy-Sigma.py main "uniBTCMainnetDeployer" "uniBTCMainnetAdmin" --network=bsc-main -I`
 
 
 def main(deployer="deployer", owner="owner"):
@@ -30,20 +30,40 @@ def main(deployer="deployer", owner="owner"):
     sigma_transparent = Contract.from_abi("Sigma", sigma_proxy, Sigma.abi)
     assert sigma_transparent.hasRole(default_admin_role, owner)
 
-    # --------- Set holders of WBTC, which have 8 decimals. ---------
-    wbtc = "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"
-    wbtc_pools = [
-        (wbtc, (vault,))
+    # --------- Set holders of FBTC, which have 8 decimals. ---------
+    fbtc = "0xC96dE26018A54D51c097160568752c4E3BD6C364"
+    fbtc_pools = [
+        (fbtc, (vault,))
     ]
-    tx = sigma_transparent.setTokenHolders(wbtc, wbtc_pools, {'from': owner})
+    tx = sigma_transparent.setTokenHolders(fbtc, fbtc_pools, {'from': owner})
     assert "TokenHoldersSet" in tx.events
-    assert sigma_transparent.getTokenHolders(wbtc) == wbtc_pools
+    assert sigma_transparent.getTokenHolders(fbtc) == fbtc_pools
     assert len(sigma_transparent.ListLeadingTokens()) == 1
 
-    # Check supply of WBTC
-    WBTC = deps.ERC20.at(wbtc)
-    assert sigma_transparent.totalSupply(wbtc) == WBTC.balanceOf(vault)
+    # Check supply of FBTC
+    FBTC = deps.ERC20.at(fbtc)
+    assert sigma_transparent.totalSupply(fbtc) == FBTC.balanceOf(vault)
+
+    # ---------- Set holders of BTCB, which have 18 decimals. ---------
+    btcb = "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c"
+    btcb_pools = [
+        (btcb, (vault,))
+    ]
+    tx = sigma_transparent.setTokenHolders(btcb, btcb_pools, {'from': owner})
+    assert "TokenHoldersSet" in tx.events
+    assert sigma_transparent.getTokenHolders(btcb) == btcb_pools
+    assert len(sigma_transparent.ListLeadingTokens()) == 2
+
+    # Check supply of BTCB
+    BTCB = deps.ERC20.at(btcb)
+    assert sigma_transparent.totalSupply(btcb) == BTCB.balanceOf(vault)
+
 
     print("Deployed Sigma proxy address: ", sigma_proxy)  # 0x8Cc6D6135C7088fdb3eBFB39B11e7CB2F9853915
     print("")
     print("Deployed Sigma implementation address: ", sigma_impl)  # 0x1F6C2e81F09174D076aA19AFd7C9c67D0e257B5a
+
+
+
+
+

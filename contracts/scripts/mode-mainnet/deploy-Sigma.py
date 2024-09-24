@@ -30,7 +30,7 @@ def main(deployer="deployer", owner="owner"):
     sigma_transparent = Contract.from_abi("Sigma", sigma_proxy, Sigma.abi)
     assert sigma_transparent.hasRole(default_admin_role, owner)
 
-    # Set holders of MBTC, which have 18 decimals.
+    # --------- Set holders of MBTC, which have 18 decimals. ---------
     mbtc = "0x59889b7021243dB5B1e065385F918316cD90D46c"
     mbtc_pools = [
         (mbtc, (vault,))
@@ -44,7 +44,7 @@ def main(deployer="deployer", owner="owner"):
     MBTC = deps.ERC20.at(mbtc)
     assert sigma_transparent.totalSupply(mbtc) == MBTC.balanceOf(vault)
 
-    # Set holders of WBTC, which have 8 decimals.
+    # ---------- Set holders of WBTC, which have 8 decimals. ----------
     wbtc = "0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF"
     wbtc_pools = [
         (wbtc, (vault,))

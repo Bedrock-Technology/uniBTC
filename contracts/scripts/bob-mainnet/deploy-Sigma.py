@@ -30,7 +30,7 @@ def main(deployer="deployer", owner="owner"):
     sigma_transparent = Contract.from_abi("Sigma", sigma_proxy, Sigma.abi)
     assert sigma_transparent.hasRole(default_admin_role, owner)
 
-    # Set holders of WBTC, which have 8 decimals.
+    # -------- Set holders of WBTC, which have 8 decimals. ----------
     wbtc = "0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3"
     wbtc_pools = [
         (wbtc, (vault,))
