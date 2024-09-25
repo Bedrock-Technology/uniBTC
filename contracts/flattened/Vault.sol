@@ -86,6 +86,14 @@ interface IAccessControlUpgradeable {
     function renounceRole(bytes32 role, address account) external;
 }
 
+// File: contracts/interfaces/ISupplyFeeder.sol
+
+interface ISupplyFeeder {
+    /**
+     * @dev Calculate the current total supply of assets for 'token'.
+     */
+    function totalSupply(address token) external view returns(uint256);
+}
 // File: contracts/token/ERC20/IERC20.sol
 
 // OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)
@@ -2390,6 +2398,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
+    address public supplyFeeder;
+
     receive() external payable {}
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -2470,6 +2480,13 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
+     * @dev set supplyFeeder address to track the locked supply assets of the vault
+     */
+    function setSupplyFeeder(address _supplyFeeder) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        supplyFeeder = _supplyFeeder;
+    }
+
+    /**
      * ======================================================================================
      *
      * INTERNAL
@@ -2484,7 +2501,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 uniBTCAmount) = _amounts(_amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(address(this).balance <= caps[NATIVE_BTC], "USR003");
+        uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(NATIVE_BTC);
+        require(totalSupply <= caps[NATIVE_BTC], "USR003");
 
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 
@@ -2498,7 +2516,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 uniBTCAmount) = _amounts(_token, _amount);
         require(uniBTCAmount > 0, "USR010");
 
-        require(IERC20(_token).balanceOf(address(this)) + _amount <= caps[_token], "USR003");
+        uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(_token);
+        require(totalSupply + _amount <= caps[_token], "USR003");
 
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
