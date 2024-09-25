@@ -109,7 +109,7 @@ contract DelayRedeemRouter is
 
     /**
      * @notice mapping to store the wrapBtcList status of an address.
-     * only wrapBtcList address can redeem using unibtc
+     * only wrapBtcList address(contain wrapped and native BTC) can redeem using unibtc
      */
     mapping(address => bool) private wrapBtcList;
 
@@ -138,6 +138,17 @@ contract DelayRedeemRouter is
      * @notice the total debt of all delayedRedeems
      */
     uint256 public totalDebt;
+
+    /**
+     * @notice the address of the native BTC token
+     */
+    address public constant NATIVE_BTC =
+        address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
+
+    /**
+     * @notice the decimals of the 18 BTC token
+     */
+    uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
     receive() external payable {}
 
@@ -237,7 +248,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev add a new wrap btc address in wrapBtcList for the contract
+     * @dev add a new wrapped or native btc address in wrapBtcList for the contract
      */
     function addToWrapBtcList(
         address _token
@@ -297,20 +308,6 @@ contract DelayRedeemRouter is
      */
 
     /**
-     * @dev check the address is in whitelist or not
-     */
-    function isWhitelisted(address _address) external view returns (bool) {
-        return whitelist[_address];
-    }
-
-    /*
-     * @dev check the address is in whitelist or not
-     */
-    function isWrapBtcListed(address _token) external view returns (bool) {
-        return wrapBtcList[_token];
-    }
-
-    /**
      * @notice Creates a delayed redeem for `_amount` to the `recipient`.
      * @dev check the address is in whitelist or not
      */
@@ -323,7 +320,6 @@ contract DelayRedeemRouter is
         require(_totalCap >= _amount + totalDebt, "USR010");
         //lock unibtc in the contract
         IERC20(uniBTC).safeTransferFrom(msg.sender, address(this), _amount);
-
         uint224 RedeemAmount = uint224(_amount);
         if (RedeemAmount != 0) {
             DelayedRedeem memory delayedRedeem = DelayedRedeem({
@@ -346,7 +342,10 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev check the address is in whitelist or not
+     * @notice Called in order to claim delayed redeem made to msg.sender that have passed the `redeemDelayTimestamp` period.
+     * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
+     * @dev that the caller of this function cannot control where the funds are sent, but they can control when the
+     * funds are sent once the redeem becomes claimable and token comeback the contract.
      */
     function claimDelayedRedeems(
         uint256 maxNumberOfDelayedRedeemsToClaim
@@ -355,7 +354,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev check the address is in whitelist or not
+     * @notice Called in order to claim delayed redeem made to the caller that have passed the `redeemDelayTimestamp` period.
      */
     function claimDelayedRedeems() external nonReentrant whenNotPaused {
         _claimDelayedRedeems(msg.sender, type(uint256).max);
@@ -478,6 +477,20 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev check the address is in whitelist or not
+     */
+    function isWhitelisted(address _address) external view returns (bool) {
+        return whitelist[_address];
+    }
+
+    /*
+     * @dev check the address is in wrap-btc list or not
+     */
+    function isWrapBtcListed(address _token) external view returns (bool) {
+        return wrapBtcList[_token];
+    }
+
+    /**
      * ======================================================================================
      *
      * INTERNAL FUNCTIONS
@@ -567,16 +580,29 @@ contract DelayRedeemRouter is
 
             // transfer the delayedRedeems to the recipient
             uint256 burn_amount = 0;
+            bytes memory data;
             for (uint256 i = 0; i < debtAmounts.length; i++) {
                 address token = debtAmounts[i].token;
-                uint256 amountToSend = debtAmounts[i].amount;
-                IERC20(token).safeTransfer(msg.sender, amountToSend);
-                tokenDebts[token].claimedAmount += amountToSend;
-                burn_amount += amountToSend;
+                uint256 amountUniBTC = debtAmounts[i].amount;
+                uint256 amountToSend = _amounts(token, amountUniBTC);
+                if (token == NATIVE_BTC) {
+                    // transfer native token to the recipient
+                    IVault(vault).execute(address(this), "", amountToSend);
+                    payable(recipient).transfer(amountToSend);
+                } else {
+                    data = abi.encodeWithSelector(
+                        IERC20.transfer.selector,
+                        recipient,
+                        amountToSend
+                    );
+                    // transfer erc20 token to the recipient
+                    IVault(vault).execute(token, data, 0);
+                }
+                tokenDebts[token].claimedAmount += amountUniBTC;
+                burn_amount += amountUniBTC;
                 emit DelayedRedeemsClaimed(recipient, token, amountToSend);
             }
             //burn claimed amount unibtc
-            bytes memory data;
             if (IERC20(uniBTC).allowance(address(this), vault) < burn_amount) {
                 IERC20(uniBTC).safeApprove(vault, burn_amount);
             }
@@ -615,6 +641,24 @@ contract DelayRedeemRouter is
         require(newCap <= DAY_MAX_ALLOWED_CAP, "USR013");
         _updateTotalCap();
         dayCap = newCap;
+    }
+
+    /**
+     * @dev determine the valid wrapped and native BTC amount.
+     */
+    function _amounts(
+        address token,
+        uint256 amount
+    ) internal view returns (uint256) {
+        if (token == NATIVE_BTC) {
+            return (amount * EXCHANGE_RATE_BASE);
+        }
+        uint8 decs = ERC20(token).decimals();
+        if (decs == 8) return (amount);
+        if (decs == 18) {
+            return (amount * EXCHANGE_RATE_BASE);
+        }
+        return (0);
     }
 
     /**

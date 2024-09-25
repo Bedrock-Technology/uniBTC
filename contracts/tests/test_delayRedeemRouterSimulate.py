@@ -9,6 +9,8 @@ def test_claimFromRedeemRouter(deps):
     deployer = accounts[0]
     owner = accounts[1] 
     user = accounts[2]
+    
+    native_token = "0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF"
     # deploy uniBTC contract
     uniBTC_contract = uniBTC.deploy(
             {'from': deployer} 
@@ -22,11 +24,11 @@ def test_claimFromRedeemRouter(deps):
     transparent_uniBTC.initialize(owner,owner, {'from': owner})
     
     # deploy WBTC contract    
-    wbtc_contract = WBTC.deploy(
+    wbtc_contract = WBTC18.deploy(
             {'from': deployer} 
             )
     print("wbtc contract",wbtc_contract)
-    transparent_wbtc = Contract.from_abi("WBTC",wbtc_contract, WBTC.abi)
+    transparent_wbtc = Contract.from_abi("WBTC",wbtc_contract, WBTC18.abi)
 
     #deploy FBTC contract
     fbtc_contract = FBTC.deploy(
@@ -60,7 +62,7 @@ def test_claimFromRedeemRouter(deps):
     assert transparent_delay_redeem_router.getAvailableCap() == day_cap
     
     #mint 1000 WBTC to owner
-    transparent_wbtc.mint(owner,1000*10**8,{'from': deployer})
+    transparent_wbtc.mint(owner,1000*10**18,{'from': deployer})
     print("owner wbtc balance",transparent_wbtc.balanceOf(owner))
     
     #mint 1000 FBTC to owner
@@ -74,22 +76,27 @@ def test_claimFromRedeemRouter(deps):
     
     #simulate redeem case
     #call redeem router createDelayedRedeem directly
-    fbtc_claim = 60*10**8
-    wbtc_claim = 10*10**8
+    fbtc_claim_uni = 60*10**8
+    wbtc_claim_uni = 10*10**8
+    wbtc_claim = 10*10**18
+    native_claim_uni = 10*10**8
+    native_claim = 10*10**18
     with brownie.reverts("USR009"):
-         transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim,{'from': user})
+         transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})
    
     transparent_delay_redeem_router.addToWhitelist(user,{'from': owner})
     
     with brownie.reverts("SYS003"):
-         transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim,{'from': user})
+         transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})
          
     transparent_delay_redeem_router.addToWrapBtcList(fbtc_contract,{'from': owner})
-    transparent_delay_redeem_router.addToWrapBtcList(wbtc_contract,{'from': owner})   
+    transparent_delay_redeem_router.addToWrapBtcList(wbtc_contract,{'from': owner})  
+    transparent_delay_redeem_router.addToWrapBtcList(native_token,{'from': owner}) 
     
     with brownie.reverts("USR010"):
-         transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim,{'from': user})   
+         transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})   
     
+    fbtc_claim_uni = 10*10**8
     fbtc_claim = 10*10**8
     
     #only vault can burn uniBTC
@@ -100,26 +107,26 @@ def test_claimFromRedeemRouter(deps):
     transparent_vault.grantRole(transparent_vault.OPERATOR_ROLE(), delay_redeem_router_proxy, {'from': owner}) 
     assert transparent_vault.hasRole(transparent_vault.OPERATOR_ROLE(), delay_redeem_router_proxy)
     
-    transparent_uniBTC.approve(delay_redeem_router_proxy,fbtc_claim,{'from': user})
-    assert transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == fbtc_claim
-    tx = transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim,{'from': user})   
+    transparent_uniBTC.approve(delay_redeem_router_proxy,fbtc_claim_uni,{'from': user})
+    assert transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == fbtc_claim_uni
+    tx = transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})   
     
     #check some status 
     assert "DelayedRedeemCreated" in tx.events
     assert tx.events["DelayedRedeemCreated"]["recipient"] == user
     assert tx.events["DelayedRedeemCreated"]["token"] == fbtc_contract
-    assert tx.events["DelayedRedeemCreated"]["amount"] == fbtc_claim
+    assert tx.events["DelayedRedeemCreated"]["amount"] == fbtc_claim_uni
     assert tx.events["DelayedRedeemCreated"]["index"] == 0
-    assert transparent_uniBTC.balanceOf(user) == user_uniBTC - fbtc_claim
-    assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == fbtc_claim
+    assert transparent_uniBTC.balanceOf(user) == user_uniBTC - fbtc_claim_uni
+    assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == fbtc_claim_uni
     assert transparent_delay_redeem_router.userRedeemsLength(user) == 1
     print("tokenDebts fbtc_contract",transparent_delay_redeem_router.tokenDebts(fbtc_contract))
-    assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim
+    assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim_uni
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user,0) == False
-    assert transparent_delay_redeem_router.getAvailableCap() == day_cap - fbtc_claim
+    assert transparent_delay_redeem_router.getAvailableCap() == day_cap - fbtc_claim_uni
     
     transparent_delay_redeem_router.claimDelayedRedeems({'from': user})
-    assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim
+    assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim_uni
     
     # time travel to 7 days later
     seven_days_travel = seven_day_time_duration + 60*60
@@ -128,44 +135,55 @@ def test_claimFromRedeemRouter(deps):
     chain.mine()
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user,0) == True
     
-    assert transparent_delay_redeem_router.getAvailableCap() == 8*day_cap - fbtc_claim
+    assert transparent_delay_redeem_router.getAvailableCap() == 8*day_cap - fbtc_claim_uni
     newday_cap = 1
     transparent_delay_redeem_router.setDayCap(newday_cap,{'from': owner})
-    assert transparent_delay_redeem_router.getAvailableCap() == 8*day_cap - fbtc_claim    
+    assert transparent_delay_redeem_router.getAvailableCap() == 8*day_cap - fbtc_claim_uni    
     
-    transparent_uniBTC.approve(delay_redeem_router_proxy,wbtc_claim,{'from': user})
-    assert transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == wbtc_claim
-    tx = transparent_delay_redeem_router.createDelayedRedeem(wbtc_contract,wbtc_claim,{'from': user})
+    transparent_uniBTC.approve(delay_redeem_router_proxy,wbtc_claim_uni,{'from': user})
+    assert transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == wbtc_claim_uni
+    tx = transparent_delay_redeem_router.createDelayedRedeem(wbtc_contract,wbtc_claim_uni,{'from': user})
     assert "DelayedRedeemCreated" in tx.events
     assert tx.events["DelayedRedeemCreated"]["recipient"] == user
     assert tx.events["DelayedRedeemCreated"]["token"] == wbtc_contract
-    assert tx.events["DelayedRedeemCreated"]["amount"] == wbtc_claim
+    assert tx.events["DelayedRedeemCreated"]["amount"] == wbtc_claim_uni
     assert tx.events["DelayedRedeemCreated"]["index"] == 1
-    assert transparent_uniBTC.balanceOf(user) == user_uniBTC - fbtc_claim - wbtc_claim
-    assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == fbtc_claim + wbtc_claim
+    assert transparent_uniBTC.balanceOf(user) == user_uniBTC - fbtc_claim_uni - wbtc_claim_uni
+    assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == fbtc_claim_uni + wbtc_claim_uni
     assert transparent_delay_redeem_router.userRedeemsLength(user) == 2
-    assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim
-    assert transparent_delay_redeem_router.tokenDebts(wbtc_contract)[0] == wbtc_claim
+    assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim_uni
+    assert transparent_delay_redeem_router.tokenDebts(wbtc_contract)[0] == wbtc_claim_uni
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user,1) == False
-    assert transparent_delay_redeem_router.getAvailableCap() == 8*day_cap - fbtc_claim - wbtc_claim
+    assert transparent_delay_redeem_router.getAvailableCap() == 8*day_cap - fbtc_claim_uni - wbtc_claim_uni
+    
+    #create native token delayed redeem
+    transparent_uniBTC.approve(delay_redeem_router_proxy,native_claim_uni,{'from': user})
+    assert transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == native_claim_uni
+    tx = transparent_delay_redeem_router.createDelayedRedeem(native_token,native_claim_uni,{'from': user})
+    
     # time travel to 7 days later
     # update timestamp
     chain.sleep(seven_days_travel)
     chain.mine()
-    assert transparent_delay_redeem_router.getAvailableCap() == 8*day_cap + 7*newday_cap - fbtc_claim - wbtc_claim
+    assert transparent_delay_redeem_router.getAvailableCap() == 8*day_cap + 7*newday_cap - fbtc_claim_uni - wbtc_claim_uni - native_claim_uni
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user,1) == True
     
-    router_fbtc_balance = 20*10**8
-    router_wbtc_balance = 20*10**8
-    fbtc_contract.transfer(delay_redeem_router_proxy,router_fbtc_balance,{'from': owner})
-    wbtc_contract.transfer(delay_redeem_router_proxy,router_wbtc_balance,{'from': owner})  
-    print("fbtc balance",fbtc_contract.balanceOf(delay_redeem_router_proxy))
-    print("wbtc balance",wbtc_contract.balanceOf(delay_redeem_router_proxy))   
+    vault_fbtc_balance = 20*10**8
+    vault_wbtc_balance = 20*10**18
+    vault_native_balance = 200*10**18
+    fbtc_contract.transfer(vault_proxy,vault_fbtc_balance,{'from': owner})
+    wbtc_contract.transfer(vault_proxy,vault_wbtc_balance,{'from': owner}) 
+    print("native owner balance",owner.balance())
+    owner.transfer(vault_proxy,vault_native_balance)
+    print("fbtc balance",fbtc_contract.balanceOf(vault_proxy))
+    print("wbtc balance",wbtc_contract.balanceOf(vault_proxy))   
+    print("native balance",web3.eth.get_balance(vault_proxy.address))
     
     print("user delay redeems by index",transparent_delay_redeem_router.userDelayedRedeemByIndex(user,0))
     print("user delay redeems by index",transparent_delay_redeem_router.userDelayedRedeemByIndex(user,1))
     print("user delay redeems",transparent_delay_redeem_router.getUserDelayedRedeems(user))
     print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy))
+    native_origin = user.balance()
     tx=transparent_delay_redeem_router.claimDelayedRedeems({'from': user})
     assert "DelayedRedeemsClaimed" in tx.events
     assert "DelayedRedeemsCompleted" in tx.events
@@ -175,11 +193,14 @@ def test_claimFromRedeemRouter(deps):
     assert tx.events["DelayedRedeemsClaimed"][1]["recipient"] == user
     assert tx.events["DelayedRedeemsClaimed"][1]["amountClaimed"] == wbtc_claim
     assert tx.events["DelayedRedeemsClaimed"][1]["token"] == wbtc_contract
-    assert tx.events["DelayedRedeemsCompleted"]["amountBurned"] == fbtc_claim + wbtc_claim
-    assert tx.events["DelayedRedeemsCompleted"]["delayedRedeemsCompleted"] == 2
+    assert tx.events["DelayedRedeemsCompleted"]["amountBurned"] == fbtc_claim_uni + wbtc_claim_uni + native_claim_uni
+    assert tx.events["DelayedRedeemsCompleted"]["delayedRedeemsCompleted"] == 3
     assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == 0
     assert wbtc_contract.balanceOf(user) == wbtc_claim
     assert fbtc_contract.balanceOf(user) == fbtc_claim
-    assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[1] == wbtc_claim
-    assert transparent_delay_redeem_router.tokenDebts(wbtc_contract)[1] == fbtc_claim
+    assert user.balance() == native_origin + native_claim
+    assert web3.eth.get_balance(vault_proxy.address) == vault_native_balance -  native_claim
+    assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[1] == fbtc_claim_uni
+    assert transparent_delay_redeem_router.tokenDebts(wbtc_contract)[1] == wbtc_claim_uni
+    assert transparent_delay_redeem_router.tokenDebts(native_token)[1] == native_claim_uni
     assert len(transparent_delay_redeem_router.getUserDelayedRedeems(user)) == 0
