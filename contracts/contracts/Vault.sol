@@ -115,7 +115,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev set supplyFeeder address to track the locked supply assets of the vault
+     * @dev set the supply feeder address to track the asset supply for the vault
      */
     function setSupplyFeeder(address _supplyFeeder) external onlyRole(DEFAULT_ADMIN_ROLE) {
         supplyFeeder = _supplyFeeder;
