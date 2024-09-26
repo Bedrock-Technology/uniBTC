@@ -146,9 +146,14 @@ contract DelayRedeemRouter is
         address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
 
     /**
-     * @notice the decimals of the 18 BTC token
+     * @notice using for converting some wrapped BTC to the 18 decimals
      */
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
+
+    /**
+     * @notice principal redeem period
+     */
+    uint256 public redeemPrincipalDelayTimestamp;
 
     receive() external payable {}
 
@@ -161,8 +166,7 @@ contract DelayRedeemRouter is
      */
 
     /**
-     *  @dev Initializes the contract by setting the `redeemStartedTimestamp` variable to the current block timestamp.
-     * Also disables the ability to call any other initializer functions.
+     *  @dev disables the ability to call any other initializer functions.
      */
     constructor() {
         _disableInitializers();
@@ -300,6 +304,15 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev set a new delay principal redeem block timestamp for the contract
+     */
+    function setRedeemPrincipalDelayTimestamp(
+        uint256 _newValue
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRedeemPrincipalDelayTimestamp(_newValue);
+    }
+
+    /**
      * ======================================================================================
      *
      * EXTERNAL FUNCTIONS
@@ -361,6 +374,24 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @notice Called in order to claim delayed redeem made to msg.sender that have passed the `redeemPrincipalDelayTimestamp` period.
+     * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
+     * @dev that the caller of this function can control when the funds are sent once the principal becomes claimable.
+     */
+    function claimPrincipals(
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) external nonReentrant whenNotPaused {
+        _claimPrincipals(msg.sender, maxNumberOfDelayedRedeemsToClaim);
+    }
+
+    /**
+     * @notice Called in order to claim delayed redeem made to the caller that have passed the `redeemPrincipalDelayTimestamp` period.
+     */
+    function claimPrincipals() external nonReentrant whenNotPaused {
+        _claimPrincipals(msg.sender, type(uint256).max);
+    }
+
+    /**
      * @notice Getter function for the mapping `_userRedeems`
      */
     function userRedeems(
@@ -387,7 +418,8 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from the `_userRedeems[user].delayedRedeems` array is currently claimable
+     * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from
+     * the `_userRedeems[user].delayedRedeems` array is currently claimable
      */
     function canClaimDelayedRedeem(
         address user,
@@ -397,6 +429,21 @@ contract DelayRedeemRouter is
             (block.timestamp >=
                 _userRedeems[user].delayedRedeems[index].timestampCreated +
                     redeemDelayTimestamp));
+    }
+
+    /**
+     * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from
+     * the `_userRedeems[user].delayedRedeems` array is currently principal claimable
+     */
+    function canClaimDelayedRedeemPrincipal(
+        address user,
+        uint256 index
+    ) external view returns (bool) {
+        return ((redeemPrincipalDelayTimestamp > redeemDelayTimestamp &&
+            index >= _userRedeems[user].delayedRedeemsCompleted) &&
+            (block.timestamp >=
+                _userRedeems[user].delayedRedeems[index].timestampCreated +
+                    redeemPrincipalDelayTimestamp));
     }
 
     /**
@@ -503,8 +550,20 @@ contract DelayRedeemRouter is
      */
     function _setRedeemDelayTimestamp(uint256 newValue) internal {
         require(newValue <= MAX_REDEEM_DELAY_DURATION_TIME, "USR012");
-        redeemDelayTimestamp = newValue;
         emit redeemDelayTimestampSet(redeemDelayTimestamp, newValue);
+        redeemDelayTimestamp = newValue;
+    }
+
+    /**
+     * @notice internal function for changing the value of `redeemPrincipalDelayTimestamp`. Also performs sanity check and emits an event.
+     */
+    function _setRedeemPrincipalDelayTimestamp(uint256 newValue) internal {
+        require(newValue <= MAX_REDEEM_DELAY_DURATION_TIME, "USR012");
+        emit redeemPrincipalDelayTimestampSet(
+            redeemPrincipalDelayTimestamp,
+            newValue
+        );
+        redeemPrincipalDelayTimestamp = newValue;
     }
 
     /**
@@ -523,56 +582,16 @@ contract DelayRedeemRouter is
     ) internal {
         uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
             .delayedRedeemsCompleted;
-        uint256 _userRedeemsLength = _userRedeems[recipient]
-            .delayedRedeems
-            .length;
         uint256 numToClaim = 0;
-        while (
-            numToClaim < maxNumberOfDelayedRedeemsToClaim &&
-            (delayedRedeemsCompletedBefore + numToClaim) < _userRedeemsLength
-        ) {
-            // copy delayedRedeem from storage to memory
-            DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
-                .delayedRedeems[delayedRedeemsCompletedBefore + numToClaim];
-            // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem cannot be claimed
-            if (
-                block.timestamp <
-                delayedRedeem.timestampCreated + redeemDelayTimestamp
-            ) {
-                break;
-            }
-            // increment i to account for the delayedRedeem being claimed
-            unchecked {
-                ++numToClaim;
-            }
-        }
+        DebtTokenAmount[] memory debtAmounts;
+        (numToClaim, debtAmounts) = _getDebtTokenAmount(
+            recipient,
+            delayedRedeemsCompletedBefore,
+            redeemDelayTimestamp,
+            maxNumberOfDelayedRedeemsToClaim
+        );
 
         if (numToClaim > 0) {
-            DebtTokenAmount[] memory debtAmounts = new DebtTokenAmount[](
-                numToClaim
-            );
-            uint256 tempCount = 0;
-            for (uint256 i = 0; i < numToClaim; i++) {
-                DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
-                    .delayedRedeems[delayedRedeemsCompletedBefore + i];
-                bool found = false;
-
-                for (uint256 j = 0; j < tempCount; j++) {
-                    if (debtAmounts[j].token == delayedRedeem.token) {
-                        debtAmounts[j].amount += delayedRedeem.amount;
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    debtAmounts[tempCount] = DebtTokenAmount({
-                        token: delayedRedeem.token,
-                        amount: delayedRedeem.amount
-                    });
-                    tempCount++;
-                }
-            }
-
             // mark the i delayedRedeems as claimed
             _userRedeems[recipient].delayedRedeemsCompleted =
                 delayedRedeemsCompletedBefore +
@@ -622,6 +641,52 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @notice internal function used in both of the overloaded `claimPrincipals` functions
+     */
+    function _claimPrincipals(
+        address recipient,
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) internal {
+        require(redeemPrincipalDelayTimestamp > redeemDelayTimestamp, "USR016");
+        uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
+            .delayedRedeemsCompleted;
+        uint256 numToClaim = 0;
+        DebtTokenAmount[] memory debtAmounts;
+        (numToClaim, debtAmounts) = _getDebtTokenAmount(
+            recipient,
+            delayedRedeemsCompletedBefore,
+            redeemPrincipalDelayTimestamp,
+            maxNumberOfDelayedRedeemsToClaim
+        );
+
+        if (numToClaim > 0) {
+            // mark the i delayedRedeems as claimed
+            _userRedeems[recipient].delayedRedeemsCompleted =
+                delayedRedeemsCompletedBefore +
+                numToClaim;
+
+            uint256 amountToSend = 0;
+            for (uint256 i = 0; i < debtAmounts.length; i++) {
+                address token = debtAmounts[i].token;
+                uint256 amountUniBTC = debtAmounts[i].amount;
+                tokenDebts[token].claimedAmount += amountUniBTC;
+                amountToSend += amountUniBTC;
+                emit DelayedRedeemsPrincipalClaimed(
+                    recipient,
+                    token,
+                    amountUniBTC
+                );
+            }
+            IERC20(uniBTC).safeTransfer(recipient, amountToSend);
+            emit DelayedRedeemsPrincipalCompleted(
+                recipient,
+                amountToSend,
+                delayedRedeemsCompletedBefore + numToClaim
+            );
+        }
+    }
+
+    /**
      * @notice internal function for changing the value of _totalCap.
      */
     function _updateTotalCap() internal {
@@ -662,6 +727,70 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev get the claimable debt list from _userRedeems through delayTimestamp
+     */
+    function _getDebtTokenAmount(
+        address recipient,
+        uint256 delayedRedeemsCompletedBefore,
+        uint256 delayTimestamp,
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) internal view returns (uint256, DebtTokenAmount[] memory) {
+        uint256 _userRedeemsLength = _userRedeems[recipient]
+            .delayedRedeems
+            .length;
+        uint256 numToClaim = 0;
+        while (
+            numToClaim < maxNumberOfDelayedRedeemsToClaim &&
+            (delayedRedeemsCompletedBefore + numToClaim) < _userRedeemsLength
+        ) {
+            // copy delayedRedeem from storage to memory
+            DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
+                .delayedRedeems[delayedRedeemsCompletedBefore + numToClaim];
+            // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem cannot be claimed
+            if (
+                block.timestamp <
+                delayedRedeem.timestampCreated + delayTimestamp
+            ) {
+                break;
+            }
+            // increment i to account for the delayedRedeem being claimed
+            unchecked {
+                ++numToClaim;
+            }
+        }
+
+        if (numToClaim > 0) {
+            DebtTokenAmount[] memory debtAmounts = new DebtTokenAmount[](
+                numToClaim
+            );
+            uint256 tempCount = 0;
+            for (uint256 i = 0; i < numToClaim; i++) {
+                DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
+                    .delayedRedeems[delayedRedeemsCompletedBefore + i];
+                bool found = false;
+
+                for (uint256 j = 0; j < tempCount; j++) {
+                    if (debtAmounts[j].token == delayedRedeem.token) {
+                        debtAmounts[j].amount += delayedRedeem.amount;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    debtAmounts[tempCount] = DebtTokenAmount({
+                        token: delayedRedeem.token,
+                        amount: delayedRedeem.amount
+                    });
+                    tempCount++;
+                }
+            }
+            return (numToClaim, debtAmounts);
+        }
+
+        return (0, new DebtTokenAmount[](0));
+    }
+
+    /**
      * ======================================================================================
      *
      * EVENTS
@@ -689,6 +818,15 @@ contract DelayRedeemRouter is
     );
 
     /**
+     * @notice event for the claiming principal of delayedRedeems
+     */
+    event DelayedRedeemsPrincipalClaimed(
+        address recipient,
+        address token,
+        uint256 amountClaimed
+    );
+
+    /**
      * @notice event for the claiming of delayedRedeems
      */
     event DelayedRedeemsCompleted(
@@ -698,7 +836,24 @@ contract DelayRedeemRouter is
     );
 
     /**
+     * @notice event for the claiming principal of delayedRedeems
+     */
+    event DelayedRedeemsPrincipalCompleted(
+        address recipient,
+        uint256 amountPrincipal,
+        uint256 delayedRedeemsCompleted
+    );
+
+    /**
      * @notice Emitted when the `redeemDelayTimestamp` variable is modified from `previousValue` to `newValue`.
      */
     event redeemDelayTimestampSet(uint256 previousValue, uint256 newValue);
+
+    /**
+     * @notice Emitted when the `redeemPrincipalDelayTimestamp` variable is modified from `previousValue` to `newValue`.
+     */
+    event redeemPrincipalDelayTimestampSet(
+        uint256 previousValue,
+        uint256 newValue
+    );
 }

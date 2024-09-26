@@ -129,3 +129,4 @@ After all submodules are updated as required, you can build contracts with this 
 2. USR013: SET_DAY_CAP_TOO_LARGE
 2. USR014: AMOUNT_TOO_LESS
 2. USR015: AMOUNT_TOO_MORE
+2. USR016: PRINCIPAL_REDEEM_TIME_MISMATCH
