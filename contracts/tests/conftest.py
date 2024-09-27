@@ -1,7 +1,7 @@
 import pytest
 from web3 import Web3
 from pathlib import Path
-from brownie import FBTC, WBTC, WBTC18, XBTC, LockedFBTC, FBTCProxy, Vault, uniBTC, accounts, Contract, project, config, network
+from brownie import FBTC, WBTC, WBTC18, XBTC, LockedFBTC, FBTCProxy, Vault, uniBTC, Sigma, accounts, Contract, project, config, network
 
 # Web3 client
 @pytest.fixture(scope="session", autouse=True)
@@ -17,6 +17,11 @@ def roles(w3):
     default_admin_role = w3.to_bytes(hexstr="0x00")  # index = 5
     return [pauser_role, minter_role, manager_role, default_admin_role]
 
+@pytest.fixture(scope="session", autouse=True)
+def operator(w3):
+     operator_role = w3.keccak(text='OPERATOR_ROLE')
+     return operator_role
+ 
 # Predefined Accounts
 @pytest.fixture(scope="session", autouse=True)
 def owner():
@@ -54,7 +59,7 @@ def deps():
 
 # Contracts
 @pytest.fixture()
-def contracts(w3, deps, chain_id, roles, owner, deployer, zero_address):
+def contracts(w3, deps, chain_id, roles, owner, deployer, zero_address, executor, operator):
     proxy = deps.TransparentUpgradeableProxy
 
     # Deploy contracts
@@ -72,6 +77,17 @@ def contracts(w3, deps, chain_id, roles, owner, deployer, zero_address):
     vault = Vault.deploy({'from': deployer})
     vault_proxy = proxy.deploy(vault, deployer, b'', {'from': deployer})
     vault_transparent = Contract.from_abi("Vault", vault_proxy.address, Vault.abi)
+    ProxyAdmin = deps.ProxyAdmin
+    # Deploy ProxyAdmin
+    proxyAdmin = ProxyAdmin.deploy({'from': owner})
+
+    # Deploy Sigma
+    sigma_impl = Sigma.deploy({'from': deployer})
+    sigma_proxy = proxy.deploy(sigma_impl, proxyAdmin, b'', {'from': deployer})
+    # Initialize Sigma
+    sigma = Contract.from_abi("Sigma", sigma_proxy, Sigma.abi)
+    sigma.initialize(owner, {'from': owner})
+
 
     # peer_sender = Peer.deploy(message_bus_sender, uni_btc_transparent, {'from': owner})
     # peer_receiver = Peer.deploy(message_bus_receiver, uni_btc_transparent, {'from': owner})
@@ -81,7 +97,9 @@ def contracts(w3, deps, chain_id, roles, owner, deployer, zero_address):
     locked_fbtc_proxy = proxy.deploy(locked_fbtc, deployer, b'', {'from': deployer})
     locked_fbtc_transparent = Contract.from_abi("LockedFBTC", locked_fbtc_proxy.address, LockedFBTC.abi)
 
-    fbtc_proxy = FBTCProxy.deploy(vault_transparent, locked_fbtc_transparent, {'from': owner})
+    fbtc_proxy = FBTCProxy.deploy(vault_transparent, locked_fbtc_transparent, owner, {'from': deployer})
+    fbtc_proxy.grantRole(operator, executor, {'from': owner})
+    fbtc.setMintable(executor, True,{'from': owner})
 
     # Configure contracts
     uni_btc_transparent.initialize(owner, owner, {'from': owner})
@@ -90,6 +108,7 @@ def contracts(w3, deps, chain_id, roles, owner, deployer, zero_address):
     #     peer.configurePeers([chain_id, chain_id + 1], [peer_sender, peer_receiver], {'from': owner})
     vault_transparent.initialize(owner, uni_btc_transparent, {'from': owner})
     uni_btc_transparent.grantRole(roles[1], vault_transparent, {'from': owner})
+    vault_transparent.setSupplyFeeder(sigma_proxy, {'from': owner})
 
     locked_fbtc_transparent.initialize(fbtc, owner, owner, vault_transparent, {'from': owner})
 
