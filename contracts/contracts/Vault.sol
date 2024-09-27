@@ -137,7 +137,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         require(uniBTCAmount > 0, "USR010");
 
         uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(NATIVE_BTC);
-        require(totalSupply <= caps[NATIVE_BTC], "USR003");
+        require(totalSupply < caps[NATIVE_BTC], "USR003");
 
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 
@@ -152,7 +152,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         require(uniBTCAmount > 0, "USR010");
 
         uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(_token);
-        require(totalSupply + _amount <= caps[_token], "USR003");
+        require(totalSupply + _amount < caps[_token], "USR003");
 
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
