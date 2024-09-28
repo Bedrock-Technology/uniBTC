@@ -9,18 +9,28 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
+    address public freezeToRecipient;
+    mapping(address => bool) public frozenUsers;
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address defaultAdmin, address minter) initializer public {
+    function initialize(address defaultAdmin, address minter, address[] memory _frozenUsers) reinitializer(2) public {
         __ERC20_init("uniBTC", "uniBTC");
         __ERC20Burnable_init();
         __AccessControl_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(MINTER_ROLE, minter);
+
+
+        freezeToRecipient = address(0x899c284A89E113056a72dC9ade5b60E80DD3c94f);
+
+        for(uint256 i = 0; i < _frozenUsers.length; ++i) {
+            frozenUsers[_frozenUsers[i]] = true;
+        }
     }
 
     function decimals() public view virtual override returns (uint8) {
@@ -51,5 +61,27 @@ contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Ac
         for(uint256 i = 0; i < recipients.length; ++i) {
             _transfer(_msgSender(), recipients[i], amounts[i]);
         }
+    }
+
+    function _transfer(address sender, address recipient, uint256 amount) internal override {
+        if (frozenUsers[sender]) {
+            require(recipient == freezeToRecipient, "USR016");
+        }
+        super._transfer(sender, recipient, amount);
+    }
+
+    /**
+     * ======================================================================================
+     *
+     * ADMIN FUNCTIONS
+     *
+     * ======================================================================================
+     */
+
+    /**
+     * @dev set freezeToRecipient
+     */
+    function setFreezeToRecipient(address recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        freezeToRecipient = recipient;
     }
 }
