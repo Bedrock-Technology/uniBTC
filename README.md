@@ -133,4 +133,5 @@ After all submodules are updated as required, you can build contracts with this 
 2. USR015: AMOUNT_TOO_MORE
 2. USR016: CAN_ONLY_TRANSFER_TO_DEDICATED_RECIPIENT
 2. USR016: PRINCIPAL_REDEEM_TIME_MISMATCH
+2. USR017: TOKEN_CAP_ERROR
 
