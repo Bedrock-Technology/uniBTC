@@ -43,7 +43,7 @@ def test_setCaps_after_upgrade(fn_isolation, deps, zero_address, roles):
     assert locked_fbtc.balanceOf(vault_without_native) > 0
 
     # Scenario 1: Native BTC is not allowed to have a cap
-    with brownie .reverts("SYS011"):
+    with brownie .reverts("SYS012"):
         vault_without_native.setCap(native_btc, cap_8, {'from': default_admin})
 
     # Scenario 2: Zero address is not allowed to have a cap
