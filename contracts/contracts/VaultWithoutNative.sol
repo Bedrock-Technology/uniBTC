@@ -32,7 +32,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
     address public supplyFeeder;
-
+    //================== 2024/09/30 ===========
     mapping(address => bool) public allowedTokenList;
     mapping(address => bool) public allowedTargetList;
     bool public outOfService;
