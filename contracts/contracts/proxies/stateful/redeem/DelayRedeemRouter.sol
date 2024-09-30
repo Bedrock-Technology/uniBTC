@@ -647,7 +647,7 @@ contract DelayRedeemRouter is
         address recipient,
         uint256 maxNumberOfDelayedRedeemsToClaim
     ) internal {
-        require(redeemPrincipalDelayTimestamp > redeemDelayTimestamp, "USR016");
+        require(redeemPrincipalDelayTimestamp > redeemDelayTimestamp, "USR017");
         uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
             .delayedRedeemsCompleted;
         uint256 numToClaim = 0;
@@ -763,13 +763,13 @@ contract DelayRedeemRouter is
             DebtTokenAmount[] memory debtAmounts = new DebtTokenAmount[](
                 numToClaim
             );
-            uint256 tempCount = 0;
+            uint256 tokenCount = 0;
             for (uint256 i = 0; i < numToClaim; i++) {
                 DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
                     .delayedRedeems[delayedRedeemsCompletedBefore + i];
                 bool found = false;
 
-                for (uint256 j = 0; j < tempCount; j++) {
+                for (uint256 j = 0; j < tokenCount; j++) {
                     if (debtAmounts[j].token == delayedRedeem.token) {
                         debtAmounts[j].amount += delayedRedeem.amount;
                         found = true;
@@ -777,14 +777,25 @@ contract DelayRedeemRouter is
                     }
                 }
                 if (!found) {
-                    debtAmounts[tempCount] = DebtTokenAmount({
+                    debtAmounts[tokenCount] = DebtTokenAmount({
                         token: delayedRedeem.token,
                         amount: delayedRedeem.amount
                     });
-                    tempCount++;
+                    tokenCount++;
                 }
             }
-            return (numToClaim, debtAmounts);
+
+            if (tokenCount == debtAmounts.length) {
+                return (numToClaim, debtAmounts);
+            }
+
+            DebtTokenAmount[] memory finalAmounts = new DebtTokenAmount[](
+                tokenCount
+            );
+            for (uint256 k = 0; k < tokenCount; k++) {
+                finalAmounts[k] = debtAmounts[k];
+            }
+            return (numToClaim, finalAmounts);
         }
 
         return (0, new DebtTokenAmount[](0));
