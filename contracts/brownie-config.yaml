@@ -34,3 +34,12 @@ networks:
       unlock:
         - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # ProxyAdmin owner address
         - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault default admin address
+        - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault default admin address
+  mainnet-public-fork:
+    cmd_settings:
+      default_balance: "1000000000000 ether"
+      unlock:
+        - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault pauser address
+        - 0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3  # ProxyAdmin owner
+
+

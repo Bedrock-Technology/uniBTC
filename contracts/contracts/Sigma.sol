@@ -9,7 +9,7 @@ import "../interfaces/ISupplyFeeder.sol";
 
 contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
     address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
-    uint8 public constant NATIVE_BTC_DECIMALS = 18;
+    uint8 public constant L2_BTC_DECIMAL = 18;
 
     /// @dev A Pool represents a group of token holders of the same token.
     struct Pool {
@@ -52,7 +52,6 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
     }
 
-
     /**
      * ======================================================================================
      *
@@ -64,14 +63,14 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
     /**
      * @dev Calculate the current total supply of assets for '_leadingToken'.
      */
-    function totalSupply(address _leadingToken) external view returns(uint256) {
+    function totalSupply(address _leadingToken) external view returns (uint256) {
         return _totalSupply(_leadingToken);
     }
 
     /**
      * @dev A helper function to retrieve the token holders for a specified '_leadingToken'.
      */
-    function getTokenHolders(address _leadingToken) external view returns(Pool[] memory) {
+    function getTokenHolders(address _leadingToken) external view returns (Pool[] memory) {
         return tokenHolders[_leadingToken];
     }
 
@@ -80,7 +79,7 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
      * The token address returned here is the key in the tokenHolders mapping
      * and can be used to retrieve the token holders via 'getTokenHolders'.
      */
-    function ListLeadingTokens() external view returns(address[] memory) {
+    function ListLeadingTokens() external view returns (address[] memory) {
         return leadingTokens;
     }
 
@@ -107,14 +106,13 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
         emit TokenHoldersSet(_leadingToken, _pools);
 
         for (uint256 i = 0; i < leadingTokens.length; i++) {
-                if (leadingTokens[i] == _leadingToken) {
-                    return;
-                }
+            if (leadingTokens[i] == _leadingToken) {
+                return;
+            }
         }
 
         leadingTokens.push(_leadingToken);
     }
-
 
     /**
      * ======================================================================================
@@ -151,12 +149,12 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
     /**
     * @dev Check if all tokens in the pools have the same decimals as the leading token.
      */
-    function _haveSameDecimals(address _leadingToken, Pool[] calldata _pools) internal view returns(bool) {
-        uint8 decimals = _leadingToken == NATIVE_BTC ? NATIVE_BTC_DECIMALS : ERC20(_leadingToken).decimals();
+    function _haveSameDecimals(address _leadingToken, Pool[] calldata _pools) internal view returns (bool) {
+        uint8 decimals = _leadingToken == NATIVE_BTC ? L2_BTC_DECIMAL : ERC20(_leadingToken).decimals();
         for (uint256 i = 0; i < _pools.length; i++) {
-          address poolToken = _pools[i].token;
+            address poolToken = _pools[i].token;
             if (poolToken == NATIVE_BTC) {
-                if (decimals != NATIVE_BTC_DECIMALS) {
+                if (decimals != L2_BTC_DECIMAL) {
                     return false;
                 }
             } else {
@@ -167,7 +165,6 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
         }
         return true;
     }
-
 
     /**
      * ======================================================================================
