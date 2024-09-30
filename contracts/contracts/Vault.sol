@@ -172,6 +172,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_token != address(0x0), "SYS003");
+        require(_cap > 0, "USR017");
 
         uint8 decs = L2_BTC_DECIMAL;
 
