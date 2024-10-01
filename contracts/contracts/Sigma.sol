@@ -64,6 +64,7 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
      * @dev Calculate the current total supply of assets for '_leadingToken'.
      */
     function totalSupply(address _leadingToken) external view returns (uint256) {
+        require(tokenHolders[_leadingToken].length > 0, "USR018");
         return _totalSupply(_leadingToken);
     }
 
