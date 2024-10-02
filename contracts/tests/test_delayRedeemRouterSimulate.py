@@ -21,7 +21,7 @@ def test_claimFromRedeemRouter(deps):
             {'from': deployer})
     print("uniBTC proxy",uniBTC_proxy)
     transparent_uniBTC = Contract.from_abi("uniBTC",uniBTC_proxy, uniBTC.abi)
-    transparent_uniBTC.initialize(owner,owner, {'from': owner})
+    transparent_uniBTC.initialize(owner,owner,[], {'from': owner})
     
     # deploy WBTC contract    
     wbtc_contract = WBTC18.deploy(
@@ -106,6 +106,7 @@ def test_claimFromRedeemRouter(deps):
     #call vault function need operator role
     transparent_vault.grantRole(transparent_vault.OPERATOR_ROLE(), delay_redeem_router_proxy, {'from': owner}) 
     assert transparent_vault.hasRole(transparent_vault.OPERATOR_ROLE(), delay_redeem_router_proxy)
+    transparent_vault.allowTarget([uniBTC_proxy,wbtc_contract,fbtc_contract,delay_redeem_router_proxy],{'from': owner})
     
     transparent_uniBTC.approve(delay_redeem_router_proxy,fbtc_claim_uni,{'from': user})
     assert transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == fbtc_claim_uni

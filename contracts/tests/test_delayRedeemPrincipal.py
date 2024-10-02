@@ -20,7 +20,7 @@ def test_claimPrincipalFromRedeemRouter(deps):
             {'from': deployer})
     print("uniBTC proxy",uniBTC_proxy)
     transparent_uniBTC = Contract.from_abi("uniBTC",uniBTC_proxy, uniBTC.abi)
-    transparent_uniBTC.initialize(owner,owner, {'from': owner})
+    transparent_uniBTC.initialize(owner,owner,[], {'from': owner})
     
     # deploy WBTC contract    
     wbtc_contract = WBTC18.deploy(
