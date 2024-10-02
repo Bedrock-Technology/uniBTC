@@ -86,14 +86,16 @@ interface IAccessControlUpgradeable {
     function renounceRole(bytes32 role, address account) external;
 }
 
-// File: contracts/interfaces/ISupplyFeeder.sol
+// File: contracts/interfaces/IVault.sol
 
-interface ISupplyFeeder {
-    /**
-     * @dev Calculate the current total supply of assets for 'token'.
-     */
-    function totalSupply(address token) external view returns(uint256);
+interface IVault {
+    function execute(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) external returns (bytes memory);
 }
+
 // File: contracts/token/ERC20/IERC20.sol
 
 // OpenZeppelin Contracts (last updated v4.6.0) (token/ERC20/IERC20.sol)
@@ -174,6 +176,310 @@ interface IERC20 {
         address to,
         uint256 amount
     ) external returns (bool);
+}
+
+// File: contracts/token/ERC20/extensions/draft-IERC20Permit.sol
+
+// OpenZeppelin Contracts v4.4.1 (token/ERC20/extensions/draft-IERC20Permit.sol)
+
+/**
+ * @dev Interface of the ERC20 Permit extension allowing approvals to be made via signatures, as defined in
+ * https://eips.ethereum.org/EIPS/eip-2612[EIP-2612].
+ *
+ * Adds the {permit} method, which can be used to change an account's ERC20 allowance (see {IERC20-allowance}) by
+ * presenting a message signed by the account. By not relying on {IERC20-approve}, the token holder account doesn't
+ * need to send a transaction, and thus is not required to hold Ether at all.
+ */
+interface IERC20Permit {
+    /**
+     * @dev Sets `value` as the allowance of `spender` over ``owner``'s tokens,
+     * given ``owner``'s signed approval.
+     *
+     * IMPORTANT: The same issues {IERC20-approve} has related to transaction
+     * ordering also apply here.
+     *
+     * Emits an {Approval} event.
+     *
+     * Requirements:
+     *
+     * - `spender` cannot be the zero address.
+     * - `deadline` must be a timestamp in the future.
+     * - `v`, `r` and `s` must be a valid `secp256k1` signature from `owner`
+     * over the EIP712-formatted function arguments.
+     * - the signature must use ``owner``'s current nonce (see {nonces}).
+     *
+     * For more information on the signature format, see the
+     * https://eips.ethereum.org/EIPS/eip-2612#specification[relevant EIP
+     * section].
+     */
+    function permit(
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external;
+
+    /**
+     * @dev Returns the current nonce for `owner`. This value must be
+     * included whenever a signature is generated for {permit}.
+     *
+     * Every successful call to {permit} increases ``owner``'s nonce by one. This
+     * prevents a signature from being used multiple times.
+     */
+    function nonces(address owner) external view returns (uint256);
+
+    /**
+     * @dev Returns the domain separator used in the encoding of the signature for {permit}, as defined by {EIP712}.
+     */
+    // solhint-disable-next-line func-name-mixedcase
+    function DOMAIN_SEPARATOR() external view returns (bytes32);
+}
+
+// File: contracts/utils/Address.sol
+
+// OpenZeppelin Contracts (last updated v4.8.0) (utils/Address.sol)
+
+/**
+ * @dev Collection of functions related to the address type
+ */
+library Address {
+    /**
+     * @dev Returns true if `account` is a contract.
+     *
+     * [IMPORTANT]
+     * ====
+     * It is unsafe to assume that an address for which this function returns
+     * false is an externally-owned account (EOA) and not a contract.
+     *
+     * Among others, `isContract` will return false for the following
+     * types of addresses:
+     *
+     *  - an externally-owned account
+     *  - a contract in construction
+     *  - an address where a contract will be created
+     *  - an address where a contract lived, but was destroyed
+     * ====
+     *
+     * [IMPORTANT]
+     * ====
+     * You shouldn't rely on `isContract` to protect against flash loan attacks!
+     *
+     * Preventing calls from contracts is highly discouraged. It breaks composability, breaks support for smart wallets
+     * like Gnosis Safe, and does not provide security since it can be circumvented by calling from a contract
+     * constructor.
+     * ====
+     */
+    function isContract(address account) internal view returns (bool) {
+        // This method relies on extcodesize/address.code.length, which returns 0
+        // for contracts in construction, since the code is only stored at the end
+        // of the constructor execution.
+
+        return account.code.length > 0;
+    }
+
+    /**
+     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
+     * `recipient`, forwarding all available gas and reverting on errors.
+     *
+     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
+     * of certain opcodes, possibly making contracts go over the 2300 gas limit
+     * imposed by `transfer`, making them unable to receive funds via
+     * `transfer`. {sendValue} removes this limitation.
+     *
+     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].
+     *
+     * IMPORTANT: because control is transferred to `recipient`, care must be
+     * taken to not create reentrancy vulnerabilities. Consider using
+     * {ReentrancyGuard} or the
+     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
+     */
+    function sendValue(address payable recipient, uint256 amount) internal {
+        require(address(this).balance >= amount, "Address: insufficient balance");
+
+        (bool success, ) = recipient.call{value: amount}("");
+        require(success, "Address: unable to send value, recipient may have reverted");
+    }
+
+    /**
+     * @dev Performs a Solidity function call using a low level `call`. A
+     * plain `call` is an unsafe replacement for a function call: use this
+     * function instead.
+     *
+     * If `target` reverts with a revert reason, it is bubbled up by this
+     * function (like regular Solidity function calls).
+     *
+     * Returns the raw returned data. To convert to the expected return value,
+     * use https://solidity.readthedocs.io/en/latest/units-and-global-variables.html?highlight=abi.decode#abi-encoding-and-decoding-functions[`abi.decode`].
+     *
+     * Requirements:
+     *
+     * - `target` must be a contract.
+     * - calling `target` with `data` must not revert.
+     *
+     * _Available since v3.1._
+     */
+    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+        return functionCallWithValue(target, data, 0, "Address: low-level call failed");
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`], but with
+     * `errorMessage` as a fallback revert reason when `target` reverts.
+     *
+     * _Available since v3.1._
+     */
+    function functionCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        return functionCallWithValue(target, data, 0, errorMessage);
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but also transferring `value` wei to `target`.
+     *
+     * Requirements:
+     *
+     * - the calling contract must have an ETH balance of at least `value`.
+     * - the called Solidity function must be `payable`.
+     *
+     * _Available since v3.1._
+     */
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value
+    ) internal returns (bytes memory) {
+        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCallWithValue-address-bytes-uint256-}[`functionCallWithValue`], but
+     * with `errorMessage` as a fallback revert reason when `target` reverts.
+     *
+     * _Available since v3.1._
+     */
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        uint256 value,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        require(address(this).balance >= value, "Address: insufficient balance for call");
+        (bool success, bytes memory returndata) = target.call{value: value}(data);
+        return verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but performing a static call.
+     *
+     * _Available since v3.3._
+     */
+    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
+        return functionStaticCall(target, data, "Address: low-level static call failed");
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+     * but performing a static call.
+     *
+     * _Available since v3.3._
+     */
+    function functionStaticCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal view returns (bytes memory) {
+        (bool success, bytes memory returndata) = target.staticcall(data);
+        return verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-}[`functionCall`],
+     * but performing a delegate call.
+     *
+     * _Available since v3.4._
+     */
+    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
+        return functionDelegateCall(target, data, "Address: low-level delegate call failed");
+    }
+
+    /**
+     * @dev Same as {xref-Address-functionCall-address-bytes-string-}[`functionCall`],
+     * but performing a delegate call.
+     *
+     * _Available since v3.4._
+     */
+    function functionDelegateCall(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) internal returns (bytes memory) {
+        (bool success, bytes memory returndata) = target.delegatecall(data);
+        return verifyCallResultFromTarget(target, success, returndata, errorMessage);
+    }
+
+    /**
+     * @dev Tool to verify that a low level call to smart-contract was successful, and revert (either by bubbling
+     * the revert reason or using the provided one) in case of unsuccessful call or if target was not a contract.
+     *
+     * _Available since v4.8._
+     */
+    function verifyCallResultFromTarget(
+        address target,
+        bool success,
+        bytes memory returndata,
+        string memory errorMessage
+    ) internal view returns (bytes memory) {
+        if (success) {
+            if (returndata.length == 0) {
+                // only check isContract if the call was successful and the return data is empty
+                // otherwise we already know that it was a contract
+                require(isContract(target), "Address: call to non-contract");
+            }
+            return returndata;
+        } else {
+            _revert(returndata, errorMessage);
+        }
+    }
+
+    /**
+     * @dev Tool to verify that a low level call was successful, and revert if it wasn't, either by bubbling the
+     * revert reason or using the provided one.
+     *
+     * _Available since v4.3._
+     */
+    function verifyCallResult(
+        bool success,
+        bytes memory returndata,
+        string memory errorMessage
+    ) internal pure returns (bytes memory) {
+        if (success) {
+            return returndata;
+        } else {
+            _revert(returndata, errorMessage);
+        }
+    }
+
+    function _revert(bytes memory returndata, string memory errorMessage) private pure {
+        // Look for revert reason and bubble it up if present
+        if (returndata.length > 0) {
+            // The easiest way to bubble the revert reason is using memory via assembly
+            /// @solidity memory-safe-assembly
+            assembly {
+                let returndata_size := mload(returndata)
+                revert(add(32, returndata), returndata_size)
+            }
+        } else {
+            revert(errorMessage);
+        }
+    }
 }
 
 // File: contracts/utils/AddressUpgradeable.sol
@@ -789,6 +1095,13 @@ library MathUpgradeable {
     }
 }
 
+// File: contracts/interfaces/IMintableContract.sol
+
+interface IMintableContract is IERC20 {
+    function mint(address account, uint256 amount) external;
+    function burn(uint256 amount) external;
+    function burnFrom(address account, uint256 amount) external;
+}
 // File: contracts/proxy/utils/Initializable.sol
 
 // OpenZeppelin Contracts (last updated v4.8.1) (proxy/utils/Initializable.sol)
@@ -978,6 +1291,118 @@ interface IERC20Metadata is IERC20 {
     function decimals() external view returns (uint8);
 }
 
+// File: contracts/token/ERC20/utils/SafeERC20.sol
+
+// OpenZeppelin Contracts (last updated v4.8.0) (token/ERC20/utils/SafeERC20.sol)
+
+/**
+ * @title SafeERC20
+ * @dev Wrappers around ERC20 operations that throw on failure (when the token
+ * contract returns false). Tokens that return no value (and instead revert or
+ * throw on failure) are also supported, non-reverting calls are assumed to be
+ * successful.
+ * To use this library you can add a `using SafeERC20 for IERC20;` statement to your contract,
+ * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
+ */
+library SafeERC20 {
+    using Address for address;
+
+    function safeTransfer(
+        IERC20 token,
+        address to,
+        uint256 value
+    ) internal {
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
+    }
+
+    function safeTransferFrom(
+        IERC20 token,
+        address from,
+        address to,
+        uint256 value
+    ) internal {
+        _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
+    }
+
+    /**
+     * @dev Deprecated. This function has issues similar to the ones found in
+     * {IERC20-approve}, and its usage is discouraged.
+     *
+     * Whenever possible, use {safeIncreaseAllowance} and
+     * {safeDecreaseAllowance} instead.
+     */
+    function safeApprove(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        // safeApprove should only be called when setting an initial allowance,
+        // or when resetting it to zero. To increase and decrease it, use
+        // 'safeIncreaseAllowance' and 'safeDecreaseAllowance'
+        require(
+            (value == 0) || (token.allowance(address(this), spender) == 0),
+            "SafeERC20: approve from non-zero to non-zero allowance"
+        );
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
+    }
+
+    function safeIncreaseAllowance(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        uint256 newAllowance = token.allowance(address(this), spender) + value;
+        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+    }
+
+    function safeDecreaseAllowance(
+        IERC20 token,
+        address spender,
+        uint256 value
+    ) internal {
+        unchecked {
+            uint256 oldAllowance = token.allowance(address(this), spender);
+            require(oldAllowance >= value, "SafeERC20: decreased allowance below zero");
+            uint256 newAllowance = oldAllowance - value;
+            _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+        }
+    }
+
+    function safePermit(
+        IERC20Permit token,
+        address owner,
+        address spender,
+        uint256 value,
+        uint256 deadline,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) internal {
+        uint256 nonceBefore = token.nonces(owner);
+        token.permit(owner, spender, value, deadline, v, r, s);
+        uint256 nonceAfter = token.nonces(owner);
+        require(nonceAfter == nonceBefore + 1, "SafeERC20: permit did not succeed");
+    }
+
+    /**
+     * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract), relaxing the requirement
+     * on the return value: the return value is optional (but if data is returned, it must not be false).
+     * @param token The token targeted by the call.
+     * @param data The call data (encoded using abi.encode or one of its variants).
+     */
+    function _callOptionalReturn(IERC20 token, bytes memory data) private {
+        // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
+        // we're implementing it ourselves. We use {Address-functionCall} to perform this call, which verifies that
+        // the target address contains contract code and also asserts for success in the low-level call.
+
+        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
+        if (returndata.length > 0) {
+            // Return data is optional
+            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+        }
+    }
+}
+
 // File: contracts/utils/StringsUpgradeable.sol
 
 // OpenZeppelin Contracts (last updated v4.8.0) (utils/Strings.sol)
@@ -1044,6 +1469,86 @@ library StringsUpgradeable {
     function toHexString(address addr) internal pure returns (string memory) {
         return toHexString(uint256(uint160(addr)), _ADDRESS_LENGTH);
     }
+}
+
+// File: contracts/security/ReentrancyGuardUpgradeable.sol
+
+// OpenZeppelin Contracts (last updated v4.8.0) (security/ReentrancyGuard.sol)
+
+/**
+ * @dev Contract module that helps prevent reentrant calls to a function.
+ *
+ * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier
+ * available, which can be applied to functions to make sure there are no nested
+ * (reentrant) calls to them.
+ *
+ * Note that because there is a single `nonReentrant` guard, functions marked as
+ * `nonReentrant` may not call one another. This can be worked around by making
+ * those functions `private`, and then adding `external` `nonReentrant` entry
+ * points to them.
+ *
+ * TIP: If you would like to learn more about reentrancy and alternative ways
+ * to protect against it, check out our blog post
+ * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].
+ */
+abstract contract ReentrancyGuardUpgradeable is Initializable {
+    // Booleans are more expensive than uint256 or any type that takes up a full
+    // word because each write operation emits an extra SLOAD to first read the
+    // slot's contents, replace the bits taken up by the boolean, and then write
+    // back. This is the compiler's defense against contract upgrades and
+    // pointer aliasing, and it cannot be disabled.
+
+    // The values being non-zero value makes deployment a bit more expensive,
+    // but in exchange the refund on every call to nonReentrant will be lower in
+    // amount. Since refunds are capped to a percentage of the total
+    // transaction's gas, it is best to keep them low in cases like this one, to
+    // increase the likelihood of the full refund coming into effect.
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+
+    uint256 private _status;
+
+    function __ReentrancyGuard_init() internal onlyInitializing {
+        __ReentrancyGuard_init_unchained();
+    }
+
+    function __ReentrancyGuard_init_unchained() internal onlyInitializing {
+        _status = _NOT_ENTERED;
+    }
+
+    /**
+     * @dev Prevents a contract from calling itself, directly or indirectly.
+     * Calling a `nonReentrant` function from another `nonReentrant`
+     * function is not supported. It is possible to prevent this from happening
+     * by making the `nonReentrant` function external, and making it call a
+     * `private` function that does the actual work.
+     */
+    modifier nonReentrant() {
+        _nonReentrantBefore();
+        _;
+        _nonReentrantAfter();
+    }
+
+    function _nonReentrantBefore() private {
+        // On the first call to nonReentrant, _status will be _NOT_ENTERED
+        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+
+        // Any calls to nonReentrant after this point will fail
+        _status = _ENTERED;
+    }
+
+    function _nonReentrantAfter() private {
+        // By storing the original value once again, a refund is triggered (see
+        // https://eips.ethereum.org/EIPS/eip-2200)
+        _status = _NOT_ENTERED;
+    }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[49] private __gap;
 }
 
 // File: contracts/token/ERC20/ERC20.sol
@@ -1760,114 +2265,645 @@ abstract contract AccessControlUpgradeable is Initializable, ContextUpgradeable,
     uint256[49] private __gap;
 }
 
-// File: contracts/contracts/Sigma.sol
+// File: contracts/security/PausableUpgradeable.sol
 
-contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
-    address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
-    uint8 public constant L2_BTC_DECIMAL = 18;
+// OpenZeppelin Contracts (last updated v4.7.0) (security/Pausable.sol)
 
-    /// @dev A Pool represents a group of token holders of the same token.
-    struct Pool {
-        address token;
-        address[] holders;
+/**
+ * @dev Contract module which allows children to implement an emergency stop
+ * mechanism that can be triggered by an authorized account.
+ *
+ * This module is used through inheritance. It will make available the
+ * modifiers `whenNotPaused` and `whenPaused`, which can be applied to
+ * the functions of your contract. Note that they will not be pausable by
+ * simply including this module, only once the modifiers are put in place.
+ */
+abstract contract PausableUpgradeable is Initializable, ContextUpgradeable {
+    /**
+     * @dev Emitted when the pause is triggered by `account`.
+     */
+    event Paused(address account);
+
+    /**
+     * @dev Emitted when the pause is lifted by `account`.
+     */
+    event Unpaused(address account);
+
+    bool private _paused;
+
+    /**
+     * @dev Initializes the contract in unpaused state.
+     */
+    function __Pausable_init() internal onlyInitializing {
+        __Pausable_init_unchained();
     }
 
-    /// @dev A list of leadingTokens stores all the tokens that lead groups of Pools.
-    address[] public leadingTokens;
+    function __Pausable_init_unchained() internal onlyInitializing {
+        _paused = false;
+    }
 
     /**
-     * @dev A mapping of tokenHolders stores the token holders for each token.
-     * The key is the leading token address, and the value is an array of Pools.
-     * The leading token and all corresponding tokens in the Pool array must have the same decimals.
+     * @dev Modifier to make a function callable only when the contract is not paused.
+     *
+     * Requirements:
+     *
+     * - The contract must not be paused.
      */
-    mapping(address => Pool[]) public tokenHolders;
+    modifier whenNotPaused() {
+        _requireNotPaused();
+        _;
+    }
+
+    /**
+     * @dev Modifier to make a function callable only when the contract is paused.
+     *
+     * Requirements:
+     *
+     * - The contract must be paused.
+     */
+    modifier whenPaused() {
+        _requirePaused();
+        _;
+    }
+
+    /**
+     * @dev Returns true if the contract is paused, and false otherwise.
+     */
+    function paused() public view virtual returns (bool) {
+        return _paused;
+    }
+
+    /**
+     * @dev Throws if the contract is paused.
+     */
+    function _requireNotPaused() internal view virtual {
+        require(!paused(), "Pausable: paused");
+    }
+
+    /**
+     * @dev Throws if the contract is not paused.
+     */
+    function _requirePaused() internal view virtual {
+        require(paused(), "Pausable: not paused");
+    }
+
+    /**
+     * @dev Triggers stopped state.
+     *
+     * Requirements:
+     *
+     * - The contract must not be paused.
+     */
+    function _pause() internal virtual whenNotPaused {
+        _paused = true;
+        emit Paused(_msgSender());
+    }
+
+    /**
+     * @dev Returns to normal state.
+     *
+     * Requirements:
+     *
+     * - The contract must be paused.
+     */
+    function _unpause() internal virtual whenPaused {
+        _paused = false;
+        emit Unpaused(_msgSender());
+    }
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[49] private __gap;
+}
+
+// File: contracts/contracts/proxies/stateful/redeem/DelayRedeemRouter.sol
+
+contract DelayRedeemRouter is
+Initializable,
+AccessControlUpgradeable,
+PausableUpgradeable,
+ReentrancyGuardUpgradeable
+{
+    using SafeERC20 for IERC20;
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    /**
+     * @notice the duration time in 30 days (60 * 60 * 24 * 30 = 2,592,000)
+     */
+    uint256 public constant MAX_REDEEM_DELAY_DURATION_TIME = 2592000;
+
+    /**
+     * @notice the duration time in 1 day (60 * 60 * 24 = 86,400)
+     */
+    uint256 public constant DAY_DELAY_DURATION_TIME = 86400;
+
+    /**
+     * @notice the maximum amount of unibtc that can be burned setting in a single day
+     */
+    uint256 public constant DAY_MAX_ALLOWED_CAP = 1000e8;
+
+    /**
+     * @notice Delay enforced by this contract for completing any delayedRedeem, Measured in timestamp,
+     * and adjustable by this contract's owner,up to a maximum of `MAX_REDEEM_DELAY_DURATION_TIME`.
+     * Minimum value is 0 (i.e. no delay enforced).
+     */
+    uint256 public redeemDelayTimestamp;
+
+    /**
+     * @notice The timestamp at which the redeem functionality was enabled for the first time.
+     */
+    uint256 public redeemStartedTimestamp;
+
+    /**
+     * @notice The address of the ERC20 uniBTC token.
+     */
+    address public uniBTC;
+
+    /**
+     * @notice The address of the Vault contract.
+     */
+    address public vault;
+
+    /**
+     * @notice struct used to pack data into a single storage slot
+     */
+    struct DelayedRedeem {
+        uint224 amount;
+        uint32 timestampCreated;
+        address token;
+    }
+
+    /**
+     * @notice struct used to store a single users delayedRedeem data
+     */
+    struct UserDelayedRedeems {
+        uint256 delayedRedeemsCompleted;
+        DelayedRedeem[] delayedRedeems;
+    }
+
+    /**
+     * @notice define a structure for temporary storage of ERC20 tokens and corresponding cumulative amounts
+     */
+    struct DebtTokenAmount {
+        address token;
+        uint256 amount;
+    }
+
+    /**
+     * @notice struct used to store the total amount of debt and the total amount of claimed debt for a specific token
+     */
+    struct TokenDebtInfo {
+        uint256 totalAmount;
+        uint256 claimedAmount;
+    }
+
+    /**
+     * @notice user => struct storing all delayedRedeem info.
+     * Marked as internal with an external getter function named `userRedeems`
+     */
+    mapping(address => UserDelayedRedeems) internal _userRedeems;
+
+    /**
+     * @notice token => struct tracking different token debt.
+     */
+    mapping(address => TokenDebtInfo) public tokenDebts;
+
+    /**
+     * @notice mapping to store the whitelist status of an address.
+     * only whitelist address can redeem using unibtc
+     */
+    mapping(address => bool) private whitelist;
+
+    /**
+     * @notice mapping to store the wrapBtcList status of an address.
+     * only wrapBtcList address(contain wrapped and native BTC) can redeem using unibtc
+     */
+    mapping(address => bool) private wrapBtcList;
+
+    /**
+     * @notice flag to enable/disable the whitelist feature.
+     * If enabled, only whitelisted addresses can redeem using unibtc.
+     */
+    bool public whitelistEnabled;
+
+    /**
+     * @notice the total redeem cap for a single day
+     */
+    uint256 public dayCap;
+
+    /**
+     * @notice the total redeem cap for duration history day
+     */
+    uint256 private _totalCap;
+
+    /**
+     * @notice the last updated day for update the total redeem cap
+     */
+    uint256 public lastUpdatedDay;
+
+    /**
+     * @notice the total debt of all delayedRedeems
+     */
+    uint256 public totalDebt;
+
+    /**
+     * @notice the address of the native BTC token
+     */
+    address public constant NATIVE_BTC =
+    address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
+
+    /**
+     * @notice using for converting some wrapped BTC to the 18 decimals
+     */
+    uint256 public constant EXCHANGE_RATE_BASE = 1e10;
+
+    /**
+     * @notice principal redeem period
+     */
+    uint256 public redeemPrincipalDelayTimestamp;
+
+    receive() external payable {}
 
     /**
      * ======================================================================================
      *
-     * SYSTEM SETTINGS
+     * CONSTRUCTOR
      *
      * ======================================================================================
      */
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
+    /**
+     *  @dev disables the ability to call any other initializer functions.
+     */
     constructor() {
         _disableInitializers();
     }
 
-    receive() external payable {
-        revert("value not accepted");
+    /**
+     * ======================================================================================
+     *
+     * MODIFIERS
+     *
+     * ======================================================================================
+     */
+
+    /**
+     * @dev modifier to check if the caller is whitelisted
+     */
+    modifier onlyWhitelisted() {
+        require(!whitelistEnabled || whitelist[msg.sender], "USR009");
+        _;
     }
 
-    function initialize(address _defaultAdmin) initializer public {
+    /**
+     * ======================================================================================
+     *
+     * ADMIN
+     *
+     * ======================================================================================
+     */
+
+    /**
+     * @notice admin-only function for modifying the value of the `redeemDelayTimestamp` variable.
+     */
+    function initialize(
+        address _defaultAdmin,
+        address _uniBTC,
+        address _vault,
+        uint256 _redeemDelayTimestamp,
+        bool _whitelistEnabled,
+        uint256 _dayCap
+    ) public initializer {
         __AccessControl_init();
+        __Pausable_init();
+        __ReentrancyGuard_init();
 
         require(_defaultAdmin != address(0x0), "SYS001");
+        require(_uniBTC != address(0x0), "SYS001");
+        require(_vault != address(0x0), "SYS001");
+        require(_dayCap <= DAY_MAX_ALLOWED_CAP, "USR013");
 
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
+        _grantRole(PAUSER_ROLE, _defaultAdmin);
+
+        uniBTC = _uniBTC;
+        vault = _vault;
+        _totalCap = _dayCap;
+        dayCap = _dayCap;
+        redeemStartedTimestamp = block.timestamp;
+        _setWhitelistEnabled(_whitelistEnabled);
+        _setRedeemDelayTimestamp(_redeemDelayTimestamp);
+    }
+
+    /**
+     * @dev pause the contract
+     */
+    function pause() public onlyRole(PAUSER_ROLE) {
+        _pause();
+    }
+
+    /**
+     * @dev unpause the contract
+     */
+    function unpause() public onlyRole(PAUSER_ROLE) {
+        _unpause();
+    }
+
+    /**
+     * @dev set a new delay redeem block timestamp for the contract
+     */
+    function setRedeemDelayTimestamp(
+        uint256 _newValue
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRedeemDelayTimestamp(_newValue);
+    }
+
+    /**
+     * @dev add a new wrapped or native btc address in wrapBtcList for the contract
+     */
+    function addToWrapBtcList(
+        address _token
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        wrapBtcList[_token] = true;
+    }
+
+    /**
+     * @dev remove an address from wrapBtcList for the contract
+     */
+    function removeFromWrapBtcList(
+        address _token
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        wrapBtcList[_token] = false;
+    }
+
+    /**
+     * @dev set the whitelistEnabled for the contract
+     */
+    function setWhitelistEnabled(
+        bool _enabled
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setWhitelistEnabled(_enabled);
+    }
+
+    /**
+     * @dev add a new address in whitelist for the contract
+     */
+    function addToWhitelist(
+        address _address
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        whitelist[_address] = true;
+    }
+
+    /**
+     * @dev remove an address from whitelist for the contract
+     */
+    function removeFromWhitelist(
+        address _address
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        whitelist[_address] = false;
+    }
+
+    /**
+     * @dev set a new day Cap for the contract
+     */
+    function setDayCap(uint256 _newCap) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setDayCap(_newCap);
+    }
+
+    /**
+     * @dev set a new delay principal redeem block timestamp for the contract
+     */
+    function setRedeemPrincipalDelayTimestamp(
+        uint256 _newValue
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRedeemPrincipalDelayTimestamp(_newValue);
     }
 
     /**
      * ======================================================================================
      *
-     * VIEW FUNCTIONS
+     * EXTERNAL FUNCTIONS
      *
      * ======================================================================================
      */
 
     /**
-     * @dev Calculate the current total supply of assets for '_leadingToken'.
+     * @notice Creates a delayed redeem for `_amount` to the `recipient`.
+     * @dev check the address is in whitelist or not
      */
-    function totalSupply(address _leadingToken) external view returns (uint256) {
-        require(tokenHolders[_leadingToken].length > 0, "USR018");
-        return _totalSupply(_leadingToken);
-    }
+    function createDelayedRedeem(
+        address _token,
+        uint256 _amount
+    ) external nonReentrant whenNotPaused onlyWhitelisted {
+        require(wrapBtcList[_token], "SYS003");
+        _updateTotalCap();
+        require(_totalCap >= _amount + totalDebt, "USR010");
+        //lock unibtc in the contract
+        IERC20(uniBTC).safeTransferFrom(msg.sender, address(this), _amount);
+        uint224 RedeemAmount = uint224(_amount);
+        if (RedeemAmount != 0) {
+            DelayedRedeem memory delayedRedeem = DelayedRedeem({
+                amount: RedeemAmount,
+                timestampCreated: uint32(block.timestamp),
+                token: _token
+            });
+            _userRedeems[msg.sender].delayedRedeems.push(delayedRedeem);
 
-    /**
-     * @dev A helper function to retrieve the token holders for a specified '_leadingToken'.
-     */
-    function getTokenHolders(address _leadingToken) external view returns (Pool[] memory) {
-        return tokenHolders[_leadingToken];
-    }
+            tokenDebts[_token].totalAmount += _amount;
+            totalDebt += _amount;
 
-    /**
-     * @dev A helper function to list all tokens that lead groups of Pools.
-     * The token address returned here is the key in the tokenHolders mapping
-     * and can be used to retrieve the token holders via 'getTokenHolders'.
-     */
-    function ListLeadingTokens() external view returns (address[] memory) {
-        return leadingTokens;
-    }
-
-    /**
-     * ======================================================================================
-     *
-     * ADMIN FUNCTIONS
-     *
-     * ======================================================================================
-     */
-
-    /**
-     * @dev Set holders to track the total supply of assets, which must have the same decimals.
-     */
-    function setTokenHolders(address _leadingToken, Pool[] calldata _pools) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_haveSameDecimals(_leadingToken, _pools), "SYS010");
-
-        delete tokenHolders[_leadingToken];
-
-        for (uint256 i = 0; i < _pools.length; i++) {
-            tokenHolders[_leadingToken].push(_pools[i]);
+            emit DelayedRedeemCreated(
+                msg.sender,
+                _token,
+                RedeemAmount,
+                _userRedeems[msg.sender].delayedRedeems.length - 1
+            );
         }
+    }
 
-        emit TokenHoldersSet(_leadingToken, _pools);
+    /**
+     * @notice Called in order to claim delayed redeem made to msg.sender that have passed the `redeemDelayTimestamp` period.
+     * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
+     * @dev that the caller of this function cannot control where the funds are sent, but they can control when the
+     * funds are sent once the redeem becomes claimable and token comeback the contract.
+     */
+    function claimDelayedRedeems(
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) external nonReentrant whenNotPaused {
+        _claimDelayedRedeems(msg.sender, maxNumberOfDelayedRedeemsToClaim);
+    }
 
-        for (uint256 i = 0; i < leadingTokens.length; i++) {
-            if (leadingTokens[i] == _leadingToken) {
-                return;
+    /**
+     * @notice Called in order to claim delayed redeem made to the caller that have passed the `redeemDelayTimestamp` period.
+     */
+    function claimDelayedRedeems() external nonReentrant whenNotPaused {
+        _claimDelayedRedeems(msg.sender, type(uint256).max);
+    }
+
+    /**
+     * @notice Called in order to claim delayed redeem made to msg.sender that have passed the `redeemPrincipalDelayTimestamp` period.
+     * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
+     * @dev that the caller of this function can control when the funds are sent once the principal becomes claimable.
+     */
+    function claimPrincipals(
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) external nonReentrant whenNotPaused {
+        _claimPrincipals(msg.sender, maxNumberOfDelayedRedeemsToClaim);
+    }
+
+    /**
+     * @notice Called in order to claim delayed redeem made to the caller that have passed the `redeemPrincipalDelayTimestamp` period.
+     */
+    function claimPrincipals() external nonReentrant whenNotPaused {
+        _claimPrincipals(msg.sender, type(uint256).max);
+    }
+
+    /**
+     * @notice Getter function for the mapping `_userRedeems`
+     */
+    function userRedeems(
+        address user
+    ) external view returns (UserDelayedRedeems memory) {
+        return _userRedeems[user];
+    }
+
+    /**
+     * @notice Getter function for fetching the delayedRedeem at the `index`th entry from the `_userRedeems[user].delayedRedeems` array
+     */
+    function userDelayedRedeemByIndex(
+        address user,
+        uint256 index
+    ) external view returns (DelayedRedeem memory) {
+        return _userRedeems[user].delayedRedeems[index];
+    }
+
+    /**
+     * @notice Getter function for fetching the length of the delayedRedeems array of a specific user
+     */
+    function userRedeemsLength(address user) external view returns (uint256) {
+        return _userRedeems[user].delayedRedeems.length;
+    }
+
+    /**
+     * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from
+     * the `_userRedeems[user].delayedRedeems` array is currently claimable
+     */
+    function canClaimDelayedRedeem(
+        address user,
+        uint256 index
+    ) external view returns (bool) {
+        return ((index >= _userRedeems[user].delayedRedeemsCompleted) &&
+            (block.timestamp >=
+                _userRedeems[user].delayedRedeems[index].timestampCreated +
+                redeemDelayTimestamp));
+    }
+
+    /**
+     * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from
+     * the `_userRedeems[user].delayedRedeems` array is currently principal claimable
+     */
+    function canClaimDelayedRedeemPrincipal(
+        address user,
+        uint256 index
+    ) external view returns (bool) {
+        return ((redeemPrincipalDelayTimestamp > redeemDelayTimestamp &&
+            index >= _userRedeems[user].delayedRedeemsCompleted) &&
+            (block.timestamp >=
+                _userRedeems[user].delayedRedeems[index].timestampCreated +
+                redeemPrincipalDelayTimestamp));
+    }
+
+    /**
+     * @notice Getter function to get all delayedRedeems of the `user`
+     */
+    function getUserDelayedRedeems(
+        address user
+    ) external view returns (DelayedRedeem[] memory) {
+        uint256 delayedRedeemsCompleted = _userRedeems[user]
+        .delayedRedeemsCompleted;
+        uint256 totalDelayedRedeems = _userRedeems[user].delayedRedeems.length;
+        uint256 userDelayedRedeemsLength = totalDelayedRedeems -
+        delayedRedeemsCompleted;
+        DelayedRedeem[] memory userDelayedRedeems = new DelayedRedeem[](
+            userDelayedRedeemsLength
+        );
+        for (uint256 i = 0; i < userDelayedRedeemsLength; i++) {
+            userDelayedRedeems[i] = _userRedeems[user].delayedRedeems[
+            delayedRedeemsCompleted + i
+            ];
+        }
+        return userDelayedRedeems;
+    }
+
+    /**
+     * @notice Getter function to get all delayedRedeems that are currently claimable by the `user`
+     */
+    function getClaimableUserDelayedRedeems(
+        address user
+    ) external view returns (DelayedRedeem[] memory) {
+        uint256 delayedRedeemsCompleted = _userRedeems[user]
+        .delayedRedeemsCompleted;
+        uint256 totalDelayedRedeems = _userRedeems[user].delayedRedeems.length;
+        uint256 userDelayedRedeemsLength = totalDelayedRedeems -
+        delayedRedeemsCompleted;
+
+        uint256 firstNonClaimableRedeemIndex = userDelayedRedeemsLength;
+
+        for (uint256 i = 0; i < userDelayedRedeemsLength; i++) {
+            DelayedRedeem memory delayedRedeem = _userRedeems[user]
+            .delayedRedeems[delayedRedeemsCompleted + i];
+            // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem cannot be claimed
+            if (
+                block.timestamp <
+                delayedRedeem.timestampCreated + redeemDelayTimestamp
+            ) {
+                firstNonClaimableRedeemIndex = i;
+                break;
             }
         }
+        uint256 numberOfClaimableRedeems = firstNonClaimableRedeemIndex;
+        DelayedRedeem[] memory claimableDelayedRedeems = new DelayedRedeem[](
+            numberOfClaimableRedeems
+        );
 
-        leadingTokens.push(_leadingToken);
+        if (numberOfClaimableRedeems != 0) {
+            for (uint256 i = 0; i < numberOfClaimableRedeems; i++) {
+                claimableDelayedRedeems[i] = _userRedeems[user].delayedRedeems[
+                delayedRedeemsCompleted + i
+                ];
+            }
+        }
+        return claimableDelayedRedeems;
+    }
+
+    /**
+     * @notice get current available Cap
+     */
+    function getAvailableCap() external view returns (uint256) {
+        uint256 currentDay = (block.timestamp - redeemStartedTimestamp) /
+        DAY_DELAY_DURATION_TIME;
+        uint256 currentCap = _totalCap;
+        if (currentDay > lastUpdatedDay) {
+            uint256 passeddays = currentDay - lastUpdatedDay;
+            currentCap = _totalCap + passeddays * dayCap;
+        }
+        return currentCap - totalDebt;
+    }
+
+    /**
+     * @dev check the address is in whitelist or not
+     */
+    function isWhitelisted(address _address) external view returns (bool) {
+        return whitelist[_address];
+    }
+
+    /*
+     * @dev check the address is in wrap-btc list or not
+     */
+    function isWrapBtcListed(address _token) external view returns (bool) {
+        return wrapBtcList[_token];
     }
 
     /**
@@ -1879,47 +2915,248 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
      */
 
     /**
-     * @dev Calculate the current total assets (native assets and ERC-20 assets) supplied.
+     * @notice internal function for changing the value of `redeemDelayTimestamp`. Also performs sanity check and emits an event.
      */
-    function _totalSupply(address _leadingToken) internal view returns (uint256) {
-        uint256 total;
-        Pool[] memory pools = tokenHolders[_leadingToken];
-        for (uint256 i = 0; i < pools.length; i++) {
-            address token = pools[i].token;
-            address[] memory holders = pools[i].holders;
-            if (token == NATIVE_BTC) {
-                for (uint256 j = 0; j < holders.length; j++) {
-                    uint256 balance = holders[j].balance;
-                    total += balance;
-                }
-            } else {
-                for (uint256 j = 0; j < holders.length; j++) {
-                    uint256 balance = ERC20(token).balanceOf(holders[j]);
-                    total += balance;
-                }
-            }
-        }
-        return total;
+    function _setRedeemDelayTimestamp(uint256 newValue) internal {
+        require(newValue <= MAX_REDEEM_DELAY_DURATION_TIME, "USR012");
+        emit redeemDelayTimestampSet(redeemDelayTimestamp, newValue);
+        redeemDelayTimestamp = newValue;
     }
 
     /**
-    * @dev Check if all tokens in the pools have the same decimals as the leading token.
+     * @notice internal function for changing the value of `redeemPrincipalDelayTimestamp`. Also performs sanity check and emits an event.
      */
-    function _haveSameDecimals(address _leadingToken, Pool[] calldata _pools) internal view returns (bool) {
-        uint8 decimals = _leadingToken == NATIVE_BTC ? L2_BTC_DECIMAL : ERC20(_leadingToken).decimals();
-        for (uint256 i = 0; i < _pools.length; i++) {
-            address poolToken = _pools[i].token;
-            if (poolToken == NATIVE_BTC) {
-                if (decimals != L2_BTC_DECIMAL) {
-                    return false;
+    function _setRedeemPrincipalDelayTimestamp(uint256 newValue) internal {
+        require(newValue <= MAX_REDEEM_DELAY_DURATION_TIME, "USR012");
+        emit redeemPrincipalDelayTimestampSet(
+            redeemPrincipalDelayTimestamp,
+            newValue
+        );
+        redeemPrincipalDelayTimestamp = newValue;
+    }
+
+    /**
+     * @notice internal function for changing the value of `whitelistEnabled`.
+     */
+    function _setWhitelistEnabled(bool newValue) internal {
+        whitelistEnabled = newValue;
+    }
+
+    /**
+     * @notice internal function used in both of the overloaded `claimDelayedRedeems` functions
+     */
+    function _claimDelayedRedeems(
+        address recipient,
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) internal {
+        uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
+        .delayedRedeemsCompleted;
+        uint256 numToClaim = 0;
+        DebtTokenAmount[] memory debtAmounts;
+        (numToClaim, debtAmounts) = _getDebtTokenAmount(
+            recipient,
+            delayedRedeemsCompletedBefore,
+            redeemDelayTimestamp,
+            maxNumberOfDelayedRedeemsToClaim
+        );
+
+        if (numToClaim > 0) {
+            // mark the i delayedRedeems as claimed
+            _userRedeems[recipient].delayedRedeemsCompleted =
+            delayedRedeemsCompletedBefore +
+            numToClaim;
+
+            // transfer the delayedRedeems to the recipient
+            uint256 burn_amount = 0;
+            bytes memory data;
+            for (uint256 i = 0; i < debtAmounts.length; i++) {
+                address token = debtAmounts[i].token;
+                uint256 amountUniBTC = debtAmounts[i].amount;
+                uint256 amountToSend = _amounts(token, amountUniBTC);
+                if (token == NATIVE_BTC) {
+                    // transfer native token to the recipient
+                    IVault(vault).execute(address(this), "", amountToSend);
+                    payable(recipient).transfer(amountToSend);
+                } else {
+                    data = abi.encodeWithSelector(
+                        IERC20.transfer.selector,
+                        recipient,
+                        amountToSend
+                    );
+                    // transfer erc20 token to the recipient
+                    IVault(vault).execute(token, data, 0);
                 }
-            } else {
-                if (ERC20(poolToken).decimals() != decimals) {
-                    return false;
-                }
+                tokenDebts[token].claimedAmount += amountUniBTC;
+                burn_amount += amountUniBTC;
+                emit DelayedRedeemsClaimed(recipient, token, amountToSend);
+            }
+            //burn claimed amount unibtc
+            if (IERC20(uniBTC).allowance(address(this), vault) < burn_amount) {
+                IERC20(uniBTC).safeApprove(vault, burn_amount);
+            }
+            data = abi.encodeWithSelector(
+                IMintableContract.burnFrom.selector,
+                address(this),
+                burn_amount
+            );
+            IVault(vault).execute(uniBTC, data, 0);
+
+            emit DelayedRedeemsCompleted(
+                recipient,
+                burn_amount,
+                delayedRedeemsCompletedBefore + numToClaim
+            );
+        }
+    }
+
+    /**
+     * @notice internal function used in both of the overloaded `claimPrincipals` functions
+     */
+    function _claimPrincipals(
+        address recipient,
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) internal {
+        require(redeemPrincipalDelayTimestamp > redeemDelayTimestamp, "USR016");
+        uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
+        .delayedRedeemsCompleted;
+        uint256 numToClaim = 0;
+        DebtTokenAmount[] memory debtAmounts;
+        (numToClaim, debtAmounts) = _getDebtTokenAmount(
+            recipient,
+            delayedRedeemsCompletedBefore,
+            redeemPrincipalDelayTimestamp,
+            maxNumberOfDelayedRedeemsToClaim
+        );
+
+        if (numToClaim > 0) {
+            // mark the i delayedRedeems as claimed
+            _userRedeems[recipient].delayedRedeemsCompleted =
+            delayedRedeemsCompletedBefore +
+            numToClaim;
+
+            uint256 amountToSend = 0;
+            for (uint256 i = 0; i < debtAmounts.length; i++) {
+                address token = debtAmounts[i].token;
+                uint256 amountUniBTC = debtAmounts[i].amount;
+                tokenDebts[token].claimedAmount += amountUniBTC;
+                amountToSend += amountUniBTC;
+                emit DelayedRedeemsPrincipalClaimed(
+                    recipient,
+                    token,
+                    amountUniBTC
+                );
+            }
+            IERC20(uniBTC).safeTransfer(recipient, amountToSend);
+            emit DelayedRedeemsPrincipalCompleted(
+                recipient,
+                amountToSend,
+                delayedRedeemsCompletedBefore + numToClaim
+            );
+        }
+    }
+
+    /**
+     * @notice internal function for changing the value of _totalCap.
+     */
+    function _updateTotalCap() internal {
+        uint256 currentDay = (block.timestamp - redeemStartedTimestamp) /
+        DAY_DELAY_DURATION_TIME;
+        if (currentDay > lastUpdatedDay) {
+            uint256 passeddays = currentDay - lastUpdatedDay;
+            _totalCap = _totalCap + passeddays * dayCap;
+            lastUpdatedDay = currentDay;
+        }
+    }
+
+    /**
+     * @notice internal function for changing the value of `dayCap`.
+     */
+    function _setDayCap(uint256 newCap) internal {
+        require(newCap <= DAY_MAX_ALLOWED_CAP, "USR013");
+        _updateTotalCap();
+        dayCap = newCap;
+    }
+
+    /**
+     * @dev determine the valid wrapped and native BTC amount.
+     */
+    function _amounts(
+        address token,
+        uint256 amount
+    ) internal view returns (uint256) {
+        if (token == NATIVE_BTC) {
+            return (amount * EXCHANGE_RATE_BASE);
+        }
+        uint8 decs = ERC20(token).decimals();
+        if (decs == 8) return (amount);
+        if (decs == 18) {
+            return (amount * EXCHANGE_RATE_BASE);
+        }
+        return (0);
+    }
+
+    /**
+     * @dev get the claimable debt list from _userRedeems through delayTimestamp
+     */
+    function _getDebtTokenAmount(
+        address recipient,
+        uint256 delayedRedeemsCompletedBefore,
+        uint256 delayTimestamp,
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) internal view returns (uint256, DebtTokenAmount[] memory) {
+        uint256 _userRedeemsLength = _userRedeems[recipient]
+        .delayedRedeems
+        .length;
+        uint256 numToClaim = 0;
+        while (
+            numToClaim < maxNumberOfDelayedRedeemsToClaim &&
+            (delayedRedeemsCompletedBefore + numToClaim) < _userRedeemsLength
+        ) {
+            // copy delayedRedeem from storage to memory
+            DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
+            .delayedRedeems[delayedRedeemsCompletedBefore + numToClaim];
+            // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem cannot be claimed
+            if (
+                block.timestamp <
+                delayedRedeem.timestampCreated + delayTimestamp
+            ) {
+                break;
+            }
+            // increment i to account for the delayedRedeem being claimed
+            unchecked {
+                ++numToClaim;
             }
         }
-        return true;
+
+        if (numToClaim > 0) {
+            DebtTokenAmount[] memory debtAmounts = new DebtTokenAmount[](
+                numToClaim
+            );
+            uint256 tempCount = 0;
+            for (uint256 i = 0; i < numToClaim; i++) {
+                DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
+                .delayedRedeems[delayedRedeemsCompletedBefore + i];
+                bool found = false;
+
+                for (uint256 j = 0; j < tempCount; j++) {
+                    if (debtAmounts[j].token == delayedRedeem.token) {
+                        debtAmounts[j].amount += delayedRedeem.amount;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    debtAmounts[tempCount] = DebtTokenAmount({
+                        token: delayedRedeem.token,
+                        amount: delayedRedeem.amount
+                    });
+                    tempCount++;
+                }
+            }
+            return (numToClaim, debtAmounts);
+        }
+
+        return (0, new DebtTokenAmount[](0));
     }
 
     /**
@@ -1929,5 +3166,63 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
      *
      * ======================================================================================
      */
-    event TokenHoldersSet(address leadingToken, Pool[] pools);
+
+    /**
+     * @notice event for delayedRedeem creation
+     */
+    event DelayedRedeemCreated(
+        address recipient,
+        address token,
+        uint256 amount,
+        uint256 index
+    );
+
+    /**
+     * @notice event for the claiming of delayedRedeems
+     */
+    event DelayedRedeemsClaimed(
+        address recipient,
+        address token,
+        uint256 amountClaimed
+    );
+
+    /**
+     * @notice event for the claiming principal of delayedRedeems
+     */
+    event DelayedRedeemsPrincipalClaimed(
+        address recipient,
+        address token,
+        uint256 amountClaimed
+    );
+
+    /**
+     * @notice event for the claiming of delayedRedeems
+     */
+    event DelayedRedeemsCompleted(
+        address recipient,
+        uint256 amountBurned,
+        uint256 delayedRedeemsCompleted
+    );
+
+    /**
+     * @notice event for the claiming principal of delayedRedeems
+     */
+    event DelayedRedeemsPrincipalCompleted(
+        address recipient,
+        uint256 amountPrincipal,
+        uint256 delayedRedeemsCompleted
+    );
+
+    /**
+     * @notice Emitted when the `redeemDelayTimestamp` variable is modified from `previousValue` to `newValue`.
+     */
+    event redeemDelayTimestampSet(uint256 previousValue, uint256 newValue);
+
+    /**
+     * @notice Emitted when the `redeemPrincipalDelayTimestamp` variable is modified from `previousValue` to `newValue`.
+     */
+    event redeemPrincipalDelayTimestampSet(
+        uint256 previousValue,
+        uint256 newValue
+    );
 }

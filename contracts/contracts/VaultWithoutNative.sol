@@ -32,7 +32,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
     address public supplyFeeder;
-
+    //================== 2024/09/30 ===========
     mapping(address => bool) public allowedTokenList;
     mapping(address => bool) public allowedTargetList;
     bool public outOfService;
@@ -165,6 +165,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_token != NATIVE_BTC, "SYS012");
         require(_token != address(0x0), "SYS003");
+        require(_cap > 0, "USR017");
 
         uint8 decs = ERC20(_token).decimals();
 

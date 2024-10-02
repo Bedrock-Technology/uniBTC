@@ -647,7 +647,7 @@ contract DelayRedeemRouter is
         address recipient,
         uint256 maxNumberOfDelayedRedeemsToClaim
     ) internal {
-        require(redeemPrincipalDelayTimestamp > redeemDelayTimestamp, "USR017");
+        require(redeemPrincipalDelayTimestamp > redeemDelayTimestamp, "USR019");
         uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
             .delayedRedeemsCompleted;
         uint256 numToClaim = 0;

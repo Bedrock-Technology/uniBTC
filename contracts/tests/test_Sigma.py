@@ -1,7 +1,8 @@
 import brownie
 from brownie import Sigma, Contract
 
-
+# NOTE: This test designed to run on the development network
+# Command to run test: `brownie test tests/test_Sigma.py -I`
 def test_setTokenHolders(fn_isolation, contracts, deps, deployer, owner, bob, zero_address):
     fbtc, locked_fbtc, wbtc18, vault = contracts[7], contracts[10], contracts[11], contracts[6],
 
@@ -66,7 +67,15 @@ def test_totalSupply(fn_isolation, contracts, deps, deployer, owner, bob):
     sigma = Contract.from_abi("Sigma", sigma_proxy, Sigma.abi)
     sigma.initialize(owner, {'from': owner})
 
-    # Set holders
+    # ---Revert Path Testing---
+
+    # Scenario 1: The leading token hasn't been registered and 'totalSupply' should revert
+    with brownie.reverts("USR018"):
+        sigma.totalSupply(fbtc)
+
+    # ---Happy Path Testing---
+
+    # Scenario 2: The total supply is zero
     pools = [
         (fbtc, (vault,)),
         (wbtc, (vault,))
@@ -74,11 +83,9 @@ def test_totalSupply(fn_isolation, contracts, deps, deployer, owner, bob):
 
     sigma.setTokenHolders(fbtc, pools, {'from': owner})
 
-    # ---Happy Path Testing---
-    # Scenario 1: The total supply is zero
     assert sigma.totalSupply(fbtc) == 0
 
-    # Scenario 2: The total supply is updated successfully
+    # Scenario 3: The total supply is updated successfully
     amt = 10000 * 1e8
     fbtc.mint(vault, amt, {'from': owner})
     wbtc.mint(vault, amt, {'from': owner})

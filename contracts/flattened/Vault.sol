@@ -2394,11 +2394,15 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     bool private _DEPRECATED_redeemable_;
 
     address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
-    uint8 public constant NATIVE_BTC_DECIMALS = 18;
+    uint8 public constant L2_BTC_DECIMAL = 18;
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
     address public supplyFeeder;
+    //================== 2024/09/30 ===========
+    mapping(address => bool) public allowedTokenList;
+    mapping(address => bool) public allowedTargetList;
+    bool public outOfService;
 
     receive() external payable {}
 
@@ -2407,24 +2411,30 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         _disableInitializers();
     }
 
+    modifier serviceNormal{
+        require(!outOfService, "SYS011");
+        _;
+    }
+
     /**
      * @dev mint uniBTC with native BTC
      */
-    function mint() external payable {
-        require(!paused[NATIVE_BTC], "SYS002");
+    function mint() external payable serviceNormal {
+        require(allowedTokenList[NATIVE_BTC] && !paused[NATIVE_BTC], "SYS002");
         _mint(msg.sender, msg.value);
     }
 
     /**
      * @dev mint uniBTC with the given type of wrapped BTC
      */
-    function mint(address _token, uint256 _amount) external {
-        require(!paused[_token], "SYS002");
+    function mint(address _token, uint256 _amount) external serviceNormal {
+        require(allowedTokenList[_token] && !paused[_token], "SYS002");
         _mint(msg.sender, _token, _amount);
     }
 
     // @dev execute a contract call that also transfers '_value' wei to '_target'
-    function execute(address _target, bytes memory _data, uint256 _value) external nonReentrant onlyRole(OPERATOR_ROLE) returns(bytes memory) {
+    function execute(address _target, bytes memory _data, uint256 _value) external nonReentrant onlyRole(OPERATOR_ROLE) serviceNormal returns (bytes memory) {
+        require(allowedTargetList[_target], "SYS001");
         return _target.functionCallWithValue(_data, _value);
     }
 
@@ -2449,19 +2459,79 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
+     * @dev allow the minting of a token
+     */
+    function allowToken(address[] memory _token) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        for (uint256 i = 0; i < _token.length; i++) {
+            allowedTokenList[_token[i]] = true;
+        }
+        emit TokenAllowed(_token);
+    }
+
+    /**
+     * @dev deny the minting of a token
+     */
+    function denyToken(address[] memory _token) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        for (uint256 i = 0; i < _token.length; i++) {
+            allowedTokenList[_token[i]] = false;
+        }
+        emit TokenDenied(_token);
+    }
+
+    /**
+     * @dev allow the target address
+     */
+    function allowTarget(address[] memory _targets) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        for (uint256 i = 0; i < _targets.length; i++) {
+            allowedTargetList[_targets[i]] = true;
+        }
+        emit TargetAllowed(_targets);
+    }
+
+    /**
+     * @dev deny the target address
+     */
+    function denyTarget(address[] memory _targets) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        for (uint256 i = 0; i < _targets.length; i++) {
+            allowedTargetList[_targets[i]] = false;
+        }
+        emit TargetDenied(_targets);
+    }
+
+    /**
      * @dev a pauser pause the minting of a token
      */
-    function pauseToken(address _token) public onlyRole(PAUSER_ROLE) {
-        paused[_token] = true;
-        emit TokenPaused(_token);
+    function pauseToken(address[] memory _tokens) external onlyRole(PAUSER_ROLE) {
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            paused[_tokens[i]] = true;
+        }
+        emit TokenPaused(_tokens);
     }
 
     /**
      * @dev a pauser unpause the minting of a token
      */
-    function unpauseToken(address _token) public onlyRole(PAUSER_ROLE) {
-        paused[_token] = false;
-        emit TokenUnpaused(_token);
+    function unpauseToken(address[] memory _tokens) external onlyRole(PAUSER_ROLE) {
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            paused[_tokens[i]] = false;
+        }
+        emit TokenUnpaused(_tokens);
+    }
+
+    /**
+     * @dev toggle service
+     */
+    function startService() external onlyRole(PAUSER_ROLE) {
+        outOfService = false;
+        emit StartService();
+    }
+
+    /**
+ * @dev toggle service
+     */
+    function stopService() external onlyRole(PAUSER_ROLE) {
+        outOfService = true;
+        emit StopService();
     }
 
     /**
@@ -2469,8 +2539,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_token != address(0x0), "SYS003");
+        require(_cap > 0, "USR017");
 
-        uint8 decs = NATIVE_BTC_DECIMALS;
+        uint8 decs = L2_BTC_DECIMAL;
 
         if (_token != NATIVE_BTC) decs = ERC20(_token).decimals();
 
@@ -2480,7 +2551,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev set supplyFeeder address to track the locked supply assets of the vault
+     * @dev set the supply feeder address to track the asset supply for the vault
      */
     function setSupplyFeeder(address _supplyFeeder) external onlyRole(DEFAULT_ADMIN_ROLE) {
         supplyFeeder = _supplyFeeder;
@@ -2502,7 +2573,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         require(uniBTCAmount > 0, "USR010");
 
         uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(NATIVE_BTC);
-        require(totalSupply <= caps[NATIVE_BTC], "USR003");
+        require(totalSupply <= caps[NATIVE_BTC] && caps[NATIVE_BTC] != 0, "USR003");
 
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
 
@@ -2517,7 +2588,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         require(uniBTCAmount > 0, "USR010");
 
         uint256 totalSupply = ISupplyFeeder(supplyFeeder).totalSupply(_token);
-        require(totalSupply + _amount <= caps[_token], "USR003");
+        require((totalSupply + _amount <= caps[_token]) && caps[_token] != 0, "USR003");
 
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
         IMintableContract(uniBTC).mint(_sender, uniBTCAmount);
@@ -2528,19 +2599,19 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev determine the valid native BTC amount and the corresponding uniBTC amount.
      */
-    function _amounts(uint256 _amount) internal returns (uint256, uint256) {
-        uint256 uniBTCAmt = _amount /EXCHANGE_RATE_BASE;
+    function _amounts(uint256 _amount) internal pure returns (uint256, uint256) {
+        uint256 uniBTCAmt = _amount / EXCHANGE_RATE_BASE;
         return (uniBTCAmt * EXCHANGE_RATE_BASE, uniBTCAmt);
     }
 
     /**
      * @dev determine the valid wrapped BTC amount and the corresponding uniBTC amount.
      */
-    function _amounts(address _token, uint256 _amount) internal returns (uint256, uint256) {
+    function _amounts(address _token, uint256 _amount) internal view returns (uint256, uint256) {
         uint8 decs = ERC20(_token).decimals();
         if (decs == 8) return (_amount, _amount);
         if (decs == 18) {
-            uint256 uniBTCAmt = _amount /EXCHANGE_RATE_BASE;
+            uint256 uniBTCAmt = _amount / EXCHANGE_RATE_BASE;
             return (uniBTCAmt * EXCHANGE_RATE_BASE, uniBTCAmt);
         }
         return (0, 0);
@@ -2554,6 +2625,12 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      * ======================================================================================
      */
     event Minted(address token, uint256 amount);
-    event TokenPaused(address token);
-    event TokenUnpaused(address token);
+    event TokenPaused(address[] token);
+    event TokenUnpaused(address[] token);
+    event TokenAllowed(address[] token);
+    event TokenDenied(address[] token);
+    event TargetAllowed(address[] token);
+    event TargetDenied(address[] token);
+    event StartService();
+    event StopService();
 }
