@@ -117,3 +117,12 @@
 - BSC: [0xEb28877D7e3DbA5bcd4D0a1474C31F8AFb2d6052](https://bscscan.com/address/0xEb28877D7e3DbA5bcd4D0a1474C31F8AFb2d6052)
 - Ethereum: [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://etherscan.io/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c)
 - Mantle: [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://explorer.mantle.xyz/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c)
+
+
+## 6. Other Contracts
+### 6.1 ApproveProxy
+- ETH：0x69Fd3E6302cB34d5c4E4B81bC0D7435ecC21bbdb
+- BSC: 0x11b3808A5C0B612BC284EF7c2c6034C77A66BE7b
+
+### 6.2 TransferNativeProxy
+
