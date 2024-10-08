@@ -79,6 +79,9 @@
 - Ethereum: [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)
 - Optimism: [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://optimistic.etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)
 
+### 3.3 MBTCProxy
+- MBTCProxy deployed at: 0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a
+
 ---------------------------------------------------
 
 ## 4. Leading Tokens
