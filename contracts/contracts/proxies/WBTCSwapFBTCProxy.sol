@@ -15,7 +15,7 @@ contract WBTCSwapFBTCProxy is Ownable {
     address public immutable UNISWAP_WBTC_FBTC_POOL;
     uint24 public immutable UNISWAP_WBTC_FBTC_FEE;
     uint256 public constant SLIPPAGE_RANGE = 10000;
-    uint256 public constant SLIPPAGE_DEFAULT = 10;
+    uint256 public constant SLIPPAGE_DEFAULT = 50;
 
     receive() external payable {
         revert("value only accepted by the Vault contract");
@@ -120,6 +120,25 @@ contract WBTCSwapFBTCProxy is Ownable {
             IUniswapV3Router02.exactInputSingle.selector,
             params
         );
+
+        uint256 vaultFbtcBalanceBefore = IERC20(FBTC).balanceOf(BEDROCK_VAULT);
         IVault(BEDROCK_VAULT).execute(UNISWAP_V3_ROUTER_02, data, 0);
+        uint256 vaultFbtcBalanceAfter = IERC20(FBTC).balanceOf(BEDROCK_VAULT);
+        uint256 amount = vaultFbtcBalanceAfter - vaultFbtcBalanceBefore;
+        require(amount >= amountOutMin, "USR003");
+        emit SwapWBTCForFBTCAmount(amount);
     }
+
+    /**
+     * ======================================================================================
+     *
+     * EVENTS
+     *
+     * ======================================================================================
+     */
+
+    /**
+     * @notice event for swapWBTCForFBTC
+     */
+    event SwapWBTCForFBTCAmount(uint256 amount);
 }
