@@ -152,7 +152,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev toggle service
+     * @dev start all service
      */
     function startService() external onlyRole(PAUSER_ROLE) {
         outOfService = false;
@@ -160,7 +160,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
- * @dev toggle service
+     * @dev stop all service
      */
     function stopService() external onlyRole(PAUSER_ROLE) {
         outOfService = true;
