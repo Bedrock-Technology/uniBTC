@@ -31,12 +31,13 @@ def test_swapWBTCToFBTC(deps,request):
     vault_proxy = TransparentUpgradeableProxy.at("0x047d41f2544b7f63a8e991af2068a363d210d6da")
     vault = Contract.from_abi("Vault",vault_proxy, Vault.abi)
     vault.grantRole(vault.OPERATOR_ROLE(), wbtc_swap_fbtc_contract, {'from': owner})
+    vault.allowTarget([router], {'from': owner})
     wbtc_erc20 = interface.IERC20(wbtc)
     fbtc_erc20 = interface.IERC20(fbtc)
     vault_wbtc_balance = wbtc_erc20.balanceOf(vault)
     vault_fbtc_balance = fbtc_erc20.balanceOf(vault)
     print("Balance of WBTC in vault",vault_wbtc_balance,"balance of FBTC in vault",vault_fbtc_balance)
-    
+
     #swap wbtc to fbtc
     depth = wbtc_swap_fbtc_contract.getUniswapWbtcForFbtcDepth()
     print("pool wbtc depth is",depth[0],"fbtc depth is",depth[1])
@@ -45,9 +46,8 @@ def test_swapWBTCToFBTC(deps,request):
     slippage = 0
 
     #test different swap function
-    test_case = TEST_LIST[1]
     revert = False
-    if test_case == TEST_LIST[0] :
+    if test_case == TEST_LIST[1] :
         slippage = 100
         revert = custom_slippage(wbtc_swap_fbtc_contract,wbtc_value,slippage,owner)
     else:
@@ -76,6 +76,8 @@ def test_swapWBTCToFBTC(deps,request):
 def custom_slippage(wbtc_swap_fbtc_contract,wbtc_value,slippage,owner):
     try:
         tx = wbtc_swap_fbtc_contract.swapWBTCForFBTC(wbtc_value, slippage, {'from': owner})
+        assert "SwapWBTCForFBTCAmount" in tx.events
+        print("Swap success with real amount",tx.events["SwapWBTCForFBTCAmount"]["amount"])
         return False
     except brownie.exceptions.VirtualMachineError as e:   
         print("Swap failed with slippage",slippage)
@@ -84,6 +86,8 @@ def custom_slippage(wbtc_swap_fbtc_contract,wbtc_value,slippage,owner):
 def default_slippage(wbtc_swap_fbtc_contract,wbtc_value,owner):
     try:
         tx = wbtc_swap_fbtc_contract.swapWBTCForFBTC(wbtc_value, {'from': owner})
+        assert "SwapWBTCForFBTCAmount" in tx.events
+        print("Swap success with real amount",tx.events["SwapWBTCForFBTCAmount"]["amount"])
         return False
     except brownie.exceptions.VirtualMachineError as e:
         print("Swap failed with default slippage") 
