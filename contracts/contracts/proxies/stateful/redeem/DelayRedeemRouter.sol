@@ -155,6 +155,12 @@ contract DelayRedeemRouter is
      */
     uint256 public redeemPrincipalDelayTimestamp;
 
+    /**
+     * @notice mapping to store the blacklist status of an address.
+     * only not in blacklist address can redeem using unibtc
+     */
+    mapping(address => bool) private blacklist;
+
     receive() external payable {}
 
     /**
@@ -185,6 +191,14 @@ contract DelayRedeemRouter is
      */
     modifier onlyWhitelisted() {
         require(!whitelistEnabled || whitelist[msg.sender], "USR009");
+        _;
+    }
+
+    /**
+     * @dev modifier to check if the caller is not blacklisted
+     */
+    modifier onlyNotBlacklisted() {
+        require(!blacklist[msg.sender], "USR009");
         _;
     }
 
@@ -313,6 +327,24 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev add a new address in blacklist for the contract
+     */
+    function addToBlacklist(
+        address _address
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        blacklist[_address] = true;
+    }
+
+    /**
+     * @dev remove an address from blacklist for the contract
+     */
+    function removeFromBlacklist(
+        address _address
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        blacklist[_address] = false;
+    }
+
+    /**
      * ======================================================================================
      *
      * EXTERNAL FUNCTIONS
@@ -327,7 +359,7 @@ contract DelayRedeemRouter is
     function createDelayedRedeem(
         address _token,
         uint256 _amount
-    ) external nonReentrant whenNotPaused onlyWhitelisted {
+    ) external nonReentrant whenNotPaused onlyWhitelisted onlyNotBlacklisted {
         require(wrapBtcList[_token], "SYS003");
         _updateTotalCap();
         require(_totalCap >= _amount + totalDebt, "USR010");
@@ -362,14 +394,19 @@ contract DelayRedeemRouter is
      */
     function claimDelayedRedeems(
         uint256 maxNumberOfDelayedRedeemsToClaim
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused onlyNotBlacklisted {
         _claimDelayedRedeems(msg.sender, maxNumberOfDelayedRedeemsToClaim);
     }
 
     /**
      * @notice Called in order to claim delayed redeem made to the caller that have passed the `redeemDelayTimestamp` period.
      */
-    function claimDelayedRedeems() external nonReentrant whenNotPaused {
+    function claimDelayedRedeems()
+        external
+        nonReentrant
+        whenNotPaused
+        onlyNotBlacklisted
+    {
         _claimDelayedRedeems(msg.sender, type(uint256).max);
     }
 
@@ -380,14 +417,19 @@ contract DelayRedeemRouter is
      */
     function claimPrincipals(
         uint256 maxNumberOfDelayedRedeemsToClaim
-    ) external nonReentrant whenNotPaused {
+    ) external nonReentrant whenNotPaused onlyNotBlacklisted {
         _claimPrincipals(msg.sender, maxNumberOfDelayedRedeemsToClaim);
     }
 
     /**
      * @notice Called in order to claim delayed redeem made to the caller that have passed the `redeemPrincipalDelayTimestamp` period.
      */
-    function claimPrincipals() external nonReentrant whenNotPaused {
+    function claimPrincipals()
+        external
+        nonReentrant
+        whenNotPaused
+        onlyNotBlacklisted
+    {
         _claimPrincipals(msg.sender, type(uint256).max);
     }
 
@@ -535,6 +577,13 @@ contract DelayRedeemRouter is
      */
     function isWrapBtcListed(address _token) external view returns (bool) {
         return wrapBtcList[_token];
+    }
+
+    /**
+     * @dev check the address is in blacklist or not
+     */
+    function isBlacklisted(address _address) external view returns (bool) {
+        return blacklist[_address];
     }
 
     /**

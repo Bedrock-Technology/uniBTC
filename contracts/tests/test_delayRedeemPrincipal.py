@@ -116,6 +116,10 @@ def test_claimPrincipalFromRedeemRouter(deps):
     print("user delay redeems",transparent_delay_redeem_router.getUserDelayedRedeems(user))
     print("unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy))
     currentUniAmount = transparent_uniBTC.balanceOf(user)
+    transparent_delay_redeem_router.addToBlacklist(user,{'from': owner})
+    with brownie.reverts("USR009"):
+         transparent_delay_redeem_router.claimPrincipals({'from': user})
+    transparent_delay_redeem_router.removeFromBlacklist(user,{'from': owner})
     tx=transparent_delay_redeem_router.claimPrincipals({'from': user})
     assert "DelayedRedeemsPrincipalClaimed" in tx.events
     assert "DelayedRedeemsPrincipalCompleted" in tx.events
