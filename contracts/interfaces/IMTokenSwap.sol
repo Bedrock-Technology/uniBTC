@@ -11,5 +11,15 @@ interface IMTokenSwap {
     );
 
     function swapMBtc(bytes32 _txHash, uint256 _amount) external;
+
     function bridgeAddress() external returns (address);
+}
+
+interface ILockNativeTokenWithBridgeFee {
+    event LockNativeTokenWithBridgeFee(
+        address account,
+        uint256 amount,
+        string destBtcAddr,
+        uint256 bridgeFee
+    );
 }
