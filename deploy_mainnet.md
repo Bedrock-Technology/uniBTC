@@ -66,6 +66,9 @@
 ### 2.2 BitLayerNativeProxy Deployments
 - **Bitlayer**: [0xcb28dab5e89f6bf2feb2de200564baff77d59957](https://www.btrscan.com/address/0xcb28dab5e89f6bf2feb2de200564baff77d59957?tab=Transactions)
 
+### 2.3 MBTCProxy
+- Merlin: 0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4
+
 ---------------------------------------------------
 
 ## 3. Chainlink Adapter Deployments
@@ -78,9 +81,6 @@
 - Arbitrum: [0x4DFfCaf5d0B3B83a31405443bF5A4D6a3F9903F5](https://arbiscan.io/address/0x4DFfCaf5d0B3B83a31405443bF5A4D6a3F9903F5)
 - Ethereum: [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)
 - Optimism: [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://optimistic.etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)
-
-### 3.3 MBTCProxy
-- MBTCProxy deployed at: 0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4
 
 ---------------------------------------------------
 
