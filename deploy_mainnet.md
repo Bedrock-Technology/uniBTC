@@ -80,7 +80,7 @@
 - Optimism: [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://optimistic.etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)
 
 ### 3.3 MBTCProxy
-- MBTCProxy deployed at: 0x58Cb2637DEca008a7e9AebBE9843fA7E4d9d187D
+- MBTCProxy deployed at: 0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4
 
 ---------------------------------------------------
 
