@@ -43,7 +43,7 @@
 - Zeta: [0x84E5C854A7fF9F49c888d69DECa578D406C26800](https://zetachain.blockscout.com/address/0x84E5C854A7fF9F49c888d69DECa578D406C26800)
 
 ### 1.4 Sigma Deployments
-- **B²**: [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://explorer.bsquared.network/address/0x94c7f81e3b0458daa721ca5e29f6ced05ccce2b3)
+- **B²**: [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://explorer.bsquared.network/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a)
 - **Bitlayer**: [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://www.btrscan.com/address/0x6b2a01a5f79deb4c2f3c0eda7b01df456fbd726a?tab=Transactions)
 - **Merlin**: [0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a](https://scan.merlinchain.io/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a)
 - Arbitrum: [0x8Cc6D6135C7088fdb3eBFB39B11e7CB2F9853915](https://arbiscan.io/address/0x8cc6d6135c7088fdb3ebfb39b11e7cb2f9853915)
