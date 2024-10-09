@@ -10,21 +10,19 @@ import "../../interfaces/IBTCLayer2Bridge.sol";
 
 contract MBTCProxy is Ownable {
     address private constant EMPTY_TOKEN = address(0);
-    bytes32 private constant BASE_HASH = 0xbeD0000000000000000000000000000000000000000000000000000000000000;
+    uint256 private BASE_NONCE = uint256(keccak256("BEDROCK_MERLIN"));
 
     address public immutable vault;
-    address public immutable mBTC;
-    address public immutable mTokenSwap;
+    address public constant mBTC = 0xB880fd278198bd590252621d4CD071b1842E9Bcd;
+    address public constant mTokenSwap = 0x72A817715f174a32303e8C33cDCd25E0dACfE60b;
     address public immutable btcLayer2Bridge;
 
     uint256 public nonce;
 
-    constructor(address _vault, address _mBTC, address _mTokenSwap) {
+    constructor(address _vault, uint256 _nonce) {
         vault = _vault;
-        mBTC = _mBTC;
-        mTokenSwap = _mTokenSwap;
-        btcLayer2Bridge = IMTokenSwap(_mTokenSwap).bridgeAddress();
-        nonce = 2;
+        nonce = _nonce;
+        btcLayer2Bridge = IMTokenSwap(mTokenSwap).bridgeAddress();
     }
 
     receive() external payable {
@@ -84,6 +82,6 @@ contract MBTCProxy is Ownable {
      */
     function getNextTxHash() internal returns (bytes32 txHash) {
         nonce += 1;
-        txHash = BASE_HASH | bytes32(nonce);
+        txHash = bytes32(BASE_NONCE + nonce);
     }
 }

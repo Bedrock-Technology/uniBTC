@@ -17,12 +17,10 @@ contract MBTCProxyTest is Test, ILockNativeTokenWithBridgeFee {
     function setUp() public {
         deployer = makeAddr("deployer");
         vault = payable(0xF9775085d726E782E83585033B58606f7731AB18);
-        mBTC = address(0xB880fd278198bd590252621d4CD071b1842E9Bcd);
-        mTokenSwap = address(0x72A817715f174a32303e8C33cDCd25E0dACfE60b);
         bridge = address(0x28AD6b7dfD79153659cb44C2155cf7C0e1CeEccC);
         owner = address(0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB);
         vm.startPrank(deployer);
-        mbtcProxy = new MBTCProxy(vault, mBTC, mTokenSwap);
+        mbtcProxy = new MBTCProxy(vault, 1000);
         vm.stopPrank();
         vm.startPrank(owner);
         address[] memory targets = new address[](1);
@@ -47,9 +45,10 @@ contract MBTCProxyTest is Test, ILockNativeTokenWithBridgeFee {
     }
 
     function test_nextHash() public view {
-        bytes32 BASE_HASH = 0xbeD0000000000000000000000000000000000000000000000000000000000000;
-        uint256 nonce = 18;
-        bytes32 txHash = BASE_HASH | bytes32(nonce);
+        uint256 BASE_NONCE = uint256(keccak256("BEDROCK_MERLIN"));
+        uint256 nonce = mbtcProxy.nonce();
+        nonce += 1;
+        bytes32 txHash = bytes32(BASE_NONCE + nonce);
         console.logBytes32(txHash);
     }
 }
