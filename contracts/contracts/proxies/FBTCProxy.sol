@@ -21,7 +21,7 @@ contract FBTCProxy is AccessControl {
     }
 
     receive() external payable {
-    revert("value only accepted by the Vault contract");
+        revert("value only accepted by the Vault contract");
     }
 
     /**
