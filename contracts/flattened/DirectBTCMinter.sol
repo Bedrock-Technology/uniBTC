@@ -1943,8 +1943,8 @@ abstract contract AccessControlUpgradeable is Initializable, ContextUpgradeable,
 contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
 
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant APPROVER_ROLE = keccak256("APPROVER_ROLE");
+    bytes32 public constant L1_MINTER_ROLE = keccak256("L1_MINTER_ROLE");
 
     /**
      * @dev directBTC is the address of the directBTC contract
@@ -2002,9 +2002,12 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
     function initialize(address _defaultAdmin, address _directBTC, address _vault, address _uniBTC) initializer public {
         require(_directBTC != address(0x0), "SYS001");
         require(_vault != address(0x0), "SYS001");
+        require(_uniBTC != address(0x0), "SYS001");
 
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
+        _grantRole(APPROVER_ROLE, _defaultAdmin);
+        _grantRole(L1_MINTER_ROLE, _defaultAdmin);
 
         directBTC = _directBTC;
         vault = _vault;
@@ -2014,7 +2017,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
     /**
      * @dev receive the event
     */
-    function receiveEvent(address _recipient, bytes32 _txHash, uint256 _amount) public onlyRole(OPERATOR_ROLE) {
+    function receiveEvent(address _recipient, bytes32 _txHash, uint256 _amount) public onlyRole(L1_MINTER_ROLE) {
         require(_amount > 0, "USR011");
         require(_recipient != address(0), "USR011");
         require(_txHash != bytes32(0), "USR011");
@@ -2029,7 +2032,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
     /**
      * @dev approve the event
     */
-    function approveEvent() public onlyRole(ADMIN_ROLE) {
+    function approveEvent() public onlyRole(APPROVER_ROLE) {
         require(processIdx < eventIndexes.length, "SYS003");
 
         bytes32 _txHash = eventIndexes[processIdx];
@@ -2049,11 +2052,16 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
      * 3. transfer uniBTC to recipient
     */
     function _mint(address _recipient, uint256 _amount) internal {
+        uint256 prevBalance = IERC20(uniBTC).balanceOf(address(this));
 
         IMintableContract(directBTC).mint(address(this), _amount);
 
         IERC20(directBTC).safeIncreaseAllowance(vault, _amount);
         IMintableContract(vault).mint(directBTC, _amount);
+
+        //make sure received the uniBTC token
+        uint256 curBalance = IERC20(uniBTC).balanceOf(address(this));
+        assert(curBalance == prevBalance + _amount);
 
         IERC20(uniBTC).safeTransfer(_recipient, _amount);
     }
@@ -2061,7 +2069,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
     /**
      * @dev reject the event
     */
-    function rejectEvent() public onlyRole(ADMIN_ROLE) {
+    function rejectEvent() public onlyRole(APPROVER_ROLE) {
         require(processIdx < eventIndexes.length, "SYS003");
 
         bytes32 _txHash = eventIndexes[processIdx];
@@ -2076,7 +2084,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
     /**
      * @dev set the recipient to allow or disallow
     */
-    function setRecipient(address _addr, bool allow) public onlyRole(ADMIN_ROLE) {
+    function setRecipient(address _addr, bool allow) public onlyRole(APPROVER_ROLE) {
         recipients[_addr] = allow;
         emit RecipientChanged(_addr, allow);
     }

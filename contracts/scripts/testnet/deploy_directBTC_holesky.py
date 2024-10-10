@@ -17,8 +17,11 @@ def main(deployer="testnet-deployer", owner="testnet-owner"):
 
     w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
     default_admin_role = w3.to_bytes(hexstr="0x00")
-
+    # directBTC roles
     minter_role = w3.keccak(text='MINTER_ROLE')
+    # directBTCMinter roles
+    approver_role = w3.keccak(text='APPROVER_ROLE')
+    l1minter_role = w3.keccak(text='L1_MINTER_ROLE')
 
     deployer = accounts.load(deployer)
     owner = accounts.load(owner)
@@ -38,6 +41,8 @@ def main(deployer="testnet-deployer", owner="testnet-owner"):
     minter_transparent = Contract.from_abi("DirectBTCMinter", minter_proxy, DirectBTCMinter.abi)
     minter_transparent.initialize(owner, directBTC_proxy, uniBtcVault, vault_proxy.uniBTC(), {'from': owner})
     assert minter_transparent.hasRole(default_admin_role, owner)
+    assert minter_transparent.hasRole(l1minter_role, owner)
+    assert minter_transparent.hasRole(approver_role, owner)
     assert minter_transparent.directBTC() == directBTC_proxy
 
     # init directBTC

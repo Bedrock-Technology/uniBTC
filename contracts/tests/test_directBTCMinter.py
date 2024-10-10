@@ -6,13 +6,13 @@ from web3 import Web3
 # ProxyAdmin:  0xC0c9E78BfC3996E8b68D872b29340816495D7e89
 # uniBtc Vault:  0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
 # -----
-# Deployed directBTC proxy:  0x4213455d10Cf464cC987169DF9A94a10aB0f0723
-# Deployed directBTC implementation:  0x322Edee552a536339282C31a5815ea967fadd497
+# Deployed directBTC proxy:  0xe3747f26A74E4831Cdd0f3E54733B379D7842c7A
+# Deployed directBTC implementation:  0x647Dc65c8DFb6f1a09C0A1f9F56AEed941ef2277
 # -----
-# Deployed DirectBTCMinter proxy:  0x270A0cbAc24063541d108C63A5a206C83F8Ed275
-# Deployed DirectBTCMinter implementation:  0xeEcCdFDFf1c579c84E50541c0BA1bB27A467cD63
+# Deployed DirectBTCMinter proxy:  0x0F433A202611Afa304B873D31149731Bd746a943
+# Deployed DirectBTCMinter implementation:  0xD4c9C929CE4904D8b79ad1734f69777feFF51af7
 #
-# Command to run test: `brownie test tests/test_directBTCMinter.py --network=holesky-fork -I`
+# Command to run test: `brownie test tests/test_directBTCMinter.py --network=holesky-fork -I -W ignore::DeprecationWarning`
 def test_directBTCMinter(deps):
     uniBtcVault = '0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823'
 
@@ -24,26 +24,26 @@ def test_directBTCMinter(deps):
 
     # grantRole admin, setRecipient
     w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
-    admin_role = w3.keccak(text='ADMIN_ROLE')
-    operator_role = w3.keccak(text='OPERATOR_ROLE')
+    approver_role = w3.keccak(text='APPROVER_ROLE')
+    operator_role = w3.keccak(text='L1_MINTER_ROLE')
 
     #directBTC
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
-    directBTC_proxy = TransparentUpgradeableProxy.at('0x4213455d10Cf464cC987169DF9A94a10aB0f0723')
+    directBTC_proxy = TransparentUpgradeableProxy.at('0xe3747f26A74E4831Cdd0f3E54733B379D7842c7A')
     direct_btc = Contract.from_abi("directBTC", directBTC_proxy, directBTC.abi)
 
     #directBTCMinter
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
-    directBTCMinter_proxy = TransparentUpgradeableProxy.at('0x270A0cbAc24063541d108C63A5a206C83F8Ed275')
+    directBTCMinter_proxy = TransparentUpgradeableProxy.at('0x0F433A202611Afa304B873D31149731Bd746a943')
     direct_btc_minter = Contract.from_abi("DirectBTCMinter", directBTCMinter_proxy, DirectBTCMinter.abi)
 
     # grantRole operator role
     direct_btc_minter.grantRole(operator_role, operator, {'from': owner})
     assert direct_btc_minter.hasRole(operator_role, operator)
 
-    # grantRole admin
-    direct_btc_minter.grantRole(admin_role, owner, {'from': owner})
-    assert direct_btc_minter.hasRole(admin_role, owner)
+    # validate approver_role
+    assert direct_btc_minter.hasRole(approver_role, owner)
+    assert direct_btc_minter.hasRole(operator_role, owner)
 
     # setRecipient
     direct_btc_minter.setRecipient(recipient, True, {'from': owner})
