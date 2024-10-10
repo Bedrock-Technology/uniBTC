@@ -7,8 +7,7 @@ import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "../interfaces/IMintableContract.sol";
-import "../interfaces/IVault.sol";
+import "../../../../interfaces/IMintableContract.sol";
 
 contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
@@ -69,7 +68,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
         _disableInitializers();
     }
 
-    function initialize(address _defaultAdmin, address _directBTC, address _vault) initializer public {
+    function initialize(address _defaultAdmin, address _directBTC, address _vault, address _uniBTC) initializer public {
         require(_directBTC != address(0x0), "SYS001");
         require(_vault != address(0x0), "SYS001");
 
@@ -78,7 +77,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
 
         directBTC = _directBTC;
         vault = _vault;
-        uniBTC = IVault(vault).uniBTC();
+        uniBTC = _uniBTC;
     }
 
     /**
@@ -123,7 +122,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
         IMintableContract(directBTC).mint(address(this), _amount);
 
         IERC20(directBTC).safeIncreaseAllowance(vault, _amount);
-        IVault(vault).mint(directBTC, _amount);
+        IMintableContract(vault).mint(directBTC, _amount);
 
         IERC20(uniBTC).safeTransfer(_recipient, _amount);
     }
