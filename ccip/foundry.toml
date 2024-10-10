@@ -1,0 +1,13 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib","../contracts/lib","node_modules"]
+solc = "0.8.19"
+remappings = [
+    "@chainlink/contracts-ccip/=node_modules/@chainlink/contracts-ccip",
+    "@chainlink/local/src/=lib/chainlink-local/src",
+    "@openzeppelin/contracts/=../contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3/contracts",
+    "@openzeppelin/contracts-upgradeable/=../contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/contracts"
+]
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
