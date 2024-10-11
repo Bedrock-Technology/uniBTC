@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
-import "./IVault.sol";
 // Reference: https://etherscan.io/address/0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45
 interface IUniswapV3Router02 {
     struct ExactInputSingleParams {
@@ -20,8 +19,9 @@ interface IUniswapV3Router02 {
 }
 
 //Reference: https://etherscan.io/address/0x9dbe5dFfAEB4Ac2e0ac14F8B4e08b3bc55De5232
-interface IUniswapWbtcFbtcPool {
+interface IUniswapV3Pool {
     function fee() external view returns (uint24);
     function token0() external view returns (address);
     function token1() external view returns (address);
 }
+
