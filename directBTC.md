@@ -5,7 +5,7 @@
   directBTC is a wrapped version of BTC on Ethereum. It is
   pegged 1:1 with BTC on Bitcoin chain.
   
-  The BTC is locked in a custodian wallet and the corresponding amount of directBTC is minted on Ethereum.
+  The BTC is locked in a custody wallet and the corresponding amount of directBTC is minted on Ethereum.
   
   The custodian wallet is managed by a third party.
 
