@@ -13,3 +13,6 @@
 [submodule "celer/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3"]
 	path = celer/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3
 	url = git@github.com:OpenZeppelin/openzeppelin-contracts-upgradeable.git
+[submodule "ccip/lib/chainlink-local"]
+	path = ccip/lib/chainlink-local
+	url = https://github.com/smartcontractkit/chainlink-local

@@ -11,3 +11,8 @@ LICENSE
 contracts/cache
 contracts/out
 contracts/broadcast
+ccip/cache
+ccip/out
+ccip/broadcast
+ccip/.idea
+ccip/node_modules
