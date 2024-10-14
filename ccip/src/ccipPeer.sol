@@ -256,10 +256,10 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
             data: _text, // ABI-encoded string
             tokenAmounts: new Client.EVMTokenAmount[](0), // Empty array as no tokens are transferred
             extraArgs: Client._argsToBytes(
-        // Additional arguments, setting gas limit
+                // Additional arguments, setting gas limit
                 Client.EVMExtraArgsV1({gasLimit: 200_000})
             ),
-        // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
+            // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
             feeToken: _feeTokenAddress
         });
     }
