@@ -40,7 +40,14 @@ contract InitCCIPPeer is Script {
         ccipPeer.allowlistSourceChain(sourceSelector, fujiPeer);
         ccipPeer.allowlistDestinationChain(destSelector, fujiPeer);
         vm.stopPrank();
-        console.log("source:%s", ccipPeer.allowlistedSourceChains(sourceSelector));
-        console.log("dest:%s", ccipPeer.allowlistedDestinationChains(destSelector));
+        console.log(
+            "source:%s",
+            ccipPeer.allowlistedSourceChains(sourceSelector)
+        );
+        console.log(
+            "dest:%s",
+            ccipPeer.allowlistedDestinationChains(destSelector)
+        );
     }
 }
+

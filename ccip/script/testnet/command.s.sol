@@ -15,12 +15,14 @@ contract CmdCCIPPeer is Script {
 
     function setUp() public {
         owner = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
-        if (block.chainid == 97) { //bsc-testnet
+        if (block.chainid == 97) {
+            //bsc-testnet
             uniBTCAddr = 0xdF1925B7A0f56a3ED7f74bE2a813Ae8bbA756e59;
             ccipPeerAddr = 0xbEfC7D6A15cc9bf839E64a16cd43ABD55Dd6633d;
             destinationChainSelector = 14767482510784806043;
         }
-        if (block.chainid == 43113) { //avax-testnet
+        if (block.chainid == 43113) {
+            //avax-testnet
             uniBTCAddr = 0xAb3630cEf046e2dFAFd327eB8b7B96D627dEFa83;
             ccipPeerAddr = 0xD498e4aEE5585ff8099158E641c025a761ACC656;
             destinationChainSelector = 13264668187771770619;
@@ -57,10 +59,18 @@ contract CmdCCIPPeer is Script {
         if (allowance < 10e8) {
             uniBTCIns.approve(ccipPeerAddr, 10e8);
         }
-        uint fees = ccipPeerIns.estimateSendTokenFees(destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8);
+        uint fees = ccipPeerIns.estimateSendTokenFees(
+            destinationChainSelector,
+            0x8cb37518330014E027396E3ED59A231FBe3B011A,
+            1e8
+        );
         console.log("est fees:%d", fees);
         // send to owner, 1uniBTC
-        ccipPeerIns.sendToken{value: fees}(destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8);
+        ccipPeerIns.sendToken{value: fees}(
+            destinationChainSelector,
+            0x8cb37518330014E027396E3ED59A231FBe3B011A,
+            1e8
+        );
         vm.stopBroadcast();
     }
 
@@ -69,7 +79,12 @@ contract CmdCCIPPeer is Script {
     //fuji
     function estimateSendTokenFees() public view {
         // send to owner, 1uniBTC
-        uint fees = ccipPeerIns.estimateSendTokenFees(destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8);
+        uint fees = ccipPeerIns.estimateSendTokenFees(
+            destinationChainSelector,
+            0x8cb37518330014E027396E3ED59A231FBe3B011A,
+            1e8
+        );
         console.log("est fees:%d", fees);
     }
 }
+
