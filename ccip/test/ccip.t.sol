@@ -72,11 +72,11 @@ contract SmokeTest is Test {
         vm.startPrank(defaultAdmin);
         peerA.allowlistSourceChain(_chainSelector, address(peerB));
         peerA.allowlistDestinationChain(_chainSelector, address(peerB));
-        peerA.allowlistDestinationChainuniBTC(_chainSelector, uniBTCProxy);
+        peerA.allowlistTargetTokens(_chainSelector, uniBTCProxy);
 
         peerB.allowlistSourceChain(_chainSelector, address(peerA));
         peerB.allowlistDestinationChain(_chainSelector, address(peerA));
-        peerB.allowlistDestinationChainuniBTC(_chainSelector, uniBTCProxy);
+        peerB.allowlistTargetTokens(_chainSelector, uniBTCProxy);
 
         vm.stopPrank();
     }

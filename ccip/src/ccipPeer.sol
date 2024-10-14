@@ -36,7 +36,7 @@ AccessControlUpgradeable
         address sender
     );
     // Used when the destination chain uniBTC has not been allowlisted by the contract owner.
-    error DestinationChainuniBTCNotAllowlisted(
+    error TargetTokensNotAllowlisted(
         uint64 destinationChainSelector,
         address token
     );
@@ -84,7 +84,7 @@ AccessControlUpgradeable
     mapping(uint64 => address) public allowlistedDestinationChains;
 
     // Mapping to keep track of destination chains uniBTC address.
-    mapping(uint64 => address) public allowlistedDestinationChainsuniBTC;
+    mapping(uint64 => address) public targetTokens;
 
     // Mapping to keep track of allowlisted source chains and sender.
     mapping(uint64 => address) public allowlistedSourceChains;
@@ -160,11 +160,11 @@ AccessControlUpgradeable
     }
 
     /// @dev Updates the allowlist status of a destination chain Token for transactions.
-    function allowlistDestinationChainuniBTC(
+    function allowlistTargetTokens(
         uint64 _destinationChainSelector,
         address _token
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        allowlistedDestinationChainsuniBTC[_destinationChainSelector] = _token;
+        targetTokens[_destinationChainSelector] = _token;
     }
 
     /// @dev Updates the allowlist status of a source chain for transactions.
@@ -410,12 +410,12 @@ AccessControlUpgradeable
                 _receiver
             );
 
-        address _target = allowlistedDestinationChainsuniBTC[
+        address _target = targetTokens[
                     _destinationChainSelector
 
             ];
         if (_target == address(0))
-            revert DestinationChainuniBTCNotAllowlisted(
+            revert TargetTokensNotAllowlisted(
                 _destinationChainSelector,
                 _target
             );
