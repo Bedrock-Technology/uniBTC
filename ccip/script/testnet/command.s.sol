@@ -5,6 +5,10 @@ import {Script, console} from "forge-std/Script.sol";
 import {CCIPPeer} from "../../src/ccipPeer.sol";
 import {uniBTC} from "../../src/mocks/uniBTC.sol";
 
+//sendtoken:
+//sendtokensing:
+//target call:
+
 contract CmdCCIPPeer is Script {
     address public owner;
     address public uniBTCAddr;
@@ -12,20 +16,26 @@ contract CmdCCIPPeer is Script {
     address public ccipPeerAddr;
     CCIPPeer public ccipPeerIns;
     uint64 public destinationChainSelector;
+    uint64 public selfdestinationChainSelector;
+    address public peeruniBTCAddr;
 
     function setUp() public {
         owner = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
         if (block.chainid == 97) {
             //bsc-testnet
-            uniBTCAddr = 0xdF1925B7A0f56a3ED7f74bE2a813Ae8bbA756e59;
-            ccipPeerAddr = 0xbEfC7D6A15cc9bf839E64a16cd43ABD55Dd6633d;
+            uniBTCAddr = 0xF04Cb14F13144505eB93a165476f1259A1538303;
+            ccipPeerAddr = 0x71c1A45eBa172d11c9e52dDF8BADD4b3A585b517;
             destinationChainSelector = 14767482510784806043;
+            peeruniBTCAddr = 0x285AFd3688a20aa854b9AED89e538CF85177b458;
+            selfdestinationChainSelector = 13264668187771770619;
         }
         if (block.chainid == 43113) {
             //avax-testnet
-            uniBTCAddr = 0xAb3630cEf046e2dFAFd327eB8b7B96D627dEFa83;
-            ccipPeerAddr = 0xD498e4aEE5585ff8099158E641c025a761ACC656;
+            uniBTCAddr = 0x285AFd3688a20aa854b9AED89e538CF85177b458;
+            ccipPeerAddr = 0x3C4C2f4d6e45C23DF2B02b94168A5f0d378faeAe;
             destinationChainSelector = 13264668187771770619;
+            peeruniBTCAddr = 0xF04Cb14F13144505eB93a165476f1259A1538303;
+            selfdestinationChainSelector = 14767482510784806043;
         }
         uniBTCIns = uniBTC(uniBTCAddr);
         ccipPeerIns = CCIPPeer(payable(ccipPeerAddr));
@@ -47,6 +57,16 @@ contract CmdCCIPPeer is Script {
     function grantuniBTCMinterRole() public {
         vm.startBroadcast(owner);
         uniBTCIns.grantRole(uniBTCIns.MINTER_ROLE(), ccipPeerAddr);
+        vm.stopBroadcast();
+    }
+
+    //bsc
+    //forge script script/testnet/command.s.sol:CmdCCIPPeer --sig targetAllowList --rpc-url https://bsc-testnet-rpc.publicnode.com --account owner --broadcast
+    //fuji
+    //forge script script/testnet/command.s.sol:CmdCCIPPeer --sig targetAllowList --rpc-url https://avalanche-fuji-c-chain-rpc.publicnode.com --account owner --broadcast
+    function targetAllowList() public {
+        vm.startBroadcast(owner);
+        ccipPeerIns.allowlistTargetTokens(destinationChainSelector, peeruniBTCAddr);
         vm.stopBroadcast();
     }
 
@@ -87,4 +107,5 @@ contract CmdCCIPPeer is Script {
         console.log("est fees:%d", fees);
     }
 }
+
 

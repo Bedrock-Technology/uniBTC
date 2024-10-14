@@ -13,8 +13,7 @@ import {uniBTC} from "../../src/mocks/uniBTC.sol";
 //testnet
 //forge script script/testnet/deploy_bsc.s.sol:DeployCCIPPeer --rpc-url https://bsc-testnet-rpc.publicnode.com --account deploy --broadcast
 
-//forge script script/testnet/deploy_bsc.s.sol:DeployCCIPPeer --rpc-url https://bsc-testnet-rpc.publicnode.com --account deploy --broadcast \
-//--verify --verifier-url 'https://api-testnet.bscscan.com/api' --etherscan-api-key "xxxxxx"
+//forge script script/testnet/deploy_bsc.s.sol:DeployCCIPPeer --rpc-url https://bsc-testnet-rpc.publicnode.com --account deploy --broadcast --verify --verifier-url 'https://api-testnet.bscscan.com/api' --etherscan-api-key "xxxxxx" --delay 60
 
 contract DeployCCIPPeer is Script {
     address public deploy;
@@ -34,10 +33,10 @@ contract DeployCCIPPeer is Script {
         //deploy mockUniBTC
         uniBTC uniBTCImplementation = new uniBTC();
         TransparentUpgradeableProxy uniBTCProxy = new TransparentUpgradeableProxy(
-                address(uniBTCImplementation),
-                address(adminInstance),
-                abi.encodeCall(uniBTCImplementation.initialize, (owner, owner))
-            );
+            address(uniBTCImplementation),
+            address(adminInstance),
+            abi.encodeCall(uniBTCImplementation.initialize, (owner, owner))
+        );
         //deploy ccipPeer
         CCIPPeer ccipPeerImplementation = new CCIPPeer(router);
         new TransparentUpgradeableProxy(
@@ -78,9 +77,7 @@ contract DeployCCIPPeer is Script {
 //--constructor-args $(cast abi-encode "constructor(address _router)"0xE1053aE1857476f36A3C62580FF9b016E8EE8F6f)
 //proxyAddress 0xbEfC7D6A15cc9bf839E64a16cd43ABD55Dd6633d
 
-//ccipPeer Implementation: 0xA99248E4F1ECD23d35ED9132f80cbC956f6BB373
-//ccipPeer Proxy: 0xB290BEDD4302dc7160467C59692387073B69EC47
-//uniBTC Implementation: 0x563a27728d298F21738aB694E95F344A42731fE5
-//uniBTC Proxy: 0x416274fB6922cbd9cD3Dd9a7339E802640F591Aa
-//proxyAdmin: 0xa93322A98335b791Df87f20bb939Fbe4d84ffADD
+//proxyAdmin: 0x6F10dC7dc5ff3Cbb7C18B324AbDC05fADe601370
+//uniBTC: 0xF04Cb14F13144505eB93a165476f1259A1538303
+//ccipPeer:0x71c1A45eBa172d11c9e52dDF8BADD4b3A585b517
 

@@ -188,6 +188,18 @@ contract SmokeTest is Test {
         vm.stopPrank();
     }
 
+    function test_token_not_allowed() public {
+        vm.startPrank(defaultAdmin);
+        peerA.allowlistTargetTokens(chainSelector, address(0));
+        vm.stopPrank();
+
+        vm.startPrank(peerAuser);
+        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        vm.expectRevert();
+        peerA.sendToken(chainSelector, peerCuser, 300000000);
+        vm.stopPrank();
+    }
+
     function test_minAmt() public {
         vm.startPrank(defaultAdmin);
         peerA.setMinTransferAmt(900000000);
