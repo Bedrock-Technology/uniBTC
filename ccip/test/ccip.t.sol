@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.19;
+pragma solidity >=0.8.19;
 
 import {Test, console} from "forge-std/Test.sol";
 import {uniBTC} from "../src/mocks/uniBTC.sol";
 import {IRouterClient, CCIPLocalSimulator} from "@chainlink/local/src/ccip/CCIPLocalSimulator.sol";
-import {CCIPPeer} from "../src/CCIPPeer.sol";
+import {CCIPPeer, IMintableContract} from "../src/CCIPPeer.sol";
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
@@ -25,7 +25,6 @@ contract SmokeTest is Test {
     address public peerBuser = makeAddr("peerBuser");
     address public peerCuser = makeAddr("peerCuser");
     uint256 public sysSignKey = 334556765765;
-
 
     function deployuniBTC() public {
         vm.startPrank(deploy);
@@ -73,9 +72,12 @@ contract SmokeTest is Test {
         vm.startPrank(defaultAdmin);
         peerA.allowlistSourceChain(_chainSelector, address(peerB));
         peerA.allowlistDestinationChain(_chainSelector, address(peerB));
+        peerA.allowlistTargetTokens(_chainSelector, uniBTCProxy);
 
         peerB.allowlistSourceChain(_chainSelector, address(peerA));
         peerB.allowlistDestinationChain(_chainSelector, address(peerA));
+        peerB.allowlistTargetTokens(_chainSelector, uniBTCProxy);
+
         vm.stopPrank();
     }
 
@@ -209,20 +211,87 @@ contract SmokeTest is Test {
     function test_sendSign() public {
         vm.startPrank(peerAuser);
         uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
-        bytes32 digest = sha256(abi.encode(peerAuser, address(peerA), block.chainid, chainSelector, peerCuser, 300000000));
+        bytes32 digest = sha256(
+            abi.encode(
+                peerAuser,
+                address(peerA),
+                block.chainid,
+                chainSelector,
+                peerCuser,
+                300000000
+            )
+        );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(sysSignKey, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
-        bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 300000000, signature);
+        bytes32 messageId = peerA.sendToken(
+            chainSelector,
+            peerCuser,
+            300000000,
+            signature
+        );
         console.logBytes32(messageId);
         assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 300000000);
         assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 300000000);
     }
 
-    function test_verifySign() view public {
-        bytes32 digest = sha256(abi.encode(defaultAdmin, address(peerA), block.chainid, chainSelector, peerCuser, 300000000));
+    function test_verifySignChange() public {
+        bytes32 digest = sha256(
+            abi.encode(
+                defaultAdmin,
+                address(peerA),
+                block.chainid,
+                chainSelector,
+                peerCuser,
+                300000000
+            )
+        );
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(sysSignKey, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
-        bool verify = peerA.verifySendTokenSign(defaultAdmin, chainSelector, peerCuser, 300000000, signature);
+        bool verify = peerA.verifySendTokenSign(
+            defaultAdmin,
+            chainSelector,
+            peerCuser,
+            300000000,
+            signature
+        );
         assert(verify == true);
+
+        //change
+        uint256 newSysSigner = 324325435;
+        address newSysSignerAddress = vm.addr(newSysSigner);
+        vm.startPrank(defaultAdmin);
+        peerA.setSysSinger(newSysSignerAddress);
+        vm.stopPrank();
+        bytes32 digest1 = sha256(
+            abi.encode(
+                defaultAdmin,
+                address(peerA),
+                block.chainid,
+                chainSelector,
+                peerCuser,
+                300000000
+            )
+        );
+        (uint8 v1, bytes32 r1, bytes32 s1) = vm.sign(newSysSigner, digest1);
+        bytes memory signature1 = abi.encodePacked(r1, s1, v1);
+        bool verify1 = peerA.verifySendTokenSign(
+            defaultAdmin,
+            chainSelector,
+            peerCuser,
+            300000000,
+            signature1
+        );
+        assert(verify1 == true);
+    }
+
+    function test_targetCall() public {
+        vm.startPrank(defaultAdmin);
+        bytes memory callData = abi.encodeWithSelector(IMintableContract.mint.selector, peerCuser, 300000000);
+        bytes32 messageId = peerA.targetCall(chainSelector, peerB.uniBTC(), callData);
+        assertTrue(peerB.processedMessages(messageId), "not true");
+        vm.stopPrank();
+        console.logBytes32(messageId);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 300000000);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 600000000);
     }
 }
