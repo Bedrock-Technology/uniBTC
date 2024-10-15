@@ -19,11 +19,15 @@ contracts = {
         "locked_fbtc": "0xEb28877D7e3DbA5bcd4D0a1474C31F8AFb2d6052",    # https://explorer.mantle.xyz/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c
         "admin": "0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB",
     },
-
+    "bob": {
+        "vault": "0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf", 
+        "locked_fbtc": "0xee03e367bcb59a9b4c1c0ea495a2e9cac36372c8",
+        "admin": "0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB",
+    },
 }
 
 
-def main(deployer_account="mainnet-deployer", network="bsc"):
+def main(deployer_account="mainnet-deployer", network="bob"):
     deployer = accounts.load(deployer_account)
     assert contracts[network]['vault'] != ""
     assert contracts[network]['locked_fbtc'] != ""

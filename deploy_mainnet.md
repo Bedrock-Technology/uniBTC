@@ -62,6 +62,7 @@
 - BSC: [0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a](https://bscscan.com/address/0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a)
 - Ethereum: [0xa3a30F627dBC02AFf3c0A736A065443A0e85b1AE](https://etherscan.io/address/0xa3a30F627dBC02AFf3c0A736A065443A0e85b1AE)
 - Mantle: [0x02e3E2c644601b18Ad67a6F09155fe5581AF25ea](https://explorer.mantle.xyz/address/0x02e3E2c644601b18Ad67a6F09155fe5581AF25ea)
+- BOB: 0xF9775085d726E782E83585033B58606f7731AB18
 
 ### 2.2 BitLayerNativeProxy Deployments
 - **Bitlayer**: [0xcb28dab5e89f6bf2feb2de200564baff77d59957](https://www.btrscan.com/address/0xcb28dab5e89f6bf2feb2de200564baff77d59957?tab=Transactions)
@@ -120,6 +121,7 @@
 - BSC: [0xEb28877D7e3DbA5bcd4D0a1474C31F8AFb2d6052](https://bscscan.com/address/0xEb28877D7e3DbA5bcd4D0a1474C31F8AFb2d6052)
 - Ethereum: [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://etherscan.io/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c)
 - Mantle: [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://explorer.mantle.xyz/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c)
+- Bob: 0xee03e367bcb59a9b4c1c0ea495a2e9cac36372c8
 
 
 ## 6. Other Contracts
