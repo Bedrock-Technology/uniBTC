@@ -10,8 +10,7 @@ import {uniBTC} from "../../src/mocks/uniBTC.sol";
 //forge script script/testnet/deploy_fuji.s.sol:DeployCCIPPeer --rpc-url https://avalanche-fuji-c-chain-rpc.publicnode.com
 
 //testnet
-//forge script script/testnet/deploy_fuji.s.sol:DeployCCIPPeer --rpc-url https://avalanche-fuji-c-chain-rpc.publicnode.com --account deploy --broadcast \
-//--verify --verifier-url 'https://api.routescan.io/v2/network/testnet/evm/43113/etherscan' --etherscan-api-key "verifyContract"
+//forge script script/testnet/deploy_fuji.s.sol:DeployCCIPPeer --rpc-url https://avalanche-fuji-c-chain-rpc.publicnode.com --account deploy --broadcast --verify --verifier-url 'https://api.routescan.io/v2/network/testnet/evm/43113/etherscan' --etherscan-api-key "verifyContract"
 
 contract DeployCCIPPeer is Script {
     address public deploy;
@@ -31,19 +30,16 @@ contract DeployCCIPPeer is Script {
         //deploy mockUniBTC
         uniBTC uniBTCImplementation = new uniBTC();
         TransparentUpgradeableProxy uniBTCProxy = new TransparentUpgradeableProxy(
-                address(uniBTCImplementation),
-                address(adminInstance),
-                abi.encodeCall(uniBTCImplementation.initialize, (owner, owner))
-            );
+            address(uniBTCImplementation),
+            address(adminInstance),
+            abi.encodeCall(uniBTCImplementation.initialize, (owner, owner))
+        );
         //deploy ccipPeer
         CCIPPeer ccipPeerImplementation = new CCIPPeer(router);
         new TransparentUpgradeableProxy(
             address(ccipPeerImplementation),
             address(adminInstance),
-            abi.encodeCall(
-                ccipPeerImplementation.initialize,
-                (owner, address(uniBTCProxy), owner)
-            )
+            abi.encodeCall(ccipPeerImplementation.initialize, (owner, address(uniBTCProxy), owner))
         );
         vm.stopPrank();
     }
@@ -75,3 +71,6 @@ contract DeployCCIPPeer is Script {
 //--constructor-args $(cast abi-encode "constructor(address _router)" 0xF694E193200268f9a4868e4Aa017A0118C9a8177)
 //proxyAddress 0xD498e4aEE5585ff8099158E641c025a761ACC656
 
+//proxyAdmin: 0xcA0D4Fec4b4D6B9a5f8D96F043d9A7d9cA652151
+//uniBTC: 0x285AFd3688a20aa854b9AED89e538CF85177b458
+//ccipPeer:0x3C4C2f4d6e45C23DF2B02b94168A5f0d378faeAe

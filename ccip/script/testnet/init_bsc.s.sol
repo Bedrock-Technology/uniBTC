@@ -24,14 +24,23 @@ contract InitCCIPPeer is Script {
     uint64 public destSelector;
     address public fujiPeer;
 
+    uint64 public selfsourceSelector;
+    uint64 public selfdestSelector;
+    address public selfbscPeer;
+
     function setUp() public {
         owner = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
-        CCIPPeerAddress = 0xbEfC7D6A15cc9bf839E64a16cd43ABD55Dd6633d;
+        CCIPPeerAddress = 0x71c1A45eBa172d11c9e52dDF8BADD4b3A585b517;
         ccipPeer = CCIPPeer(payable(CCIPPeerAddress));
         //peer fuji
         sourceSelector = 14767482510784806043;
         destSelector = 14767482510784806043;
-        fujiPeer = 0xD498e4aEE5585ff8099158E641c025a761ACC656;
+        fujiPeer = 0x3C4C2f4d6e45C23DF2B02b94168A5f0d378faeAe;
+
+        //self bsc
+        selfsourceSelector = 13264668187771770619;
+        selfdestSelector = 13264668187771770619;
+        selfbscPeer = 0x71c1A45eBa172d11c9e52dDF8BADD4b3A585b517;
     }
 
     function run() public {
@@ -39,15 +48,12 @@ contract InitCCIPPeer is Script {
         vm.startBroadcast(owner);
         ccipPeer.allowlistSourceChain(sourceSelector, fujiPeer);
         ccipPeer.allowlistDestinationChain(destSelector, fujiPeer);
+        ccipPeer.allowlistSourceChain(selfsourceSelector, selfbscPeer);
+        ccipPeer.allowlistDestinationChain(selfdestSelector, selfbscPeer);
         vm.stopPrank();
-        console.log(
-            "source:%s",
-            ccipPeer.allowlistedSourceChains(sourceSelector)
-        );
-        console.log(
-            "dest:%s",
-            ccipPeer.allowlistedDestinationChains(destSelector)
-        );
+        console.log("source:%s", ccipPeer.allowlistedSourceChains(sourceSelector));
+        console.log("dest:%s", ccipPeer.allowlistedDestinationChains(destSelector));
+        console.log("source:%s", ccipPeer.allowlistedSourceChains(selfsourceSelector));
+        console.log("dest:%s", ccipPeer.allowlistedDestinationChains(selfdestSelector));
     }
 }
-
