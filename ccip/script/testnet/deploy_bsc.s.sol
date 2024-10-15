@@ -42,10 +42,7 @@ contract DeployCCIPPeer is Script {
         new TransparentUpgradeableProxy(
             address(ccipPeerImplementation),
             address(adminInstance),
-            abi.encodeCall(
-                ccipPeerImplementation.initialize,
-                (owner, address(uniBTCProxy), owner)
-            )
+            abi.encodeCall(ccipPeerImplementation.initialize, (owner, address(uniBTCProxy), owner))
         );
         vm.stopPrank();
     }
@@ -80,4 +77,3 @@ contract DeployCCIPPeer is Script {
 //proxyAdmin: 0x6F10dC7dc5ff3Cbb7C18B324AbDC05fADe601370
 //uniBTC: 0xF04Cb14F13144505eB93a165476f1259A1538303
 //ccipPeer:0x71c1A45eBa172d11c9e52dDF8BADD4b3A585b517
-

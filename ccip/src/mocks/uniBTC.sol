@@ -6,12 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20Burnable
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract uniBTC is
-    Initializable,
-    ERC20Upgradeable,
-    ERC20BurnableUpgradeable,
-    AccessControlUpgradeable
-{
+contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -19,10 +14,7 @@ contract uniBTC is
         _disableInitializers();
     }
 
-    function initialize(
-        address defaultAdmin,
-        address minter
-    ) public initializer {
+    function initialize(address defaultAdmin, address minter) public initializer {
         __ERC20_init("uniBTC", "uniBTC");
         __ERC20Burnable_init();
         __AccessControl_init();
@@ -43,10 +35,7 @@ contract uniBTC is
         _burn(_msgSender(), amount);
     }
 
-    function burnFrom(
-        address account,
-        uint256 amount
-    ) public override onlyRole(MINTER_ROLE) {
+    function burnFrom(address account, uint256 amount) public override onlyRole(MINTER_ROLE) {
         _spendAllowance(account, _msgSender(), amount);
         _burn(account, amount);
     }
@@ -55,10 +44,7 @@ contract uniBTC is
      * @dev Batch transfer amount to recipient
      * @notice that excessive gas consumption causes transaction revert
      */
-    function batchTransfer(
-        address[] memory recipients,
-        uint256[] memory amounts
-    ) public {
+    function batchTransfer(address[] memory recipients, uint256[] memory amounts) public {
         require(recipients.length > 0, "USR001");
         require(recipients.length == amounts.length, "USR002");
 
@@ -67,4 +53,3 @@ contract uniBTC is
         }
     }
 }
-

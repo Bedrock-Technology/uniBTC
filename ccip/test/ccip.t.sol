@@ -30,41 +30,25 @@ contract SmokeTest is Test {
         vm.startPrank(deploy);
         uniBTC implementation = new uniBTC();
         TransparentUpgradeableProxy uniBTCProxyAddress = new TransparentUpgradeableProxy(
-            address(implementation),
-            deploy,
-            abi.encodeCall(
-                implementation.initialize,
-                (defaultAdmin, defaultMinter)
-            )
+            address(implementation), deploy, abi.encodeCall(implementation.initialize, (defaultAdmin, defaultMinter))
         );
         uniBTCProxy = address(uniBTCProxyAddress);
         vm.stopPrank();
     }
 
-    function deployPeers(
-        address _routerA,
-        address _routerB,
-        address _uniBTC,
-        uint64 _chainSelector
-    ) public {
+    function deployPeers(address _routerA, address _routerB, address _uniBTC, uint64 _chainSelector) public {
         vm.startPrank(deploy);
         CCIPPeer peerAImplement = new CCIPPeer(_routerA);
         CCIPPeer peerBImplement = new CCIPPeer(_routerB);
         TransparentUpgradeableProxy peerAProxy = new TransparentUpgradeableProxy(
             address(peerAImplement),
             deploy,
-            abi.encodeCall(
-                peerAImplement.initialize,
-                (defaultAdmin, _uniBTC, vm.addr(sysSignKey))
-            )
+            abi.encodeCall(peerAImplement.initialize, (defaultAdmin, _uniBTC, vm.addr(sysSignKey)))
         );
         TransparentUpgradeableProxy peerBProxy = new TransparentUpgradeableProxy(
             address(peerBImplement),
             deploy,
-            abi.encodeCall(
-                peerBImplement.initialize,
-                (defaultAdmin, _uniBTC, vm.addr(sysSignKey))
-            )
+            abi.encodeCall(peerBImplement.initialize, (defaultAdmin, _uniBTC, vm.addr(sysSignKey)))
         );
         vm.stopPrank();
         peerA = CCIPPeer(payable(peerAProxy));
@@ -85,54 +69,29 @@ contract SmokeTest is Test {
         //vm.deal(deploy, 10 ether);
         deployuniBTC();
         ccipLocalSimulator = new CCIPLocalSimulator();
-        (
-            uint64 chainSelector_,
-            IRouterClient sourceRouter,
-            IRouterClient destinationRouter,
-            ,
-            ,
-            ,
-
-        ) = ccipLocalSimulator.configuration();
+        (uint64 chainSelector_, IRouterClient sourceRouter, IRouterClient destinationRouter,,,,) =
+            ccipLocalSimulator.configuration();
         peerARouter = sourceRouter;
         peerBRouter = destinationRouter;
         chainSelector = chainSelector_;
 
         vm.startPrank(defaultMinter);
-        uniBTC(uniBTCProxy).mint(
-            defaultMinter,
-            12 * 10 ** uniBTC(uniBTCProxy).decimals()
-        );
+        uniBTC(uniBTCProxy).mint(defaultMinter, 12 * 10 ** uniBTC(uniBTCProxy).decimals());
         uniBTC(uniBTCProxy).transfer(peerBuser, 600000000);
         uniBTC(uniBTCProxy).transfer(peerAuser, 600000000);
         vm.stopPrank();
         assertEq(uniBTC(uniBTCProxy).balanceOf(peerBuser), 600000000);
-        deployPeers(
-            address(peerARouter),
-            address(peerBRouter),
-            uniBTCProxy,
-            chainSelector
-        );
+        deployPeers(address(peerARouter), address(peerBRouter), uniBTCProxy, chainSelector);
         vm.startPrank(defaultAdmin);
-        uniBTC(uniBTCProxy).grantRole(
-            uniBTC(uniBTCProxy).MINTER_ROLE(),
-            address(peerA)
-        );
-        uniBTC(uniBTCProxy).grantRole(
-            uniBTC(uniBTCProxy).MINTER_ROLE(),
-            address(peerB)
-        );
+        uniBTC(uniBTCProxy).grantRole(uniBTC(uniBTCProxy).MINTER_ROLE(), address(peerA));
+        uniBTC(uniBTCProxy).grantRole(uniBTC(uniBTCProxy).MINTER_ROLE(), address(peerB));
         vm.stopPrank();
     }
 
     function test_baseCase() public {
         vm.startPrank(peerAuser);
         uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
-        bytes32 messageId = peerA.sendToken(
-            chainSelector,
-            peerCuser,
-            300000000
-        );
+        bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 300000000);
         assertTrue(peerB.processedMessages(messageId), "not true");
         vm.stopPrank();
         console.logBytes32(messageId);
@@ -223,49 +182,22 @@ contract SmokeTest is Test {
     function test_sendSign() public {
         vm.startPrank(peerAuser);
         uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
-        bytes32 digest = sha256(
-            abi.encode(
-                peerAuser,
-                address(peerA),
-                block.chainid,
-                chainSelector,
-                peerCuser,
-                300000000
-            )
-        );
+        bytes32 digest =
+            sha256(abi.encode(peerAuser, address(peerA), block.chainid, chainSelector, peerCuser, 300000000));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(sysSignKey, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
-        bytes32 messageId = peerA.sendToken(
-            chainSelector,
-            peerCuser,
-            300000000,
-            signature
-        );
+        bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 300000000, signature);
         console.logBytes32(messageId);
         assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 300000000);
         assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 300000000);
     }
 
     function test_verifySignChange() public {
-        bytes32 digest = sha256(
-            abi.encode(
-                defaultAdmin,
-                address(peerA),
-                block.chainid,
-                chainSelector,
-                peerCuser,
-                300000000
-            )
-        );
+        bytes32 digest =
+            sha256(abi.encode(defaultAdmin, address(peerA), block.chainid, chainSelector, peerCuser, 300000000));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(sysSignKey, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
-        bool verify = peerA.verifySendTokenSign(
-            defaultAdmin,
-            chainSelector,
-            peerCuser,
-            300000000,
-            signature
-        );
+        bool verify = peerA.verifySendTokenSign(defaultAdmin, chainSelector, peerCuser, 300000000, signature);
         assert(verify == true);
 
         //change
@@ -274,25 +206,11 @@ contract SmokeTest is Test {
         vm.startPrank(defaultAdmin);
         peerA.setSysSinger(newSysSignerAddress);
         vm.stopPrank();
-        bytes32 digest1 = sha256(
-            abi.encode(
-                defaultAdmin,
-                address(peerA),
-                block.chainid,
-                chainSelector,
-                peerCuser,
-                300000000
-            )
-        );
+        bytes32 digest1 =
+            sha256(abi.encode(defaultAdmin, address(peerA), block.chainid, chainSelector, peerCuser, 300000000));
         (uint8 v1, bytes32 r1, bytes32 s1) = vm.sign(newSysSigner, digest1);
         bytes memory signature1 = abi.encodePacked(r1, s1, v1);
-        bool verify1 = peerA.verifySendTokenSign(
-            defaultAdmin,
-            chainSelector,
-            peerCuser,
-            300000000,
-            signature1
-        );
+        bool verify1 = peerA.verifySendTokenSign(defaultAdmin, chainSelector, peerCuser, 300000000, signature1);
         assert(verify1 == true);
     }
 

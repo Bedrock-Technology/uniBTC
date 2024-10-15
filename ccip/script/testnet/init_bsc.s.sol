@@ -51,22 +51,9 @@ contract InitCCIPPeer is Script {
         ccipPeer.allowlistSourceChain(selfsourceSelector, selfbscPeer);
         ccipPeer.allowlistDestinationChain(selfdestSelector, selfbscPeer);
         vm.stopPrank();
-        console.log(
-            "source:%s",
-            ccipPeer.allowlistedSourceChains(sourceSelector)
-        );
-        console.log(
-            "dest:%s",
-            ccipPeer.allowlistedDestinationChains(destSelector)
-        );
-        console.log(
-            "source:%s",
-            ccipPeer.allowlistedSourceChains(selfsourceSelector)
-        );
-        console.log(
-            "dest:%s",
-            ccipPeer.allowlistedDestinationChains(selfdestSelector)
-        );
+        console.log("source:%s", ccipPeer.allowlistedSourceChains(sourceSelector));
+        console.log("dest:%s", ccipPeer.allowlistedDestinationChains(destSelector));
+        console.log("source:%s", ccipPeer.allowlistedSourceChains(selfsourceSelector));
+        console.log("dest:%s", ccipPeer.allowlistedDestinationChains(selfdestSelector));
     }
 }
-

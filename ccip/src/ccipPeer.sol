@@ -21,25 +21,15 @@ interface IMintableContract is IERC20 {
 }
 
 /// @title - A simple messenger contract for sending/receving string data across chains.
-contract CCIPPeer is
-CCIPReceiver,
-Initializable,
-PausableUpgradeable,
-AccessControlUpgradeable
-{
+contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
     using Address for address;
     // Custom errors to provide more descriptive revert messages.
     // Used when the destination chain has not been allowlisted by the contract owner.
-    error DestinationChainNotAllowlisted(
-        uint64 destinationChainSelector,
-        address sender
-    );
+
+    error DestinationChainNotAllowlisted(uint64 destinationChainSelector, address sender);
     // Used when the destination chain uniBTC has not been allowlisted by the contract owner.
-    error TargetTokensNotAllowlisted(
-        uint64 destinationChainSelector,
-        address token
-    );
+    error TargetTokensNotAllowlisted(uint64 destinationChainSelector, address token);
     // Used when the source chain has not been allowlisted by the contract owner.
     error SourceChainNotAllowlisted(uint64 sourceChainSelector, address sender);
     // Used when the receiver address is 0.
@@ -55,22 +45,26 @@ AccessControlUpgradeable
     }
 
     // Event emitted when a message is sent to another chain.
-    event MessageSent(
-        bytes32 indexed messageId, // The unique ID of the CCIP message.
-        uint64 indexed destinationChainSelector, // The chain selector of the destination chain.
-        address receiver, // The address of the receiver on the destination chain.
-        bytes text, // The text being sent.
-        address feeToken, // the token address used to pay CCIP fees.
-        uint256 fees // The fees paid for sending the CCIP message.
+    // The chain selector of the destination chain.
+    // The address of the receiver on the destination chain.
+    // The text being sent.
+    // the token address used to pay CCIP fees.
+    // The fees paid for sending the CCIP message.
+    event MessageSent( // The unique ID of the CCIP message.
+        bytes32 indexed messageId,
+        uint64 indexed destinationChainSelector,
+        address receiver,
+        bytes text,
+        address feeToken,
+        uint256 fees
     );
 
     // Event emitted when a message is received from another chain.
-    event MessageReceived(
-        bytes32 indexed messageId, // The unique ID of the CCIP message.
-        uint64 indexed sourceChainSelector, // The chain selector of the source chain.
-        address sender, // The address of the sender from the source chain.
-        bytes text // The text that was received.
-    );
+    event MessageReceived( // The unique ID of the CCIP message.
+        // The chain selector of the source chain.
+        // The address of the sender from the source chain.
+        // The text that was received.
+    bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, bytes text);
 
     // Event emitted when set minimal transfer amount.
     event MinTransferAmtSet(uint256 amount);
@@ -110,8 +104,9 @@ AccessControlUpgradeable
     /// @param _sourceChainSelector The selector of the destination chain.
     /// @param _sender The address of the sender.
     modifier onlyAllowlisted(uint64 _sourceChainSelector, address _sender) {
-        if (_sender != allowlistedSourceChains[_sourceChainSelector])
+        if (_sender != allowlistedSourceChains[_sourceChainSelector]) {
             revert SourceChainNotAllowlisted(_sourceChainSelector, _sender);
+        }
         _;
     }
 
@@ -119,11 +114,7 @@ AccessControlUpgradeable
         _disableInitializers();
     }
 
-    function initialize(
-        address _defaultAdmin,
-        address _uniBTC,
-        address _sysSigner
-    ) external initializer {
+    function initialize(address _defaultAdmin, address _uniBTC, address _sysSigner) external initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         _grantRole(PAUSER_ROLE, _defaultAdmin);
@@ -152,114 +143,76 @@ AccessControlUpgradeable
     }
 
     /// @dev Updates the allowlist status of a destination chain for transactions.
-    function allowlistDestinationChain(
-        uint64 _destinationChainSelector,
-        address _receiver
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function allowlistDestinationChain(uint64 _destinationChainSelector, address _receiver)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         allowlistedDestinationChains[_destinationChainSelector] = _receiver;
     }
 
     /// @dev Updates the allowlist status of a destination chain Token for transactions.
-    function allowlistTargetTokens(
-        uint64 _destinationChainSelector,
-        address _token
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function allowlistTargetTokens(uint64 _destinationChainSelector, address _token)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         targetTokens[_destinationChainSelector] = _token;
     }
 
     /// @dev Updates the allowlist status of a source chain for transactions.
-    function allowlistSourceChain(
-        uint64 _sourceChainSelector,
-        address _sender
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function allowlistSourceChain(uint64 _sourceChainSelector, address _sender) external onlyRole(DEFAULT_ADMIN_ROLE) {
         allowlistedSourceChains[_sourceChainSelector] = _sender;
     }
 
-    function setMinTransferAmt(
-        uint256 _minimalAmt
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setMinTransferAmt(uint256 _minimalAmt) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_minimalAmt > 0);
         minTransferAmt = _minimalAmt;
         emit MinTransferAmtSet(_minimalAmt);
     }
 
-    function setSysSinger(
-        address _sysSigner
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setSysSinger(address _sysSigner) external onlyRole(DEFAULT_ADMIN_ROLE) {
         sysSigner = _sysSigner;
         emit SysSignerChange(_sysSigner);
     }
 
-    function estimateSendTokenFees(
-        uint64 _destinationChainSelector,
-        address _recipient,
-        uint256 _amount
-    ) external view returns (uint256) {
-        address _receiver = allowlistedDestinationChains[
-                    _destinationChainSelector
-            ];
+    function estimateSendTokenFees(uint64 _destinationChainSelector, address _recipient, uint256 _amount)
+        external
+        view
+        returns (uint256)
+    {
+        address _receiver = allowlistedDestinationChains[_destinationChainSelector];
         require(_receiver != address(0), "USR007");
         address _target = CCIPPeer(payable(_receiver)).uniBTC();
-        bytes memory _callData = abi.encodeWithSelector(
-            IMintableContract.mint.selector,
-            _recipient,
-            _amount
-        );
-        bytes memory _message = abi.encode(
-            Request({target: _target, callData: _callData})
-        );
+        bytes memory _callData = abi.encodeWithSelector(IMintableContract.mint.selector, _recipient, _amount);
+        bytes memory _message = abi.encode(Request({target: _target, callData: _callData}));
         // Only accept native token.
-        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
-            _receiver,
-            _message,
-            address(0)
-        );
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(_receiver, _message, address(0));
         // Initialize a router client instance to interact with cross-chain router
         IRouterClient router = IRouterClient(this.getRouter());
         // Get the fee required to send the CCIP message
         return router.getFee(_destinationChainSelector, evm2AnyMessage);
     }
 
-    function sendToken(
-        uint64 _destinationChainSelector,
-        address _recipient,
-        uint256 _amount
-    )
-    external
-    payable
-    whenNotPaused
-    validateReceiver(_recipient)
-    returns (bytes32 messageId)
+    function sendToken(uint64 _destinationChainSelector, address _recipient, uint256 _amount)
+        external
+        payable
+        whenNotPaused
+        validateReceiver(_recipient)
+        returns (bytes32 messageId)
     {
-        require(
-            _amount >= minTransferAmt && _amount < SMALL_TRANSFER_MAX,
-            "USR006"
-        );
+        require(_amount >= minTransferAmt && _amount < SMALL_TRANSFER_MAX, "USR006");
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
 
-    function sendToken(
-        uint64 _destinationChainSelector,
-        address _recipient,
-        uint256 _amount,
-        bytes memory _signature
-    )
-    external
-    payable
-    whenNotPaused
-    validateReceiver(_recipient)
-    returns (bytes32 messageId)
+    function sendToken(uint64 _destinationChainSelector, address _recipient, uint256 _amount, bytes memory _signature)
+        external
+        payable
+        whenNotPaused
+        validateReceiver(_recipient)
+        returns (bytes32 messageId)
     {
         require(_amount >= minTransferAmt, "USR006");
         require(
-            verifySendTokenSign(
-                msg.sender,
-                _destinationChainSelector,
-                _recipient,
-                _amount,
-                _signature
-            ),
-            "SIGNERROR"
+            verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _signature), "SIGNERROR"
         );
         if (processedSignature[_signature]) revert SignatureProcessed();
         processedSignature[_signature] = true;
@@ -273,118 +226,72 @@ AccessControlUpgradeable
         uint256 _amount,
         bytes memory _signature
     ) public view returns (bool) {
-        bytes32 msgDigest = sha256(
-            abi.encode(
-                _sender,
-                address(this),
-                block.chainid,
-                _destinationChainSelector,
-                _recipient,
-                _amount
-            )
-        );
+        bytes32 msgDigest =
+            sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
         address signer = ECDSA.recover(msgDigest, _signature);
         return signer == sysSigner;
     }
 
-    function estimateTargetCallFees(
-        uint64 _destinationChainSelector,
-        address _target,
-        bytes memory _callData
-    ) external view returns (uint256) {
-        address _receiver = allowlistedDestinationChains[
-                    _destinationChainSelector
-            ];
+    function estimateTargetCallFees(uint64 _destinationChainSelector, address _target, bytes memory _callData)
+        external
+        view
+        returns (uint256)
+    {
+        address _receiver = allowlistedDestinationChains[_destinationChainSelector];
         require(_receiver != address(0), "USR007");
-        bytes memory _message = abi.encode(
-            Request({target: _target, callData: _callData})
-        );
+        bytes memory _message = abi.encode(Request({target: _target, callData: _callData}));
         // Only accept native token.
-        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
-            _receiver,
-            _message,
-            address(0)
-        );
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(_receiver, _message, address(0));
         // Initialize a router client instance to interact with cross-chain router
         IRouterClient router = IRouterClient(this.getRouter());
         // Get the fee required to send the CCIP message
         return router.getFee(_destinationChainSelector, evm2AnyMessage);
     }
 
-    function targetCall(
-        uint64 _destinationChainSelector,
-        address _target,
-        bytes memory _callData
-    )
-    external
-    payable
-    whenNotPaused
-    onlyRole(DEFAULT_ADMIN_ROLE)
-    returns (bytes32 messageId)
+    function targetCall(uint64 _destinationChainSelector, address _target, bytes memory _callData)
+        external
+        payable
+        whenNotPaused
+        onlyRole(DEFAULT_ADMIN_ROLE)
+        returns (bytes32 messageId)
     {
-        address _receiver = allowlistedDestinationChains[
-                    _destinationChainSelector
-            ];
-        if (_receiver == address(0))
-            revert DestinationChainNotAllowlisted(
-                _destinationChainSelector,
-                _receiver
-            );
-        bytes memory _message = abi.encode(
-            Request({target: _target, callData: _callData})
-        );
-        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
-            _receiver,
-            _message,
-            address(0)
-        );
+        address _receiver = allowlistedDestinationChains[_destinationChainSelector];
+        if (_receiver == address(0)) {
+            revert DestinationChainNotAllowlisted(_destinationChainSelector, _receiver);
+        }
+        bytes memory _message = abi.encode(Request({target: _target, callData: _callData}));
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(_receiver, _message, address(0));
         // Initialize a router client instance to interact with cross-chain router
         IRouterClient router = IRouterClient(this.getRouter());
         // Get the fee required to send the CCIP message
         uint256 fees = router.getFee(_destinationChainSelector, evm2AnyMessage);
         require(msg.value >= fees, "USR008");
         // Send the CCIP message through the router and store the returned CCIP message ID
-        messageId = router.ccipSend{value: fees}(
-            _destinationChainSelector,
-            evm2AnyMessage
-        );
+        messageId = router.ccipSend{value: fees}(_destinationChainSelector, evm2AnyMessage);
         // Emit an event with message details
-        emit MessageSent(
-            messageId,
-            _destinationChainSelector,
-            _receiver,
-            _message,
-            address(0),
-            fees
-        );
+        emit MessageSent(messageId, _destinationChainSelector, _receiver, _message, address(0), fees);
         return messageId;
     }
 
-    function supportsInterface(
-        bytes4 interfaceId
-    )
-    public
-    pure
-    override(CCIPReceiver, AccessControlUpgradeable)
-    returns (bool)
+    function supportsInterface(bytes4 interfaceId)
+        public
+        pure
+        override(CCIPReceiver, AccessControlUpgradeable)
+        returns (bool)
     {
         return CCIPReceiver.supportsInterface(interfaceId);
     }
 
     /// handle a received message
-    function _ccipReceive(
-        Client.Any2EVMMessage memory any2EvmMessage
-    )
-    internal
-    override
-    whenNotPaused
-    onlyAllowlisted(
-    any2EvmMessage.sourceChainSelector,
-    abi.decode(any2EvmMessage.sender, (address))
-    ) // Make sure source chain and sender are allowlisted
+    function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage)
+        internal
+        override
+        whenNotPaused
+        onlyAllowlisted(any2EvmMessage.sourceChainSelector, abi.decode(any2EvmMessage.sender, (address))) // Make sure source chain and sender are allowlisted
     {
-        if (processedMessages[any2EvmMessage.messageId])
+        if (processedMessages[any2EvmMessage.messageId]) {
             revert MessageProcessed();
+        }
         processedMessages[any2EvmMessage.messageId] = true;
         Request memory req = abi.decode((any2EvmMessage.data), (Request));
         req.target.functionCallWithValue(req.callData, 0);
@@ -396,42 +303,22 @@ AccessControlUpgradeable
         );
     }
 
-    function _sendToken(
-        uint64 _destinationChainSelector,
-        address _recipient,
-        uint256 _amount
-    ) internal returns (bytes32 messageId) {
-        address _receiver = allowlistedDestinationChains[
-                    _destinationChainSelector
-            ];
-        if (_receiver == address(0))
-            revert DestinationChainNotAllowlisted(
-                _destinationChainSelector,
-                _receiver
-            );
+    function _sendToken(uint64 _destinationChainSelector, address _recipient, uint256 _amount)
+        internal
+        returns (bytes32 messageId)
+    {
+        address _receiver = allowlistedDestinationChains[_destinationChainSelector];
+        if (_receiver == address(0)) {
+            revert DestinationChainNotAllowlisted(_destinationChainSelector, _receiver);
+        }
 
-        address _target = targetTokens[
-                    _destinationChainSelector
-
-            ];
-        if (_target == address(0))
-            revert TargetTokensNotAllowlisted(
-                _destinationChainSelector,
-                _target
-            );
-        bytes memory _callData = abi.encodeWithSelector(
-            IMintableContract.mint.selector,
-            _recipient,
-            _amount
-        );
-        bytes memory _message = abi.encode(
-            Request({target: _target, callData: _callData})
-        );
-        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(
-            _receiver,
-            _message,
-            address(0)
-        );
+        address _target = targetTokens[_destinationChainSelector];
+        if (_target == address(0)) {
+            revert TargetTokensNotAllowlisted(_destinationChainSelector, _target);
+        }
+        bytes memory _callData = abi.encodeWithSelector(IMintableContract.mint.selector, _recipient, _amount);
+        bytes memory _message = abi.encode(Request({target: _target, callData: _callData}));
+        Client.EVM2AnyMessage memory evm2AnyMessage = _buildCCIPMessage(_receiver, _message, address(0));
         // Initialize a router client instance to interact with cross-chain router
         IRouterClient router = IRouterClient(this.getRouter());
         // Get the fee required to send the CCIP message
@@ -440,19 +327,9 @@ AccessControlUpgradeable
         // Burn uniBTC
         IMintableContract(uniBTC).burnFrom(msg.sender, _amount);
         // Send the CCIP message through the router and store the returned CCIP message ID
-        messageId = router.ccipSend{value: fees}(
-            _destinationChainSelector,
-            evm2AnyMessage
-        );
+        messageId = router.ccipSend{value: fees}(_destinationChainSelector, evm2AnyMessage);
         // Emit an event with message details
-        emit MessageSent(
-            messageId,
-            _destinationChainSelector,
-            _receiver,
-            _message,
-            address(0),
-            fees
-        );
+        emit MessageSent(messageId, _destinationChainSelector, _receiver, _message, address(0), fees);
         return messageId;
     }
 
@@ -462,22 +339,21 @@ AccessControlUpgradeable
     /// @param _text The string data to be sent.
     /// @param _feeTokenAddress The address of the token used for fees. Set address(0) for native gas.
     /// @return Client.EVM2AnyMessage Returns an EVM2AnyMessage struct which contains information for sending a CCIP message.
-    function _buildCCIPMessage(
-        address _receiver,
-        bytes memory _text,
-        address _feeTokenAddress
-    ) private pure returns (Client.EVM2AnyMessage memory) {
+    function _buildCCIPMessage(address _receiver, bytes memory _text, address _feeTokenAddress)
+        private
+        pure
+        returns (Client.EVM2AnyMessage memory)
+    {
         // Create an EVM2AnyMessage struct in memory with necessary information for sending a cross-chain message
-        return
-            Client.EVM2AnyMessage({
+        return Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver), // ABI-encoded receiver address
             data: _text, // ABI-encoded string
             tokenAmounts: new Client.EVMTokenAmount[](0), // Empty array as no tokens are transferred
             extraArgs: Client._argsToBytes(
-        // Additional arguments, setting gas limit
+                // Additional arguments, setting gas limit
                 Client.EVMExtraArgsV1({gasLimit: 200_000})
             ),
-        // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
+            // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
             feeToken: _feeTokenAddress
         });
     }
