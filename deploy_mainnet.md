@@ -58,17 +58,9 @@
 ---------------------------------------------------
 
 ## 2. Plugin Contracts
-### 2.1 FBTCProxy Deployments
-- BSC: [0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a](https://bscscan.com/address/0x3376eBCa0A85Fc8D791B1001a571C41fdd61514a)
-- Ethereum: [0xa3a30F627dBC02AFf3c0A736A065443A0e85b1AE](https://etherscan.io/address/0xa3a30F627dBC02AFf3c0A736A065443A0e85b1AE)
-- Mantle: [0x02e3E2c644601b18Ad67a6F09155fe5581AF25ea](https://explorer.mantle.xyz/address/0x02e3E2c644601b18Ad67a6F09155fe5581AF25ea)
-- BOB: 0xF9775085d726E782E83585033B58606f7731AB18
-
 ### 2.2 BitLayerNativeProxy Deployments
 - **Bitlayer**: [0xcb28dab5e89f6bf2feb2de200564baff77d59957](https://www.btrscan.com/address/0xcb28dab5e89f6bf2feb2de200564baff77d59957?tab=Transactions)
 
-### 2.3 MBTCProxy
-- Merlin: 0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4
 
 ---------------------------------------------------
 
@@ -86,13 +78,7 @@
 ---------------------------------------------------
 
 ## 4. Leading Tokens
-### 4.1 FBTC Deployments
-- BSC: [0xC96dE26018A54D51c097160568752c4E3BD6C364](https://bscscan.com/address/0xC96dE26018A54D51c097160568752c4E3BD6C364)
-- Ethereum: [0xc96de26018a54d51c097160568752c4e3bd6c364](https://etherscan.io/address/0xc96de26018a54d51c097160568752c4e3bd6c364)
-- Mantle: [0xc96de26018a54d51c097160568752c4e3bd6c364](https://mantlescan.xyz/address/0xc96de26018a54d51c097160568752c4e3bd6c364)
-- BOB: 0xc96de26018a54d51c097160568752c4e3bd6c364
-
-### 4.2 WBTC Deployments
+### 4.1 WBTC Deployments
 - **B²**: [0x4200000000000000000000000000000000000006](https://explorer.bsquared.network/address/0x4200000000000000000000000000000000000006)
 - **Bitlayer**: [0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F](https://www.btrscan.com/address/0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F?tab=Transactions)
 - **Merlin**: [0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA](https://scan.merlinchain.io/address/0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA) (UNSUPPORTED NOW)
@@ -102,35 +88,12 @@
 - Mode: [0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF](https://modescan.io/token/0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF)
 - Optimism: [0x68f180fcCe6836688e9084f035309E29Bf0A2095](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095)
 
-### 4.3 M-BTC Deployments
-- **Merlin**: [0xB880fd278198bd590252621d4CD071b1842E9Bcd](https://scan.merlinchain.io/address/0xB880fd278198bd590252621d4CD071b1842E9Bcd)
-- Mode: [0x59889b7021243dB5B1e065385F918316cD90D46c](https://modescan.io/token/0x59889b7021243dB5B1e065385F918316cD90D46c)
 
-### 4.4 BTC.BTC Deployments
+### 4.2 BTC.BTC Deployments
 - Zeta: [0x13A0c5930C028511Dc02665E7285134B6d11A5f4](https://zetachain.blockscout.com/address/0x13A0c5930C028511Dc02665E7285134B6d11A5f4)
 
-### 4.5 BTCB Deployments
+### 4.3 BTCB Deployments
 - BSC: [0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c](https://bscscan.com/address/0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c)
 
-### 4.6 cbBTC Deployments
+### 4.4 cbBTC Deployments
 - Ethereum: [0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf](https://etherscan.io/token/0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf)
-
----------------------------------------------------
-
-## 5. Derived Tokens
-### 5.1 LockedFBTC Deployments
-- BSC: [0xEb28877D7e3DbA5bcd4D0a1474C31F8AFb2d6052](https://bscscan.com/address/0xEb28877D7e3DbA5bcd4D0a1474C31F8AFb2d6052)
-- Ethereum: [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://etherscan.io/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c)
-- Mantle: [0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c](https://explorer.mantle.xyz/address/0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c)
-- Bob: 0xee03e367bcb59a9b4c1c0ea495a2e9cac36372c8
-
-
-## 6. Other Contracts
-### 6.1 TransferProxy
-- ETH：0xF0AB759D3A1A4956e8C3C52c71cCb50f20bC342b
-- BSC: 0x98169228cB99Ed26c1043eD8Ca53A5Cb371D3B8D
-- OP: 0xbc48e8bb4e270E0C59cC1bc8885571b7BC33d03d
-- B2: 0x02e3E2c644601b18Ad67a6F09155fe5581AF25ea
-- Merlin: 0x11b3808A5C0B612BC284EF7c2c6034C77A66BE7b
-- Arbitrum: 0x8a94866dF557Bb7FCe88EfF9917237286098e590
-- Mantle: 0x3e904af0Cf56b304d0D286C8fB6eA5A84E33EAb5
