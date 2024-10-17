@@ -16,7 +16,7 @@ def main(deployer="mainnet-deployer", owner="mainnet-owner"):
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
 
     w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
-    default_admin_role = w3.to_bytes(hexstr="0x00")
+    default_admin_role = w3.toBytes(hexstr="0x00")
 
     deployer = accounts.load(deployer)
     owner = accounts.load(owner)

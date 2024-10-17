@@ -23,18 +23,19 @@
   | DirectBTCMinter imple        | 0xD4c9C929CE4904D8b79ad1734f69777feFF51af7 |
 
 ## deploy contract: mainnet
-<!-- 
-| Contract                     | Address                                    |
+### B2
+| Contract (B2)                | Address                                    |
 |------------------------------|--------------------------------------------|
-| ProxyAdmin                   | 0x029E4FbDAa31DE075dD74B2238222A08233978f6 |
-| uniBtcVault                  | 0x047D41F2544B7F63A8e991aF2068a363d210d6Da |
+| ProxyAdmin                   | 0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19 |
+| uniBtcVault                  | 0xF9775085d726E782E83585033B58606f7731AB18 |
 |------------------------------|--------------------------------------------|
-| directBTC proxy              | 0x290ae25790112D619EEF07E878674D7AAbe9CbF0 |
-| directBTC imple              | 0xeDd7E3DF86E80E5237bFa2436fE4575733CD6533 |
+| directBTC proxy              | 0x3e904af0Cf56b304d0D286C8fB6eA5A84E33EAb5 |
+| directBTC imple              | 0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4 |
 |------------------------------|--------------------------------------------|
-| DirectBTCMinter proxy        | 0xF2EB1dc3cE6bf85AbB089101642CFC92a6bAB931 |
-| DirectBTCMinter imple        | 0x5760c5050ffE04703804C31624B1C6969a5B455e |
-|------------------------------|--------------------------------------------| -->
+| DirectBTCMinter proxy        | 0xa0c8D36EBDA8bC2F3466836D8bEa87a736b8c467 |
+| DirectBTCMinter imple        | 0x4beFa2aA9c305238AA3E0b5D17eB20C045269E9d |
+|------------------------------|--------------------------------------------|
+
 
 ### ERROR code from contract
 
