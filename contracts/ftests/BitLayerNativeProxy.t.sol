@@ -13,23 +13,31 @@ contract BitLayerNativeProxyTest is Test {
     Vault public vault;
     BitLayerNativeProxy public bitLayerNative;
 
-    address public uniBTC;
+    address public uniBTCAddress;
     address public defaultAdmin;
     address public bitLayerRole;
 
     function setUp() public {
         defaultAdmin = vm.addr(1);
         bitLayerRole = vm.addr(2);
-        uniBTC = vm.addr(3);
+        uniBTCAddress = vm.addr(3);
 
         // deploy vault
         Vault vaultImplementation = new Vault();
-        vaultProxy = new TransparentUpgradeableProxy(address(vaultImplementation), vm.addr(4), abi.encodeCall(vaultImplementation.initialize, (defaultAdmin, uniBTC)));
+        vaultProxy = new TransparentUpgradeableProxy(
+            address(vaultImplementation),
+            vm.addr(4),
+            abi.encodeCall(vaultImplementation.initialize, (defaultAdmin, uniBTCAddress))
+        );
         vault = Vault(payable(vaultProxy));
 
         // deploy bitLayerProxy
         BitLayerNativeProxy implementation = new BitLayerNativeProxy();
-        bitLayerProxy = new TransparentUpgradeableProxy(address(implementation), vm.addr(4), abi.encodeCall(implementation.initialize, (defaultAdmin, address(vaultProxy))));
+        bitLayerProxy = new TransparentUpgradeableProxy(
+            address(implementation),
+            vm.addr(4),
+            abi.encodeCall(implementation.initialize, (defaultAdmin, address(vaultProxy)))
+        );
         bitLayerNative = BitLayerNativeProxy(payable(bitLayerProxy));
 
         vm.startPrank(defaultAdmin);
@@ -40,14 +48,14 @@ contract BitLayerNativeProxyTest is Test {
         vm.deal(address(vault), 10 ether);
     }
 
-    function test_getBalance() public {
+    function test_getBalance() public view {
         assertEq(address(vault).balance, 10 ether);
     }
 
-//    function test_nonce() public {
-//        uint256 nonce = bitLayerNative.nonce();
-//        console.logUint(nonce);
-//    }
+    //    function test_nonce() public {
+    //        uint256 nonce = bitLayerNative.nonce();
+    //        console.logUint(nonce);
+    //    }
 
     function test_stakeOK() public {
         vm.startPrank(defaultAdmin);
@@ -64,8 +72,10 @@ contract BitLayerNativeProxyTest is Test {
         vm.startPrank(defaultAdmin);
         bitLayerNative.stake(5 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029972
         // unstake
-        bitLayerNative.unStake(3 ether);//nonce 22691434096314749681921707768394077297869339642587417088066835679514310029973
-        uint256 queue0 = bitLayerNative.withdrawPendingQueue(22691434096314749681921707768394077297869339642587417088066835679514310029973);
+        bitLayerNative.unStake(3 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029973
+        uint256 queue0 = bitLayerNative.withdrawPendingQueue(
+            22691434096314749681921707768394077297869339642587417088066835679514310029973
+        );
         assertEq(queue0, 3 ether);
         vm.stopPrank();
     }
@@ -74,9 +84,9 @@ contract BitLayerNativeProxyTest is Test {
         vm.startPrank(defaultAdmin);
         bitLayerNative.stake(5 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029971
         // unstake
-        bitLayerNative.unStake(3 ether);//nonce 22691434096314749681921707768394077297869339642587417088066835679514310029972
+        bitLayerNative.unStake(3 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029972
         vm.expectRevert("USR015");
-        bitLayerNative.unStake(3 ether);//nonce
+        bitLayerNative.unStake(3 ether); //nonce
         vm.stopPrank();
     }
 
@@ -84,7 +94,7 @@ contract BitLayerNativeProxyTest is Test {
         vm.startPrank(defaultAdmin);
         bitLayerNative.stake(5 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029972
         // unstake
-        bitLayerNative.unStake(3 ether);//nonce 22691434096314749681921707768394077297869339642587417088066835679514310029973
+        bitLayerNative.unStake(3 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029973
         vm.stopPrank();
 
         vm.startPrank(bitLayerRole);
@@ -104,15 +114,25 @@ contract BitLayerNativeProxyTest is Test {
         bitLayerNative.stake(1 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029974
         bitLayerNative.stake(1 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029975
         // unstake
-        bitLayerNative.unStake(1 ether);//nonce 22691434096314749681921707768394077297869339642587417088066835679514310029976
-        bitLayerNative.unStake(1 ether);//nonce 22691434096314749681921707768394077297869339642587417088066835679514310029977
-        bitLayerNative.unStake(1 ether);//nonce 22691434096314749681921707768394077297869339642587417088066835679514310029978
+        bitLayerNative.unStake(1 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029976
+        bitLayerNative.unStake(1 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029977
+        bitLayerNative.unStake(1 ether); //nonce 22691434096314749681921707768394077297869339642587417088066835679514310029978
         vm.stopPrank();
         assertEq(address(bitLayerNative).balance, 8 ether);
         assertEq(bitLayerNative.withdrawPendingAmount(), 3 ether);
         assertEq(address(vault).balance, 2 ether);
-        assertEq(bitLayerNative.withdrawPendingQueue(22691434096314749681921707768394077297869339642587417088066835679514310029976), 1 ether);
-        assertEq(bitLayerNative.withdrawPendingQueue(22691434096314749681921707768394077297869339642587417088066835679514310029978), 1 ether);
+        assertEq(
+            bitLayerNative.withdrawPendingQueue(
+                22691434096314749681921707768394077297869339642587417088066835679514310029976
+            ),
+            1 ether
+        );
+        assertEq(
+            bitLayerNative.withdrawPendingQueue(
+                22691434096314749681921707768394077297869339642587417088066835679514310029978
+            ),
+            1 ether
+        );
 
         vm.startPrank(bitLayerRole);
         uint256[] memory reqs = new uint256[](3);
@@ -124,11 +144,21 @@ contract BitLayerNativeProxyTest is Test {
         assertEq(address(bitLayerNative).balance, 6 ether);
         assertEq(address(vault).balance, 4 ether);
         assertEq(bitLayerNative.withdrawPendingAmount(), 1 ether);
-        assertEq(bitLayerNative.withdrawPendingQueue(22691434096314749681921707768394077297869339642587417088066835679514310029977), 0 ether);
-        assertEq(bitLayerNative.withdrawPendingQueue(22691434096314749681921707768394077297869339642587417088066835679514310029976), 1 ether);
+        assertEq(
+            bitLayerNative.withdrawPendingQueue(
+                22691434096314749681921707768394077297869339642587417088066835679514310029977
+            ),
+            0 ether
+        );
+        assertEq(
+            bitLayerNative.withdrawPendingQueue(
+                22691434096314749681921707768394077297869339642587417088066835679514310029976
+            ),
+            1 ether
+        );
 
         vm.prank(defaultAdmin);
         vm.expectRevert("USR015");
-        bitLayerNative.unStake(6 ether);//none
+        bitLayerNative.unStake(6 ether); //none
     }
 }

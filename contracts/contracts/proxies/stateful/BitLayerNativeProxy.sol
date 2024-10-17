@@ -4,7 +4,6 @@ pragma solidity ^0.8.12;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "../../../interfaces/IVault.sol";
 
-
 contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
     address private constant NATIVE_TOKEN = address(0);
     uint256 private nonce;
@@ -24,7 +23,7 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
      *
      * ======================================================================================
      */
-    function initialize(address _defaultAdmin, address _vault) initializer public {
+    function initialize(address _defaultAdmin, address _vault) public initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         vault = _vault;
@@ -56,6 +55,7 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         }
     }
     //TODO if we can delete this function
+
     function approveWithdraw(uint256 planId) external onlyRole(BITLAYER_ROLE) {}
 
     /**
@@ -83,9 +83,17 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
      *
      * ======================================================================================
      */
-    event TokenStaked(uint256 indexed reqId, address indexed user, uint256 indexed amount, address token,
-        uint256 planId, uint256 duration, bytes extraInfo);
-    event UnboundRequired(uint256 indexed reqId, address indexed user, uint256 indexed amount, address token,
-        bytes extraInfo);
+    event TokenStaked(
+        uint256 indexed reqId,
+        address indexed user,
+        uint256 indexed amount,
+        address token,
+        uint256 planId,
+        uint256 duration,
+        bytes extraInfo
+    );
+    event UnboundRequired(
+        uint256 indexed reqId, address indexed user, uint256 indexed amount, address token, bytes extraInfo
+    );
     event UnboundApproved(uint256 indexed reqId, bytes extraInfo);
 }
