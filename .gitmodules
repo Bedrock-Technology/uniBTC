@@ -16,3 +16,15 @@
 [submodule "ccip/lib/chainlink-local"]
 	path = ccip/lib/chainlink-local
 	url = https://github.com/smartcontractkit/chainlink-local
+[submodule "ccip/lib/OpenZeppelin/openzeppelin-contracts@4.8.3"]
+	path = ccip/lib/OpenZeppelin/openzeppelin-contracts@4.8.3
+	url = git@github.com:OpenZeppelin/openzeppelin-contracts.git
+[submodule "ccip/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3"]
+	path = ccip/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3
+	url = git@github.com:OpenZeppelin/openzeppelin-contracts-upgradeable.git
+[submodule "ccip/lib/forge-std"]
+	path = ccip/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "contracts/lib/forge-std"]
+	path = contracts/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
