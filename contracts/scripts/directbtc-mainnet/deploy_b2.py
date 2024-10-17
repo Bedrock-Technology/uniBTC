@@ -4,13 +4,13 @@ from web3 import Web3
 
 
 # Execution Command Format:
-# `brownie run scripts/directbtc-mainnet/deploy.py main "mainnet-deployer" "mainnet-owner" --network=mainnet -I`
+# `brownie run scripts/directbtc-mainnet/deploy_b2.py main "mainnet-deployer" "mainnet-owner" --network=b2-fork -I`
 
 def main(deployer="mainnet-deployer", owner="mainnet-owner"):
 
     # make sure to set the correct ProxyAdmin and uniBtcVault address
-    proxyAdmin = '0x029E4FbDAa31DE075dD74B2238222A08233978f6'
-    uniBtcVault = '0x047D41F2544B7F63A8e991aF2068a363d210d6Da'
+    proxyAdmin = '0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19'
+    uniBtcVault = '0xF9775085d726E782E83585033B58606f7731AB18'
 
     deps = project.load(Path.home() / ".brownie" / "packages" / config["dependencies"][0])
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
@@ -51,7 +51,7 @@ def main(deployer="mainnet-deployer", owner="mainnet-owner"):
     assert transparent_directBTC.hasRole(default_admin_role, owner)
     assert transparent_directBTC.hasRole(minter_role, minter_proxy)
 
-    print("| Contract (ETH Mainnnet)      | Address                                    |")
+    print("| Contract (B2)                | Address                                    |")
     print("|------------------------------|--------------------------------------------|")
     print("| ProxyAdmin                   |", proxyAdmin, "|")
     print("| uniBtcVault                  |", uniBtcVault, "|")
