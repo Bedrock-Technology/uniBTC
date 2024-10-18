@@ -14,3 +14,6 @@
 
 ## TransferProxy 
 - 0x8a94866dF557Bb7FCe88EfF9917237286098e590
+
+## WBTC
+- [0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f](https://arbiscan.io/address/0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f)

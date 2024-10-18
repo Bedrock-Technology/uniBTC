@@ -13,3 +13,6 @@
 
 ## TransferProxy
 - 0xbc48e8bb4e270E0C59cC1bc8885571b7BC33d03d
+
+## WBTC
+- [0x68f180fcCe6836688e9084f035309E29Bf0A2095](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095)

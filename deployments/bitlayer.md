@@ -6,3 +6,6 @@
 
 ## BitLayerNativeProxy
 - [0xcb28dab5e89f6bf2feb2de200564baff77d59957](https://www.btrscan.com/address/0xcb28dab5e89f6bf2feb2de200564baff77d59957?tab=Transactions)
+
+## WBTC
+- [0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F](https://www.btrscan.com/address/0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F?tab=Transactions)
