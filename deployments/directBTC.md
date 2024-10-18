@@ -33,7 +33,7 @@
 | directBTC imple              | 0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4 |
 |------------------------------|--------------------------------------------|
 | DirectBTCMinter proxy        | 0xa0c8D36EBDA8bC2F3466836D8bEa87a736b8c467 |
-| DirectBTCMinter imple        | 0x4beFa2aA9c305238AA3E0b5D17eB20C045269E9d |
+| DirectBTCMinter imple        | 0xDB224E96A57C15FD8a5a5626d3481229f4ed60A1 |
 |------------------------------|--------------------------------------------|
 
 
