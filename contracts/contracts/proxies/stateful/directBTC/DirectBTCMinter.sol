@@ -101,13 +101,13 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
     /**
      * @dev get the next pending event
     */
-    function nextPendingEvent() public view returns (Event memory) {
+    function nextPendingEvent() public view returns (bytes32, Event memory) {
         bytes32 _txHash = eventIndexes[processIdx];
         Event memory e = receivedEvents[_txHash];
         if (e.state == EventState.Pending) {
-            return e;
+            return (_txHash, e);
         }
-        return Event(address(0), 0, EventState.Unused);
+        return (bytes32(0), Event(address(0), 0, EventState.Unused));
     }
 
     /**

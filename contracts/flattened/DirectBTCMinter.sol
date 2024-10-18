@@ -2030,12 +2030,26 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
     }
 
     /**
+     * @dev get the next pending event
+    */
+    function nextPendingEvent() public view returns (bytes32, Event memory) {
+        bytes32 _txHash = eventIndexes[processIdx];
+        Event memory e = receivedEvents[_txHash];
+        if (e.state == EventState.Pending) {
+            return (_txHash, e);
+        }
+        return (bytes32(0), Event(address(0), 0, EventState.Unused));
+    }
+
+    /**
      * @dev approve the event
     */
-    function approveEvent() public onlyRole(APPROVER_ROLE) {
+    function approveEvent(bytes32 _reqHash) public onlyRole(APPROVER_ROLE) {
         require(processIdx < eventIndexes.length, "SYS003");
 
         bytes32 _txHash = eventIndexes[processIdx];
+        require(_reqHash == _txHash, "USR015");
+
         Event storage e = receivedEvents[_txHash];
         require(e.state == EventState.Pending, "USR014");
 
@@ -2069,10 +2083,12 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
     /**
      * @dev reject the event
     */
-    function rejectEvent() public onlyRole(APPROVER_ROLE) {
+    function rejectEvent(bytes32 _reqHash) public onlyRole(APPROVER_ROLE) {
         require(processIdx < eventIndexes.length, "SYS003");
 
         bytes32 _txHash = eventIndexes[processIdx];
+        require(_reqHash == _txHash, "USR015");
+
         Event storage e = receivedEvents[_txHash];
         require(e.state == EventState.Pending, "USR014");
 

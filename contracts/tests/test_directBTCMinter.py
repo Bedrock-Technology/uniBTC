@@ -8,11 +8,11 @@ from web3 import Web3
 #| ProxyAdmin                   | 0xC0c9E78BfC3996E8b68D872b29340816495D7e89 |
 #| uniBtcVault                  | 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823 |
 #|------------------------------|--------------------------------------------|
-#| directBTC proxy              | 0xB0F384712Bfa4bF0c6572570c23dB9Ea797Ae4e1 |
-#| directBTC imple              | 0x029C5DfC21b539Ab4264e4966838774BCc2898A6 |
+#| directBTC proxy              | 0xAE250F66C8cD0A5812d0b89F5B3eFB7B426459Eb |
+#| directBTC imple              | 0x7a79A591A0f946B7B8537bfCC737C5EeaA8D3182 |
 #|------------------------------|--------------------------------------------|
-#| DirectBTCMinter proxy        | 0xFD8785F43b130F0308A24326D7DFde095B977236 |
-#| DirectBTCMinter imple        | 0xd677BF906Ad4144be0b18a007df7a6c7729246a9 |
+#| DirectBTCMinter proxy        | 0x7c0384D4D8Cd9e8d0D0F3CD2d55d967Aa3776f95 |
+#| DirectBTCMinter imple        | 0x617F80273eA88600a17fD9F601290635317eDD61 |
 #|------------------------------|--------------------------------------------|
 #
 # Command to run test: `brownie test tests/test_directBTCMinter.py --network=holesky-fork -I -W ignore::DeprecationWarning`
@@ -32,12 +32,12 @@ def test_directBTCMinter(deps):
 
     #directBTC
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
-    directBTC_proxy = TransparentUpgradeableProxy.at('0xB0F384712Bfa4bF0c6572570c23dB9Ea797Ae4e1')
+    directBTC_proxy = TransparentUpgradeableProxy.at('0xAE250F66C8cD0A5812d0b89F5B3eFB7B426459Eb')
     direct_btc = Contract.from_abi("directBTC", directBTC_proxy, directBTC.abi)
 
     #directBTCMinter
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
-    directBTCMinter_proxy = TransparentUpgradeableProxy.at('0xFD8785F43b130F0308A24326D7DFde095B977236')
+    directBTCMinter_proxy = TransparentUpgradeableProxy.at('0x7c0384D4D8Cd9e8d0D0F3CD2d55d967Aa3776f95')
     direct_btc_minter = Contract.from_abi("DirectBTCMinter", directBTCMinter_proxy, DirectBTCMinter.abi)
 
     # grantRole operator role
@@ -114,5 +114,7 @@ def test_directBTCMinter(deps):
     direct_btc_minter.receiveEvent(recipient, '0x08', 8 * 1e8, {'from': operator})
 
     npe = direct_btc_minter.nextPendingEvent()
-    print(npe) # [receipent, amount, status]
-    assert npe[1] == 6 * 1e8
+    txHash, event = npe
+    assert txHash == '0x06'
+    assert event[1] == 6 * 1e8
+
