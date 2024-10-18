@@ -1,0 +1,23 @@
+# Ethereum
+## Core
+- ProxyAdmin: [0x029E4FbDAa31DE075dD74B2238222A08233978f6](https://etherscan.io/address/0x029E4FbDAa31DE075dD74B2238222A08233978f6)
+- uniBTC: [0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568](https://etherscan.io/address/0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568)
+- Vault: [0x047d41f2544b7f63a8e991af2068a363d210d6da](https://etherscan.io/address/0x047d41f2544b7f63a8e991af2068a363d210d6da)
+
+## Multisig
+- 0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3
+
+## Chainlink
+- uniBTCRate: 0xE542919E4b281f10b437F947c8Ba224DdfaBc716
+- uniBTCRawBTCExchangeRateChainlinkAdapter: [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)
+
+## FBTC
+- FBTCProxy: 0xa3a30F627dBC02AFf3c0A736A065443A0e85b1AE
+- F0: 0xc96de26018a54d51c097160568752c4e3bd6c364
+- F1: 0xd681C5574b7F4E387B608ed9AF5F5Fc88662b37c
+
+## cbBTC Deployments
+- Token: [0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf](https://etherscan.io/token/0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf)
+
+## TransferProxy
+- 0xF0AB759D3A1A4956e8C3C52c71cCb50f20bC342b
