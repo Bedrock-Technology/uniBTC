@@ -3,14 +3,17 @@ import brownie
 from web3 import Web3
 
 
-# ProxyAdmin:  0xC0c9E78BfC3996E8b68D872b29340816495D7e89
-# uniBtc Vault:  0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823
-# -----
-# Deployed directBTC proxy:  0xe3747f26A74E4831Cdd0f3E54733B379D7842c7A
-# Deployed directBTC implementation:  0x647Dc65c8DFb6f1a09C0A1f9F56AEed941ef2277
-# -----
-# Deployed DirectBTCMinter proxy:  0x0F433A202611Afa304B873D31149731Bd746a943
-# Deployed DirectBTCMinter implementation:  0xD4c9C929CE4904D8b79ad1734f69777feFF51af7
+#| Contract                     | Address                                    |
+#|------------------------------|--------------------------------------------|
+#| ProxyAdmin                   | 0xC0c9E78BfC3996E8b68D872b29340816495D7e89 |
+#| uniBtcVault                  | 0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823 |
+#|------------------------------|--------------------------------------------|
+#| directBTC proxy              | 0xB0F384712Bfa4bF0c6572570c23dB9Ea797Ae4e1 |
+#| directBTC imple              | 0x029C5DfC21b539Ab4264e4966838774BCc2898A6 |
+#|------------------------------|--------------------------------------------|
+#| DirectBTCMinter proxy        | 0xFD8785F43b130F0308A24326D7DFde095B977236 |
+#| DirectBTCMinter imple        | 0xd677BF906Ad4144be0b18a007df7a6c7729246a9 |
+#|------------------------------|--------------------------------------------|
 #
 # Command to run test: `brownie test tests/test_directBTCMinter.py --network=holesky-fork -I -W ignore::DeprecationWarning`
 def test_directBTCMinter(deps):
@@ -29,12 +32,12 @@ def test_directBTCMinter(deps):
 
     #directBTC
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
-    directBTC_proxy = TransparentUpgradeableProxy.at('0xe3747f26A74E4831Cdd0f3E54733B379D7842c7A')
+    directBTC_proxy = TransparentUpgradeableProxy.at('0xB0F384712Bfa4bF0c6572570c23dB9Ea797Ae4e1')
     direct_btc = Contract.from_abi("directBTC", directBTC_proxy, directBTC.abi)
 
     #directBTCMinter
     TransparentUpgradeableProxy = deps.TransparentUpgradeableProxy
-    directBTCMinter_proxy = TransparentUpgradeableProxy.at('0x0F433A202611Afa304B873D31149731Bd746a943')
+    directBTCMinter_proxy = TransparentUpgradeableProxy.at('0xFD8785F43b130F0308A24326D7DFde095B977236')
     direct_btc_minter = Contract.from_abi("DirectBTCMinter", directBTCMinter_proxy, DirectBTCMinter.abi)
 
     # grantRole operator role
@@ -65,8 +68,8 @@ def test_directBTCMinter(deps):
 
     # success test
     amount = 10 * 1e8
-    direct_btc_minter.receiveEvent(recipient, '0x0000000000000000000000000000000000000000000000000000000000000001', amount, {'from': operator})
-    direct_btc_minter.approveEvent({'from': minterAdmin})
+    direct_btc_minter.receiveEvent(recipient, '0x01', amount, {'from': operator})
+    direct_btc_minter.approveEvent('0x01', {'from': minterAdmin})
 
     # after balance
     balance_unibtc_2 = erc20_unibtc.balanceOf(recipient)
@@ -74,15 +77,42 @@ def test_directBTCMinter(deps):
     assert amount == balance_unibtc_2 - balance_unibtc_1
     assert amount == balance2_directbtc_2 - balance_directbtc_1
 
-    direct_btc_minter.receiveEvent(recipient, '0x0000000000000000000000000000000000000000000000000000000000000002', amount, {'from': operator})
-    direct_btc_minter.rejectEvent({'from': minterAdmin})
-
+    #reject
+    direct_btc_minter.receiveEvent(recipient, '0x02', amount, {'from': operator})
+    direct_btc_minter.rejectEvent('0x02', {'from': minterAdmin})
     with brownie.reverts('USR013'):
-        direct_btc_minter.receiveEvent(recipient, '0x0000000000000000000000000000000000000000000000000000000000000002', amount, {'from': operator})
+        direct_btc_minter.receiveEvent(recipient, '0x02', amount, {'from': operator})
 
     # over cap test
+    amount = 100 * 1e8
+    direct_btc_minter.receiveEvent(recipient, '0x03', amount, {'from': operator})
     with brownie.reverts('USR003'):
-        amount = 100 * 1e8
-        direct_btc_minter.receiveEvent(recipient, '0x0000000000000000000000000000000000000000000000000000000000000003', amount, {'from': operator})
-        direct_btc_minter.approveEvent({'from': minterAdmin})
+        direct_btc_minter.approveEvent('0x03', {'from': minterAdmin})
 
+    direct_btc_minter.rejectEvent('0x03', {'from': minterAdmin})
+
+    # approve not match
+    amount = 1 * 1e8
+    direct_btc_minter.receiveEvent(recipient, '0x04', amount, {'from': operator})
+    with brownie.reverts('USR015'):
+        direct_btc_minter.approveEvent('0xA4', {'from': minterAdmin})
+
+    npe = direct_btc_minter.nextPendingEvent()
+    print(npe)
+    direct_btc_minter.approveEvent('0x04', {'from': minterAdmin})
+
+    # reject not match
+    direct_btc_minter.receiveEvent(recipient, '0x05', amount, {'from': operator})
+    with brownie.reverts('USR015'):
+        direct_btc_minter.rejectEvent('0xA5', {'from': minterAdmin})
+
+    direct_btc_minter.rejectEvent('0x05', {'from': minterAdmin})
+
+    # view next
+    direct_btc_minter.receiveEvent(recipient, '0x06', 6 * 1e8, {'from': operator})
+    direct_btc_minter.receiveEvent(recipient, '0x07', 7 * 1e8, {'from': operator})
+    direct_btc_minter.receiveEvent(recipient, '0x08', 8 * 1e8, {'from': operator})
+
+    npe = direct_btc_minter.nextPendingEvent()
+    print(npe) # [receipent, amount, status]
+    assert npe[1] == 6 * 1e8
