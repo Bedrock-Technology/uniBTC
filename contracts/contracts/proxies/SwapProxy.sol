@@ -8,6 +8,8 @@ import "../../interfaces/IUniswapV3.sol";
 import "../../interfaces/IUniswapV2.sol";
 import "../../interfaces/ICurve.sol";
 import "../../interfaces/IERC20Symbol.sol";
+import "../../interfaces/IDODOV2.sol";
+import "../../interfaces/IBalancer.sol";
 
 contract SwapProxy is Ownable {
     ///dfine slippage range
@@ -24,6 +26,10 @@ contract SwapProxy is Ownable {
         keccak256("UNISWAP_V3_PROTOCOL");
     ///define curve protocol
     bytes32 public constant CURVE_PROTOCOL = keccak256("CURVE_PROTOCOL");
+    ///define DODO protocol
+    bytes32 public constant DODO_PROTOCOL = keccak256("DODO_PROTOCOL");
+    ///define balancer protocol
+    bytes32 public constant BALANCER_PROTOCOL = keccak256("BALANCER_PROTOCOL");
     address public immutable bedrockVault;
     address public immutable fromToken;
     address public immutable toToken;
@@ -72,30 +78,37 @@ contract SwapProxy is Ownable {
      * @param amountIn The amount of input token to send.
      * @param pool The pool using for swapping
      * @param slippage The custom slippage for the swap.
+     * @param forward The custom slippage direction for the swap.
      */
     function swapToken(
         uint256 amountIn,
         address pool,
-        uint256 slippage
+        uint256 slippage,
+        bool forward
     ) external onlyOwner {
         require(slippage < SLIPPAGE_MAX, "USR011");
-        _swap(amountIn, slippage, pool);
+        _swap(amountIn, slippage, pool, forward);
     }
 
     /**
      * @dev Receive an exact amount of input token for as few output tokens as possible
      * @param amountIn The amount of input token to send.
      * @param pool The pool using for swapping
+     * @param forward The custom slippage direction for the swap.
      * The default slippage(0.5%) for the swap.
      */
-    function swapToken(uint256 amountIn, address pool) external onlyOwner {
-        _swap(amountIn, SLIPPAGE_DEFAULT, pool);
+    function swapToken(
+        uint256 amountIn,
+        address pool,
+        bool forward
+    ) external onlyOwner {
+        _swap(amountIn, SLIPPAGE_DEFAULT, pool, forward);
     }
 
     /**
      * @dev add an exact router of special protocol
      * @param router the address of router
-     * @param protocol only support(uniswapV3,uniswapV2,curve)
+     * @param protocol only support(uniswapV3,uniswapV2,curve,dodo,balancer)
      */
     function addRouter(address router, bytes32 protocol) public onlyOwner {
         _checkProtocol(protocol);
@@ -106,7 +119,7 @@ contract SwapProxy is Ownable {
     /**
      * @dev add an exact pool of special protocol
      * @param pool the address of pool
-     * @param protocol only support(uniswapV3,uniswapV2,curve)
+     * @param protocol only support(uniswapV3,uniswapV2,curve,dodo,balancer)
      */
     function addPool(address pool, bytes32 protocol) public onlyOwner {
         _checkProtocol(protocol);
@@ -118,14 +131,18 @@ contract SwapProxy is Ownable {
     }
 
     /**
-     * @dev disable an exact pool of special protocol
+     * @dev set an exact pool valid status of special protocol
      * @param pool the address of pool
-     * @param protocol only support(uniswapV3,uniswapV2,curve)
+     * @param protocol only support(uniswapV3,uniswapV2,curve,dodo,balancer)
      */
-    function disablePool(address pool, bytes32 protocol) public onlyOwner {
+    function setPoolValid(
+        address pool,
+        bytes32 protocol,
+        bool status
+    ) public onlyOwner {
         _checkProtocol(protocol);
         require(_poolsInfo[pool].existed, "USR022");
-        _poolsInfo[pool].isValid = false;
+        _poolsInfo[pool].isValid = status;
     }
 
     /**
@@ -194,10 +211,23 @@ contract SwapProxy is Ownable {
     /**
      * @dev using a pool to swap coin
      */
-    function _swap(uint256 amountIn, uint256 slippage, address pool) internal {
+    function _swap(
+        uint256 amountIn,
+        uint256 slippage,
+        address pool,
+        bool forward
+    ) internal {
         require(_poolsInfo[pool].isValid, "USR021");
-        uint256 amountOutMin = (amountIn * (SLIPPAGE_RANGE - slippage)) /
-            SLIPPAGE_RANGE;
+        uint256 amountOutMin;
+        if (!forward) {
+            amountOutMin =
+                (amountIn * (SLIPPAGE_RANGE + slippage)) /
+                SLIPPAGE_RANGE;
+        } else {
+            amountOutMin =
+                (amountIn * (SLIPPAGE_RANGE - slippage)) /
+                SLIPPAGE_RANGE;
+        }
         uint256 vaultToTokenBalanceBefore = IERC20(toToken).balanceOf(
             bedrockVault
         );
@@ -207,6 +237,10 @@ contract SwapProxy is Ownable {
             _swapByUniswapV2Router2(amountIn, amountOutMin);
         } else if (_poolsInfo[pool].protocol == CURVE_PROTOCOL) {
             _swapByCurve(amountIn, amountOutMin, pool);
+        } else if (_poolsInfo[pool].protocol == DODO_PROTOCOL) {
+            _swapByDODOV2Proxy02(amountIn, amountOutMin, pool);
+        } else if (_poolsInfo[pool].protocol == BALANCER_PROTOCOL) {
+            _swapByBalancerV2Vault(amountIn, amountOutMin, pool);
         }
         uint256 vaultToTokenBalanceAfter = IERC20(toToken).balanceOf(
             bedrockVault
@@ -310,16 +344,91 @@ contract SwapProxy is Ownable {
         IVault(bedrockVault).execute(_routers[CURVE_PROTOCOL], data, 0);
     }
 
-    function _approve(uint256 amountIn, address router) internal {
+    /**
+     * @dev call curve router to swap fromToken to toToken
+     */
+    function _swapByDODOV2Proxy02(
+        uint256 amountIn,
+        uint256 amountOutMin,
+        address pool
+    ) internal {
+        // 1. Approve 'amountIn' fromToken to dodov2 proxyv2 contract
+        address approveProxy = IDODOV2ProxyV2(_routers[DODO_PROTOCOL])
+            ._DODO_APPROVE_PROXY_();
+        address dodoApprove = IDODOAppProxy(approveProxy)._DODO_APPROVE_();
+        _approve(amountIn, dodoApprove);
+        // 2. swap fromToken to toToken using dodov2 proxyv2 contract.
+        address[] memory dodoPairs = new address[](1);
+        dodoPairs[0] = pool;
+        address baseToken = address(IDODOV2Pool(pool)._BASE_TOKEN_());
+        uint256 directions;
+        if (baseToken == fromToken) {
+            directions = 0;
+        } else {
+            directions = 1;
+        }
+        bytes memory data = abi.encodeWithSelector(
+            IDODOV2ProxyV2.dodoSwapV2TokenToToken.selector,
+            fromToken,
+            toToken,
+            amountIn,
+            amountOutMin,
+            dodoPairs,
+            directions,
+            false,
+            block.timestamp
+        );
+        IVault(bedrockVault).execute(_routers[DODO_PROTOCOL], data, 0);
+    }
+
+    /**
+     * @dev call balancer v2 vault to swap fromToken to toToken
+     */
+    function _swapByBalancerV2Vault(
+        uint256 amountIn,
+        uint256 amountOutMin,
+        address pool
+    ) internal {
+        // 1. Approve 'amountIn' fromToken to balancer v2 vault contract
+        _approve(amountIn, _routers[BALANCER_PROTOCOL]);
+        // 2. swap fromToken to toToken using balancer v2 vault contract.
+        bytes32 poolId = IBalancerPool(pool).getPoolId();
+        IBalancerVault.SingleSwap memory singleSwap = IBalancerVault
+            .SingleSwap({
+                poolId: poolId,
+                kind: IBalancerVault.SwapKind.GIVEN_IN,
+                assetIn: IAsset(fromToken),
+                assetOut: IAsset(toToken),
+                amount: amountIn,
+                userData: ""
+            });
+        IBalancerVault.FundManagement memory funds = IBalancerVault
+            .FundManagement({
+                sender: bedrockVault,
+                fromInternalBalance: false,
+                recipient: payable(bedrockVault),
+                toInternalBalance: false
+            });
+        bytes memory data = abi.encodeWithSelector(
+            IBalancerVault.swap.selector,
+            singleSwap,
+            funds,
+            amountOutMin,
+            block.timestamp
+        );
+        IVault(bedrockVault).execute(_routers[BALANCER_PROTOCOL], data, 0);
+    }
+
+    function _approve(uint256 amountIn, address spender) internal {
         require(
             IERC20(fromToken).balanceOf(bedrockVault) >= amountIn,
             "USR010"
         );
-        // 1. Approve '_amount' to router contract
-        if (IERC20(fromToken).allowance(bedrockVault, router) < amountIn) {
+        // 1. Approve 'amountIn' to spender contract
+        if (IERC20(fromToken).allowance(bedrockVault, spender) < amountIn) {
             bytes memory data = abi.encodeWithSelector(
                 IERC20.approve.selector,
-                router,
+                spender,
                 amountIn
             );
             IVault(bedrockVault).execute(fromToken, data, 0);
@@ -327,13 +436,15 @@ contract SwapProxy is Ownable {
     }
 
     /**
-     * @dev only support uniswapV3, uniswapV2, curve protocol
+     * @dev only support uniswapV3, uniswapV2, curve, dodo, and balancer protocol
      */
     function _checkProtocol(bytes32 protocol) internal pure {
         require(
             protocol == CURVE_PROTOCOL ||
                 protocol == UNISWAP_V2_PROTOCOL ||
-                protocol == UNISWAP_V3_PROTOCOL,
+                protocol == UNISWAP_V3_PROTOCOL ||
+                protocol == DODO_PROTOCOL ||
+                protocol == BALANCER_PROTOCOL,
             "USR021"
         );
     }
