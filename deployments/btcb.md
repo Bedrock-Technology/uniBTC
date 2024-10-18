@@ -1,4 +1,0 @@
-# BTCB
-
-## BTCB Tokens
-- BSC: [0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c](https://bscscan.com/address/0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c)

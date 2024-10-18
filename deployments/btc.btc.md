@@ -1,4 +1,2 @@
 # BTC.BTC
 
-## BTC.BTC Deployments
-- Zeta: [0x13A0c5930C028511Dc02665E7285134B6d11A5f4](https://zetachain.blockscout.com/address/0x13A0c5930C028511Dc02665E7285134B6d11A5f4)

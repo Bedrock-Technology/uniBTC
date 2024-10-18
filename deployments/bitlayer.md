@@ -5,4 +5,4 @@
 - Vault: [0xF9775085d726E782E83585033B58606f7731AB18](https://www.btrscan.com/address/0xF9775085d726E782E83585033B58606f7731AB18?tab=Transactions)
 
 ## BitLayerNativeProxy
-- Bitlayer: [0xcb28dab5e89f6bf2feb2de200564baff77d59957](https://www.btrscan.com/address/0xcb28dab5e89f6bf2feb2de200564baff77d59957?tab=Transactions)
+- [0xcb28dab5e89f6bf2feb2de200564baff77d59957](https://www.btrscan.com/address/0xcb28dab5e89f6bf2feb2de200564baff77d59957?tab=Transactions)
