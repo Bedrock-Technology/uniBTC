@@ -50,7 +50,10 @@ contract SwapProxyTest is Test {
 
         vm.startPrank(owner);
         swapProxy.addRouter(router, swapProxy.UNISWAP_V3_PROTOCOL());
-        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.UNISWAP_V3_PROTOCOL()));
+        console.log(
+            "addRouter success,router is:",
+            swapProxy.getRouter(swapProxy.UNISWAP_V3_PROTOCOL())
+        );
         vm.stopPrank();
 
         vm.startPrank(owner);
@@ -66,11 +69,11 @@ contract SwapProxyTest is Test {
         uint256 slippage = 99;
 
         vm.startPrank(owner);
-        swapProxy.swapToken(swapValue, poolOne, slippage);
+        swapProxy.swapToken(swapValue, poolOne, slippage, true);
         vm.stopPrank();
 
         vm.startPrank(owner);
-        swapProxy.swapToken(swapValue, poolTwo, slippage);
+        swapProxy.swapToken(swapValue, poolTwo, slippage, true);
         vm.stopPrank();
     }
 
@@ -91,7 +94,10 @@ contract SwapProxyTest is Test {
 
         vm.startPrank(owner);
         swapProxy.addRouter(router, swapProxy.UNISWAP_V2_PROTOCOL());
-        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.UNISWAP_V2_PROTOCOL()));
+        console.log(
+            "addRouter success,router is:",
+            swapProxy.getRouter(swapProxy.UNISWAP_V2_PROTOCOL())
+        );
         vm.stopPrank();
 
         vm.startPrank(owner);
@@ -104,10 +110,10 @@ contract SwapProxyTest is Test {
         vm.stopPrank();
 
         uint256 swapValue = 1 * 10 ** 8;
-        uint256 slippage = 99;
+        uint256 slippage = 5;
 
         vm.startPrank(owner);
-        swapProxy.swapToken(swapValue, poolOne, slippage);
+        swapProxy.swapToken(swapValue, poolOne, slippage, false);
         vm.stopPrank();
     }
 
@@ -128,7 +134,10 @@ contract SwapProxyTest is Test {
 
         vm.startPrank(owner);
         swapProxy.addRouter(router, swapProxy.CURVE_PROTOCOL());
-        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.CURVE_PROTOCOL()));
+        console.log(
+            "addRouter success,router is:",
+            swapProxy.getRouter(swapProxy.CURVE_PROTOCOL())
+        );
         vm.stopPrank();
 
         vm.startPrank(owner);
@@ -144,7 +153,90 @@ contract SwapProxyTest is Test {
         uint256 slippage = 99;
 
         vm.startPrank(owner);
-        swapProxy.swapToken(swapValue, poolOne, slippage);
+        swapProxy.swapToken(swapValue, poolOne, slippage, true);
+        vm.stopPrank();
+    }
+
+    function test_swapDODOV2ProxyV2() public {
+        //fromToken = address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
+        //toToken = address(0xC96dE26018A54D51c097160568752c4E3BD6C364);
+        fromToken = address(0xC96dE26018A54D51c097160568752c4E3BD6C364);
+        toToken = address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
+        router = address(0xa356867fDCEa8e71AEaF87805808803806231FdC);
+        address poolOne = address(0xD39DFbfBA9E7eccd813918FfbDa10B783EA3b3C6);
+
+        deal(fromToken, bedrockVault, 2 * 10 ** 8);
+        vm.startPrank(owner);
+        swapProxy = new SwapProxy(bedrockVault, fromToken, toToken);
+        vm.stopPrank();
+        console.log(
+            "deploy SwapProxy contract address is:",
+            address(swapProxy)
+        );
+        console.log("swapProxy exhange type is:", swapProxy.getExchangeType());
+
+        vm.startPrank(owner);
+        swapProxy.addRouter(router, swapProxy.DODO_PROTOCOL());
+        console.log(
+            "addRouter success,router is:",
+            swapProxy.getRouter(swapProxy.DODO_PROTOCOL())
+        );
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        swapProxy.addPool(poolOne, swapProxy.DODO_PROTOCOL());
+        vault.grantRole(vault.OPERATOR_ROLE(), address(swapProxy));
+        address[] memory allowTarget = new address[](1);
+        allowTarget[0] = router;
+        vault.allowTarget(allowTarget);
+        vm.stopPrank();
+
+        uint256 swapValue = 1 * 10 ** 4;
+        uint256 slippage = 99;
+
+        vm.startPrank(owner);
+        swapProxy.swapToken(swapValue, poolOne, slippage, true);
+        vm.stopPrank();
+    }
+
+    function test_swapBalancerV2Vault() public {
+        fromToken = address(0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4);
+        toToken = address(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+        router = address(0xBA12222222228d8Ba445958a75a0704d566BF2C8);
+        address poolOne = address(0xdD59f89B5B07B7844d72996fC9d83D81acC82196);
+
+        deal(fromToken, bedrockVault, 2 * 10 ** 18);
+        vm.startPrank(owner);
+        swapProxy = new SwapProxy(bedrockVault, fromToken, toToken);
+        vm.stopPrank();
+        console.log(
+            "deploy SwapProxy contract address is:",
+            address(swapProxy)
+        );
+        console.log("swapProxy exhange type is:", swapProxy.getExchangeType());
+
+        vm.startPrank(owner);
+        swapProxy.addRouter(router, swapProxy.BALANCER_PROTOCOL());
+        console.log(
+            "addRouter success,router is:",
+            swapProxy.getRouter(swapProxy.BALANCER_PROTOCOL())
+        );
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        swapProxy.addPool(poolOne, swapProxy.BALANCER_PROTOCOL());
+        vault.grantRole(vault.OPERATOR_ROLE(), address(swapProxy));
+        address[] memory allowTarget = new address[](2);
+        allowTarget[0] = router;
+        allowTarget[1] = fromToken;
+        vault.allowTarget(allowTarget);
+        vm.stopPrank();
+
+        uint256 swapValue = 1 * 10 ** 18;
+        uint256 slippage = 10;
+
+        vm.startPrank(owner);
+        swapProxy.swapToken(swapValue, poolOne, slippage, false);
         vm.stopPrank();
     }
 }
