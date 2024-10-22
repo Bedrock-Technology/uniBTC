@@ -502,7 +502,7 @@ contract SwapProxy is Ownable {
             "USR010"
         );
         // 1. Approve 'amountIn' to spender contract
-        if (IERC20(fromToken).allowance(bedrockVault, spender) < amountIn) {
+        if (IERC20(fromToken).allowance(bedrockVault, spender) != amountIn) {
             bytes memory data = abi.encodeWithSelector(
                 IERC20.approve.selector,
                 spender,
