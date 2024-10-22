@@ -12,11 +12,11 @@ import "../../interfaces/IDODOV2.sol";
 import "../../interfaces/IBalancer.sol";
 
 contract SwapProxy is Ownable {
-    ///dfine slippage range
+    ///define slippage range, precision to ten thousandths
     uint256 public constant SLIPPAGE_RANGE = 10000;
-    ///default slippage
+    ///default slippage(0.5%)
     uint256 public constant SLIPPAGE_DEFAULT = 50;
-    ///max slippage
+    ///max slippage(1%)
     uint256 public constant SLIPPAGE_MAX = 100;
     ///define uniswapV2 protocol
     bytes32 public constant UNISWAP_V2_PROTOCOL =
