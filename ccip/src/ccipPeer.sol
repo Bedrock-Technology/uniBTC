@@ -114,6 +114,13 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         _disableInitializers();
     }
 
+    /**
+     * ======================================================================================
+     *
+     * EXTERNAL FUNCTIONS
+     *
+     * ======================================================================================
+     */
     function initialize(address _defaultAdmin, address _uniBTC, address _sysSigner) external initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
@@ -260,6 +267,13 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         return messageId;
     }
 
+    /**
+     * ======================================================================================
+     *
+     * PUBLIC FUNCTIONS
+     *
+     * ======================================================================================
+     */
     function verifySendTokenSign(
         address _sender,
         uint64 _destinationChainSelector,
@@ -281,6 +295,14 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     {
         return CCIPReceiver.supportsInterface(interfaceId);
     }
+
+    /**
+     * ======================================================================================
+     *
+     * INTERNAL FUNCTIONS
+     *
+     * ======================================================================================
+     */
 
     /// handle a received message
     function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage)
@@ -332,6 +354,14 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         emit MessageSent(messageId, _destinationChainSelector, _receiver, _message, address(0), fees);
         return messageId;
     }
+
+    /**
+     * ======================================================================================
+     *
+     * PRIVATE FUNCTIONS
+     *
+     * ======================================================================================
+     */
 
     /// @notice Construct a CCIP message.
     /// @dev This function will create an EVM2AnyMessage struct with all the necessary information for sending a text.
