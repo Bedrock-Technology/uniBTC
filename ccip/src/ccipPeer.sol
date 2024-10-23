@@ -114,6 +114,13 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         _disableInitializers();
     }
 
+    /**
+     * ======================================================================================
+     *
+     * EXTERNAL FUNCTIONS
+     *
+     * ======================================================================================
+     */
     function initialize(address _defaultAdmin, address _uniBTC, address _sysSigner) external initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
@@ -219,19 +226,6 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
 
-    function verifySendTokenSign(
-        address _sender,
-        uint64 _destinationChainSelector,
-        address _recipient,
-        uint256 _amount,
-        bytes memory _signature
-    ) public view returns (bool) {
-        bytes32 msgDigest =
-            sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
-        address signer = ECDSA.recover(msgDigest, _signature);
-        return signer == sysSigner;
-    }
-
     function estimateTargetCallFees(uint64 _destinationChainSelector, address _target, bytes memory _callData)
         external
         view
@@ -273,6 +267,26 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         return messageId;
     }
 
+    /**
+     * ======================================================================================
+     *
+     * PUBLIC FUNCTIONS
+     *
+     * ======================================================================================
+     */
+    function verifySendTokenSign(
+        address _sender,
+        uint64 _destinationChainSelector,
+        address _recipient,
+        uint256 _amount,
+        bytes memory _signature
+    ) public view returns (bool) {
+        bytes32 msgDigest =
+            sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
+        address signer = ECDSA.recover(msgDigest, _signature);
+        return signer == sysSigner;
+    }
+
     function supportsInterface(bytes4 interfaceId)
         public
         pure
@@ -281,6 +295,14 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     {
         return CCIPReceiver.supportsInterface(interfaceId);
     }
+
+    /**
+     * ======================================================================================
+     *
+     * INTERNAL FUNCTIONS
+     *
+     * ======================================================================================
+     */
 
     /// handle a received message
     function _ccipReceive(Client.Any2EVMMessage memory any2EvmMessage)
@@ -332,6 +354,14 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         emit MessageSent(messageId, _destinationChainSelector, _receiver, _message, address(0), fees);
         return messageId;
     }
+
+    /**
+     * ======================================================================================
+     *
+     * PRIVATE FUNCTIONS
+     *
+     * ======================================================================================
+     */
 
     /// @notice Construct a CCIP message.
     /// @dev This function will create an EVM2AnyMessage struct with all the necessary information for sending a text.
