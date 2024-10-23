@@ -219,19 +219,6 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
 
-    function verifySendTokenSign(
-        address _sender,
-        uint64 _destinationChainSelector,
-        address _recipient,
-        uint256 _amount,
-        bytes memory _signature
-    ) public view returns (bool) {
-        bytes32 msgDigest =
-            sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
-        address signer = ECDSA.recover(msgDigest, _signature);
-        return signer == sysSigner;
-    }
-
     function estimateTargetCallFees(uint64 _destinationChainSelector, address _target, bytes memory _callData)
         external
         view
@@ -271,6 +258,19 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         // Emit an event with message details
         emit MessageSent(messageId, _destinationChainSelector, _receiver, _message, address(0), fees);
         return messageId;
+    }
+
+    function verifySendTokenSign(
+        address _sender,
+        uint64 _destinationChainSelector,
+        address _recipient,
+        uint256 _amount,
+        bytes memory _signature
+    ) public view returns (bool) {
+        bytes32 msgDigest =
+            sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
+        address signer = ECDSA.recover(msgDigest, _signature);
+        return signer == sysSigner;
     }
 
     function supportsInterface(bytes4 interfaceId)
