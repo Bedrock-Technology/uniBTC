@@ -219,11 +219,21 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     {
         require(_amount >= minTransferAmt, "USR006");
         require(
-            verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _signature), "SIGNERROR"
+            _verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _signature), "SIGNERROR"
         );
         if (processedSignature[_signature]) revert SignatureProcessed();
         processedSignature[_signature] = true;
         return _sendToken(_destinationChainSelector, _recipient, _amount);
+    }
+
+    function verifySendTokenSign(
+        address _sender,
+        uint64 _destinationChainSelector,
+        address _recipient,
+        uint256 _amount,
+        bytes memory _signature
+    ) external view returns (bool) {
+        return _verifySendTokenSign(_sender, _destinationChainSelector, _recipient, _amount, _signature);
     }
 
     function estimateTargetCallFees(uint64 _destinationChainSelector, address _target, bytes memory _callData)
@@ -274,19 +284,6 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
      *
      * ======================================================================================
      */
-    function verifySendTokenSign(
-        address _sender,
-        uint64 _destinationChainSelector,
-        address _recipient,
-        uint256 _amount,
-        bytes memory _signature
-    ) public view returns (bool) {
-        bytes32 msgDigest =
-            sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
-        address signer = ECDSA.recover(msgDigest, _signature);
-        return signer == sysSigner;
-    }
-
     function supportsInterface(bytes4 interfaceId)
         public
         pure
@@ -386,5 +383,18 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
             // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
             feeToken: _feeTokenAddress
         });
+    }
+
+    function _verifySendTokenSign(
+        address _sender,
+        uint64 _destinationChainSelector,
+        address _recipient,
+        uint256 _amount,
+        bytes memory _signature
+    ) private view returns (bool) {
+        bytes32 msgDigest =
+            sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
+        address signer = ECDSA.recover(msgDigest, _signature);
+        return signer == sysSigner;
     }
 }
