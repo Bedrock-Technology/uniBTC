@@ -110,7 +110,7 @@ contract SwapProxy is Ownable {
      * @param router the address of router
      * @param protocol only support(uniswapV3,uniswapV2,curve,dodo,balancer)
      */
-    function addRouter(address router, bytes32 protocol) public onlyOwner {
+    function addRouter(address router, bytes32 protocol) external onlyOwner {
         _checkProtocol(protocol);
         require(_routers[protocol] == address(0x0), "USR020");
         _routers[protocol] = router;
@@ -121,7 +121,7 @@ contract SwapProxy is Ownable {
      * @param pool the address of pool
      * @param protocol only support(uniswapV3,uniswapV2,curve,dodo,balancer)
      */
-    function addPool(address pool, bytes32 protocol) public onlyOwner {
+    function addPool(address pool, bytes32 protocol) external onlyOwner {
         _checkProtocol(protocol);
         require(!_poolsInfo[pool].existed, "USR020");
         _pools.push(pool);
@@ -139,7 +139,7 @@ contract SwapProxy is Ownable {
         address pool,
         bytes32 protocol,
         bool status
-    ) public onlyOwner {
+    ) external onlyOwner {
         _checkProtocol(protocol);
         require(_poolsInfo[pool].existed, "USR022");
         _poolsInfo[pool].isValid = status;
