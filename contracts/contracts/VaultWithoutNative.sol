@@ -44,7 +44,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
         _disableInitializers();
     }
 
-    modifier serviceNormal{
+    modifier serviceNormal {
         require(!outOfService, "SYS011");
         _;
     }
@@ -144,7 +144,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     }
 
     /**
-     * @dev toggle service
+     * @dev START ALL SERVICE
      */
     function startService() external onlyRole(PAUSER_ROLE) {
         outOfService = false;
@@ -152,7 +152,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     }
 
     /**
- * @dev toggle service
+     * @dev STOP ALL SERVICE
      */
     function stopService() external onlyRole(PAUSER_ROLE) {
         outOfService = true;

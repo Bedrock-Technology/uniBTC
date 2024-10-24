@@ -7,10 +7,42 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "../interfaces/ISupplyFeeder.sol";
 
+
+/**
+ * Sigma Aggregation of same token but different state 
+                 ┌────────────────┐                                 
+                 │   Leading      │                                 
+                 │   Token        │                                 
+                 │                │                                 
+                 │                │                                 
+                 └────────────────┘                                 
+                 ┌────────────────┐                                 
+                 │   Leading      │                                 
+                 │   Token        │                                 
+                 │                │                                 
+                 │                │                                 
+                 └────────────────┘                                 
+                 ┌────────────────┐                                 
+                 │   Leading      │                                 
+                 │   Token(FBTC)  │                                 
+             ┌──►│                ◄───────┐                         
+             │   │                │       │                         
+             │   └────────────────┘       │                        
+             │                            │                         
+             │                            │                         
+             │                            │                         
+    ┌────────┼──────┐            ┌────────┼─────────┐               
+    │Pool1          │            │Pool2             │               
+    │               │            │                  │               
+    │F0: 0x         │            │F1:0x             │               
+    │Holders: A,B,C │            │Holders: D,E,F    │               
+    └───────────────┘            └──────────────────┘               
+ */    
 contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
     address public constant NATIVE_BTC = address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
     uint8 public constant L2_BTC_DECIMAL = 18;
 
+                                                                    
     /// @dev A Pool represents a group of token holders of the same token.
     struct Pool {
         address token;
@@ -96,22 +128,24 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
      * @dev Set holders to track the total supply of assets, which must have the same decimals.
      */
     function setTokenHolders(address _leadingToken, Pool[] calldata _pools) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        // precheck
         require(_haveSameDecimals(_leadingToken, _pools), "SYS010");
 
+        // remove previous setting
         delete tokenHolders[_leadingToken];
 
+        // set new token aggregation
         for (uint256 i = 0; i < _pools.length; i++) {
             tokenHolders[_leadingToken].push(_pools[i]);
         }
-
         emit TokenHoldersSet(_leadingToken, _pools);
 
+        // set new leading tokens
         for (uint256 i = 0; i < leadingTokens.length; i++) {
             if (leadingTokens[i] == _leadingToken) {
                 return;
             }
         }
-
         leadingTokens.push(_leadingToken);
     }
 
@@ -132,6 +166,8 @@ contract Sigma is ISupplyFeeder, Initializable, AccessControlUpgradeable {
         for (uint256 i = 0; i < pools.length; i++) {
             address token = pools[i].token;
             address[] memory holders = pools[i].holders;
+
+            // aggregation native token and ERC20 token
             if (token == NATIVE_BTC) {
                 for (uint256 j = 0; j < holders.length; j++) {
                     uint256 balance = holders[j].balance;
