@@ -245,14 +245,14 @@ contract DelayRedeemRouter is
     /**
      * @dev pause the contract
      */
-    function pause() public onlyRole(PAUSER_ROLE) {
+    function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
     /**
      * @dev unpause the contract
      */
-    function unpause() public onlyRole(PAUSER_ROLE) {
+    function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
