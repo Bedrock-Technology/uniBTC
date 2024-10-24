@@ -30,8 +30,12 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         nonce = uint256(keccak256("BEDROCK_BITLAYER"));
     }
 
+    /// @notice Fallback function to allow the contract to receive Ether.
+    /// @dev This function has no function body, making it a default function for receiving Ether.
+    /// It is automatically called when Ether is sent to the contract without any data.
     receive() external payable {}
 
+    /// @param _amount amount of stake
     function stake(uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_amount > 0, "USR014");
         require(_amount <= vault.balance, "USR015");
@@ -40,7 +44,8 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         emit TokenStaked(nonce, address(this), _amount, NATIVE_TOKEN, 0, 0, "");
     }
 
-    function unStake(uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    /// @param _amount amount of unstake
+    function unstake(uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_amount > 0, "USR014");
         require(_amount + withdrawPendingAmount <= address(this).balance, "USR015");
         nonce += 1;
@@ -49,13 +54,14 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         emit UnboundRequired(nonce, address(this), _amount, NATIVE_TOKEN, "");
     }
 
+    /// @param reqIds requestids that were approved to unbond
     function approveUnbound(uint256[] memory reqIds) external onlyRole(BITLAYER_ROLE) {
         for (uint256 i = 0; i < reqIds.length; i++) {
             _approveUnbound(reqIds[i]);
         }
     }
-    //TODO if we can delete this function
 
+    /// @param planId planId to withdraw, not used currently
     function approveWithdraw(uint256 planId) external onlyRole(BITLAYER_ROLE) {}
 
     /**
@@ -67,7 +73,6 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
      */
     function _approveUnbound(uint256 reqId) internal {
         uint256 amount = withdrawPendingQueue[reqId];
-        // not found, do nothing.
         if (amount > 0) {
             withdrawPendingAmount -= amount;
             delete withdrawPendingQueue[reqId];
