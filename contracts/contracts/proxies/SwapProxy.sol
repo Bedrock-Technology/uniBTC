@@ -475,6 +475,7 @@ contract SwapProxy is Ownable {
     ) internal {
         // 1. Approve 'amountIn' fromToken to balancer v2 vault contract
         _approve(amountIn, _routers[BALANCER_PROTOCOL]);
+
         // 2. swap fromToken to toToken using balancer v2 vault contract.
         //  @SingleSwap: The swap details
         //  poolId: The id of the pool to swap with.
@@ -495,6 +496,7 @@ contract SwapProxy is Ownable {
                 amount: amountIn,
                 userData: ""
             });
+
         // @FundManagement: The funds details
         //  sender: The address from which tokens will be taken to perform the swap.
         //  fromInternalBalance: Whether the swap should use tokens owned by the sender which are already stored in the Vault.
