@@ -65,6 +65,20 @@ contract SwapProxy is Ownable {
         revert("value only accepted by the Vault contract");
     }
 
+   /**
+     * ======================================================================================
+     *
+     * CONSTRUCTOR
+     *
+     * ======================================================================================
+     */
+
+    /**
+     * @dev constructor
+     * @param _vault The address of the bedrock vault
+     * @param _fromToken The address of the from token for swapping
+     * @param _toToken The address of the to token after swapping
+     */
     constructor(address _vault, address _fromToken, address _toToken) {
         require(_vault != address(0), "SYS001");
         require(_fromToken != address(0), "SYS001");
@@ -246,7 +260,7 @@ contract SwapProxy is Ownable {
             bedrockVault
         );
 
-        // swap via given router
+        // swap via given pool which is supported by different protocol
         if (_poolsInfo[pool].protocol == UNISWAP_V3_PROTOCOL) {
             _swapByUniswapV3Router2(amountIn, amountOutMin, pool);
         } else if (_poolsInfo[pool].protocol == UNISWAP_V2_PROTOCOL) {
@@ -348,9 +362,10 @@ contract SwapProxy is Ownable {
             block.timestamp
         );
 
-        // swap
+        // 3. execute swap
         IVault(bedrockVault).execute(_routers[UNISWAP_V2_PROTOCOL], data, 0);
-        // post allowance check
+
+        // 4. post allowance check
         _checkAllowance(_routers[UNISWAP_V2_PROTOCOL]);
     }
 
@@ -407,9 +422,10 @@ contract SwapProxy is Ownable {
             bedrockVault
         );
 
-        // swap
+        // 3. execute swap
         IVault(bedrockVault).execute(_routers[CURVE_PROTOCOL], data, 0);
-        // post allowance check
+
+        // 4. post allowance check
         _checkAllowance(_routers[CURVE_PROTOCOL]);
     }
 
@@ -462,9 +478,10 @@ contract SwapProxy is Ownable {
             block.timestamp
         );
 
-        // swap
+        // 3. execute swap
         IVault(bedrockVault).execute(_routers[DODO_PROTOCOL], data, 0);
-        // post allowance check
+
+        // 4. post allowance check
         _checkAllowance(dodoApprove);
     }
 
@@ -520,9 +537,10 @@ contract SwapProxy is Ownable {
             block.timestamp
         );
 
-        // swap
+        // 3. execute swap
         IVault(bedrockVault).execute(_routers[BALANCER_PROTOCOL], data, 0);
-        // post allowance check
+
+        // 4. post allowance check
         _checkAllowance(_routers[BALANCER_PROTOCOL]);
     }
 
