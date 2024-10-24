@@ -16,13 +16,6 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         _disableInitializers();
     }
 
-    /**
-     * ======================================================================================
-     *
-     * ADMIN
-     *
-     * ======================================================================================
-     */
     function initialize(address _defaultAdmin, address _vault) public initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
@@ -34,6 +27,14 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
     /// @dev This function has no function body, making it a default function for receiving Ether.
     /// It is automatically called when Ether is sent to the contract without any data.
     receive() external payable {}
+
+    /**
+     * ======================================================================================
+     *
+     * EXTERNAL function
+     *
+     * ======================================================================================
+     */
 
     /// @param _amount amount of stake
     function stake(uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
