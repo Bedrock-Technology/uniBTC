@@ -13,6 +13,11 @@ contract FBTCProxy is AccessControl {
     address public immutable lockedFBTC;
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
+    /**
+     * @param _vault the vault contract address
+     * @param _lockedFBTC the F0 contract address
+     * @param _admin the admin address
+     */
     constructor(address _vault, address _lockedFBTC, address _admin) {
         vault = _vault;
         lockedFBTC = _lockedFBTC;
@@ -25,7 +30,7 @@ contract FBTCProxy is AccessControl {
     }
 
     /**
-     * @dev  mint lockedFBTC in response to a burn FBTC request on the FBTC bridge.
+     * @dev mint lockedFBTC in response to a burn FBTC request on the FBTC bridge.
      */
     function mintLockedFbtcRequest(uint256 _amount) external onlyRole(OPERATOR_ROLE) {
         address fbtc = ILockedFBTC(lockedFBTC).fbtc();
