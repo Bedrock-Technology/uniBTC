@@ -20,7 +20,7 @@ interface IMintableContract is IERC20 {
     function burnFrom(address account, uint256 amount) external;
 }
 
-/// @title - A simple messenger contract for sending/receving string data across chains.
+/// @title - messenger contract for sending/receving string data across chains.
 contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
     using Address for address;
@@ -39,18 +39,20 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     // Used when the signature replay.
     error SignatureProcessed();
 
+    // msg type communicate with ccip peers.
     struct Request {
         address target;
         bytes callData;
     }
 
-    // Event emitted when a message is sent to another chain.
-    // The chain selector of the destination chain.
-    // The address of the receiver on the destination chain.
-    // The text being sent.
-    // the token address used to pay CCIP fees.
-    // The fees paid for sending the CCIP message.
-    event MessageSent( // The unique ID of the CCIP message.
+    /// Event emitted when a message is sent to another chain.
+    /// @param messageId The unique ID of the CCIP message.
+    /// @param destinationChainSelector The chain selector of the destination chain.
+    /// @param receiver The address of the receiver on the destination chain.
+    /// @param text The Text being sent.
+    /// @param feeToken The token address used to pay CCIP fees.
+    /// @param fees The fees paid for sending the CCIP message.
+    event MessageSent(
         bytes32 indexed messageId,
         uint64 indexed destinationChainSelector,
         address receiver,
@@ -59,21 +61,25 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         uint256 fees
     );
 
-    // Event emitted when a message is received from another chain.
-    event MessageReceived( // The unique ID of the CCIP message.
-        // The chain selector of the source chain.
-        // The address of the sender from the source chain.
-        // The text that was received.
-    bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, bytes text);
+    /// Event emitted when a message is received from another chain.
+    /// @param messageId The unique ID of the CCIP message.
+    /// @param sourceChainSelector The chain selector of the source chain.
+    /// @param sender The address of the sender from the source chain.
+    /// @param text The text that was received.
+    event MessageReceived(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, bytes text);
 
-    // Event emitted when set minimal transfer amount.
+    /// Event emitted when set minimal transfer amount.
+    /// @param amount amount.
     event MinTransferAmtSet(uint256 amount);
 
-    // Event emitted when set minimal transfer amount.
+    ///Event emitted when set minimal transfer amount.
+    /// @param sysSigner system signer.
     event SysSignerChange(address sysSigner);
 
+    // amount beyond SMALL_TRANSFER_MAX should use sendToken with signature.
     uint256 public constant SMALL_TRANSFER_MAX = 10e8;
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+
     // Mapping to keep track of allowlisted destination chains and receiver.
     mapping(uint64 => address) public allowlistedDestinationChains;
 
@@ -127,8 +133,8 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         _grantRole(PAUSER_ROLE, _defaultAdmin);
         uniBTC = _uniBTC;
         sysSigner = _sysSigner;
-        // uniBTC has 8 digital decimal, 20*1e5 = 0.02000000
-        minTransferAmt = 20 * 1e5;
+        // uniBTC has 8 digital decimal, 2_000_000 = 0.02000000
+        minTransferAmt = 2_000_000;
     }
 
     /// @notice Fallback function to allow the contract to receive Ether.
@@ -138,18 +144,19 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         revert("not accepted");
     }
 
+    /// @dev pause
     function pause() external onlyRole(PAUSER_ROLE) {
         _pause();
     }
 
-    /**
-     * @dev Unpause the contract
-     */
+    /// @dev unpaused
     function unpause() external onlyRole(PAUSER_ROLE) {
         _unpause();
     }
 
     /// @dev Updates the allowlist status of a destination chain for transactions.
+    /// @param _destinationChainSelector destinationChainSelector.
+    /// @param _receiver peer chain contract address.
     function allowlistDestinationChain(uint64 _destinationChainSelector, address _receiver)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -158,6 +165,8 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     }
 
     /// @dev Updates the allowlist status of a destination chain Token for transactions.
+    /// @param _destinationChainSelector destinationChainSelector.
+    /// @param _token  uniBTC address on peer chain.
     function allowlistTargetTokens(uint64 _destinationChainSelector, address _token)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -166,21 +175,31 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     }
 
     /// @dev Updates the allowlist status of a source chain for transactions.
+    /// @param _sourceChainSelector chain selector of where the msg comes from.
+    /// @param _sender contract address of source chain.
     function allowlistSourceChain(uint64 _sourceChainSelector, address _sender) external onlyRole(DEFAULT_ADMIN_ROLE) {
         allowlistedSourceChains[_sourceChainSelector] = _sender;
     }
 
+    /// @dev setMinTransferAmt.
+    /// @param _minimalAmt amount.
     function setMinTransferAmt(uint256 _minimalAmt) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_minimalAmt > 0);
         minTransferAmt = _minimalAmt;
         emit MinTransferAmtSet(_minimalAmt);
     }
 
+    /// @dev setSysSinger.
+    /// @param _sysSigner system signer.
     function setSysSinger(address _sysSigner) external onlyRole(DEFAULT_ADMIN_ROLE) {
         sysSigner = _sysSigner;
         emit SysSignerChange(_sysSigner);
     }
 
+    /// @dev estimateFee.
+    /// @param _destinationChainSelector destinationChainSelector.
+    /// @param _recipient where the token goes to.
+    /// @param _amount amount.
     function estimateSendTokenFees(uint64 _destinationChainSelector, address _recipient, uint256 _amount)
         external
         view
@@ -199,6 +218,10 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         return router.getFee(_destinationChainSelector, evm2AnyMessage);
     }
 
+    /// @dev burn uniBTC on sender chain and mint equal amount of uniBTC on the peer chain.
+    /// @param _destinationChainSelector  destinationChainSelector.
+    /// @param _recipient where the token goes to.
+    /// @param _amount amount.
     function sendToken(uint64 _destinationChainSelector, address _recipient, uint256 _amount)
         external
         payable
@@ -210,6 +233,11 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
 
+    /// @dev amount exceed SMALL_TRANSFER_MAX shoud use this one.
+    /// @param _destinationChainSelector  destinationChainSelector.
+    /// @param _recipient where the token goes to.
+    /// @param _amount amount.
+    /// @param _signature signed whit system signer's private key.
     function sendToken(uint64 _destinationChainSelector, address _recipient, uint256 _amount, bytes memory _signature)
         external
         payable
@@ -218,14 +246,18 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         returns (bytes32 messageId)
     {
         require(_amount >= minTransferAmt, "USR006");
-        require(
-            _verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _signature), "SIGNERROR"
-        );
+        require(_verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _signature), "USR023");
         if (processedSignature[_signature]) revert SignatureProcessed();
         processedSignature[_signature] = true;
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
 
+    /// @dev verify the signature
+    /// @param _sender the sender
+    /// @param _destinationChainSelector  destinationChainSelector
+    /// @param _recipient where the token goes to.
+    /// @param _amount amount.
+    /// @param _signature signed with system signer's private key.
     function verifySendTokenSign(
         address _sender,
         uint64 _destinationChainSelector,
@@ -236,6 +268,10 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         return _verifySendTokenSign(_sender, _destinationChainSelector, _recipient, _amount, _signature);
     }
 
+    /// @dev estimate fee
+    /// @param _destinationChainSelector destinationChainSelector.
+    /// @param _target which address to run callData.
+    /// @param _callData data.
     function estimateTargetCallFees(uint64 _destinationChainSelector, address _target, bytes memory _callData)
         external
         view
@@ -252,6 +288,10 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         return router.getFee(_destinationChainSelector, evm2AnyMessage);
     }
 
+    /// @dev targetCall
+    /// @param _destinationChainSelector destinationChainSelector
+    /// @param _target which address to run callData.
+    /// @param _callData data.
     function targetCall(uint64 _destinationChainSelector, address _target, bytes memory _callData)
         external
         payable
@@ -316,8 +356,10 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         req.target.functionCallWithValue(req.callData, 0);
         emit MessageReceived(
             any2EvmMessage.messageId,
-            any2EvmMessage.sourceChainSelector, // fetch the source chain identifier (aka selector)
-            abi.decode(any2EvmMessage.sender, (address)), // abi-decoding of the sender address,
+            // fetch the source chain identifier (aka selector)
+            any2EvmMessage.sourceChainSelector,
+            // abi-decoding of the sender address,
+            abi.decode(any2EvmMessage.sender, (address)),
             any2EvmMessage.data
         );
     }
