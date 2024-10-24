@@ -307,8 +307,11 @@ contract SwapProxy is Ownable {
             IUniswapV3Router02.exactInputSingle.selector,
             params
         );
+
+        // 3. execute swap
         IVault(bedrockVault).execute(_routers[UNISWAP_V3_PROTOCOL], data, 0);
-        //after spend approve value,check allowance
+
+        // 4. post allowance check
         _checkAllowance(_routers[UNISWAP_V3_PROTOCOL]);
     }
 
