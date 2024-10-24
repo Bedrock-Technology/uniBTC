@@ -10,7 +10,6 @@ import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 interface IMintableContract is IERC20 {
     function mint(address account, uint256 amount) external;
@@ -23,7 +22,6 @@ interface IMintableContract is IERC20 {
 /// @title - messenger contract for sending/receving string data across chains.
 contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
-    using Address for address;
     // Custom errors to provide more descriptive revert messages.
     // Used when the destination chain has not been allowlisted by the contract owner.
 
@@ -49,24 +47,22 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     /// @param messageId The unique ID of the CCIP message.
     /// @param destinationChainSelector The chain selector of the destination chain.
     /// @param receiver The address of the receiver on the destination chain.
-    /// @param text The Text being sent.
-    /// @param feeToken The token address used to pay CCIP fees.
     /// @param fees The fees paid for sending the CCIP message.
     event MessageSent(
-        bytes32 indexed messageId,
-        uint64 indexed destinationChainSelector,
-        address receiver,
-        bytes text,
-        address feeToken,
-        uint256 fees
+        bytes32 indexed messageId, uint64 indexed destinationChainSelector, address receiver, uint256 fees
     );
 
-    /// Event emitted when a message is received from another chain.
+    /// Event emitted when a message is received from another chain and process success.
     /// @param messageId The unique ID of the CCIP message.
     /// @param sourceChainSelector The chain selector of the source chain.
     /// @param sender The address of the sender from the source chain.
-    /// @param text The text that was received.
-    event MessageReceived(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender, bytes text);
+    event MessageExecuted(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender);
+
+    /// Event emitted when a message is received from another chain and process failed.
+    /// @param messageId The unique ID of the CCIP message.
+    /// @param sourceChainSelector The chain selector of the source chain.
+    /// @param sender The address of the sender from the source chain.
+    event MessageFailed(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender);
 
     /// Event emitted when set minimal transfer amount.
     /// @param amount amount.
@@ -76,8 +72,10 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     /// @param sysSigner system signer.
     event SysSignerChange(address sysSigner);
 
+    uint256 public constant ONE_BTC = 1e8;
+
     // amount beyond SMALL_TRANSFER_MAX should use sendToken with signature.
-    uint256 public constant SMALL_TRANSFER_MAX = 10e8;
+    uint256 public constant SMALL_TRANSFER_MAX = 10 * ONE_BTC;
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
     // Mapping to keep track of allowlisted destination chains and receiver.
@@ -313,7 +311,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         // Send the CCIP message through the router and store the returned CCIP message ID
         messageId = router.ccipSend{value: fees}(_destinationChainSelector, evm2AnyMessage);
         // Emit an event with message details
-        emit MessageSent(messageId, _destinationChainSelector, _receiver, _message, address(0), fees);
+        emit MessageSent(messageId, _destinationChainSelector, _receiver, fees);
         return messageId;
     }
 
@@ -353,15 +351,24 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         }
         processedMessages[any2EvmMessage.messageId] = true;
         Request memory req = abi.decode((any2EvmMessage.data), (Request));
-        req.target.functionCallWithValue(req.callData, 0);
-        emit MessageReceived(
-            any2EvmMessage.messageId,
-            // fetch the source chain identifier (aka selector)
-            any2EvmMessage.sourceChainSelector,
-            // abi-decoding of the sender address,
-            abi.decode(any2EvmMessage.sender, (address)),
-            any2EvmMessage.data
-        );
+        (bool success,) = req.target.call(req.callData);
+        if (success) {
+            emit MessageExecuted(
+                any2EvmMessage.messageId,
+                // fetch the source chain identifier (aka selector)
+                any2EvmMessage.sourceChainSelector,
+                // abi-decoding of the sender address,
+                abi.decode(any2EvmMessage.sender, (address))
+            );
+        } else {
+            emit MessageFailed(
+                any2EvmMessage.messageId,
+                // fetch the source chain identifier (aka selector)
+                any2EvmMessage.sourceChainSelector,
+                // abi-decoding of the sender address,
+                abi.decode(any2EvmMessage.sender, (address))
+            );
+        }
     }
 
     function _sendToken(uint64 _destinationChainSelector, address _recipient, uint256 _amount)
@@ -390,7 +397,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         // Send the CCIP message through the router and store the returned CCIP message ID
         messageId = router.ccipSend{value: fees}(_destinationChainSelector, evm2AnyMessage);
         // Emit an event with message details
-        emit MessageSent(messageId, _destinationChainSelector, _receiver, _message, address(0), fees);
+        emit MessageSent(messageId, _destinationChainSelector, _receiver, fees);
         return messageId;
     }
 
@@ -434,6 +441,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         uint256 _amount,
         bytes memory _signature
     ) private view returns (bool) {
+        require(sysSigner != address(0), "USR024");
         bytes32 msgDigest =
             sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
         address signer = ECDSA.recover(msgDigest, _signature);

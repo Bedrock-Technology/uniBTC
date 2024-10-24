@@ -224,4 +224,22 @@ contract SmokeTest is Test {
         assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 300000000);
         assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 600000000);
     }
+
+    event MessageFailed(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender);
+
+    function test_targetCallError() public {
+        vm.startPrank(defaultAdmin);
+        uniBTC(uniBTCProxy).revokeRole(uniBTC(uniBTCProxy).MINTER_ROLE(), address(peerB));
+        //vm.expectEmit(true, true, false, true, address(peerB));
+        vm.expectEmit(true, true, false, true);
+        bytes32 Id = hex"b7d67503850d951d3e82baaf517122b51e9271175dee2480e673c22d5e314528";
+        // bytes memory text =
+        //     hex"000000000000000000000000000000000000000000000000000000000000002000000000000000000000000037497f55ff4c5986d644d0281cd72b67397374880000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000004440c10f19000000000000000000000000284277fa76ba869654459c54571df74a503cbd920000000000000000000000000000000000000000000000000000000011e1a30000000000000000000000000000000000000000000000000000000000";
+        // We emit the event we expect to see.
+        emit SmokeTest.MessageFailed(Id, 16015286601757825753, address(peerA));
+        bytes memory callData = abi.encodeWithSelector(IMintableContract.mint.selector, peerCuser, 300000000);
+        bytes32 messageId = peerA.targetCall(chainSelector, peerB.uniBTC(), callData);
+        assertTrue(peerB.processedMessages(messageId), "not true");
+        vm.stopPrank();
+    }
 }

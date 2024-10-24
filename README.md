@@ -86,3 +86,4 @@ Please check [this file](https://github.com/Bedrock-Technology/uniBTC/blob/main/
 1. USR021: VARIABLE_VALUE_IS_INVALID
 1. USR022: VARIABLE_VALUE_IS_NOT_EXITED
 1. USR023: SIGN_ERROR
+1. USR024: SYS_SIGNER_NOT_SET
