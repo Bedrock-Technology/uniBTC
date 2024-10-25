@@ -240,6 +240,7 @@ contract DelayRedeemRouter is
         redeemStartedTimestamp = block.timestamp;
         _setWhitelistEnabled(_whitelistEnabled);
         _setRedeemDelayTimestamp(_redeemDelayTimestamp);
+        _setRedeemPrincipalDelayTimestamp(MAX_REDEEM_DELAY_DURATION_TIME);
     }
 
     /**
