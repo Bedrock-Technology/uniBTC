@@ -12,7 +12,7 @@ After all submodules are updated as required, you can build contracts with this 
 
 ### 2. Mainnet Deployed Contracts
 
-Please check [this file](https://github.com/Bedrock-Technology/uniBTC/blob/main/deploy_mainnet.md) for more information.
+Please check [here](https://github.com/Bedrock-Technology/uniBTC/tree/main/deployments) for more information.
 
 ### 3. Testnet Deployed Contracts
 
