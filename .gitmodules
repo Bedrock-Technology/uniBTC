@@ -28,3 +28,6 @@
 [submodule "contracts/lib/forge-std"]
 	path = contracts/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "ccip/lib/ccip"]
+	path = ccip/lib/ccip
+	url = https://github.com/smartcontractkit/ccip
