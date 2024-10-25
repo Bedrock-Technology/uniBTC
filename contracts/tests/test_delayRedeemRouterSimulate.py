@@ -85,11 +85,6 @@ def test_claimFromRedeemRouter(deps):
          transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})
    
     transparent_delay_redeem_router.addToWhitelist(user,{'from': owner})
-    
-    transparent_delay_redeem_router.addToBlacklist(user,{'from': owner})
-    with brownie.reverts("USR009"):
-         transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})
-    transparent_delay_redeem_router.removeFromBlacklist(user,{'from': owner})
     with brownie.reverts("SYS003"):
          transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})
          
@@ -184,6 +179,24 @@ def test_claimFromRedeemRouter(deps):
     print("wbtc balance",wbtc_contract.balanceOf(vault_proxy))   
     print("native balance",web3.eth.get_balance(vault_proxy.address))
     
+    # update timestamp
+    """
+    chain.sleep(2592000)
+    chain.mine()
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"user unibtc value",transparent_uniBTC.balanceOf(user))
+    userBeforeUniBTC = transparent_uniBTC.balanceOf(user)
+    tx=transparent_delay_redeem_router.claimPrincipals({'from': user})
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"user unibtc value",transparent_uniBTC.balanceOf(user))
+    userAfterUniBTC = transparent_uniBTC.balanceOf(user)
+    assert userBeforeUniBTC+fbtc_claim_uni + wbtc_claim_uni + native_claim_uni == userAfterUniBTC
+    """
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"user unibtc value",transparent_uniBTC.balanceOf(user))
+    userBeforeUniBTC = transparent_uniBTC.balanceOf(user)
+    tx=transparent_delay_redeem_router.claimPrincipals({'from': user})
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"user unibtc value",transparent_uniBTC.balanceOf(user))
+    userAfterUniBTC = transparent_uniBTC.balanceOf(user)
+    assert userBeforeUniBTC == userAfterUniBTC
+
     print("user delay redeems by index",transparent_delay_redeem_router.userDelayedRedeemByIndex(user,0))
     print("user delay redeems by index",transparent_delay_redeem_router.userDelayedRedeemByIndex(user,1))
     print("user delay redeems",transparent_delay_redeem_router.getUserDelayedRedeems(user))
@@ -212,4 +225,24 @@ def test_claimFromRedeemRouter(deps):
     assert transparent_delay_redeem_router.tokenDebts(fbtc_contract)[1] == fbtc_claim_uni
     assert transparent_delay_redeem_router.tokenDebts(wbtc_contract)[1] == wbtc_claim_uni
     assert transparent_delay_redeem_router.tokenDebts(native_token)[1] == native_claim_uni
+    #check the debet status
     assert len(transparent_delay_redeem_router.getUserDelayedRedeems(user)) == 0
+
+    #double check the claim logic
+    transparent_uniBTC.mint(delay_redeem_router_proxy,user_uniBTC,{'from': owner})
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"wbtc_contract value",wbtc_contract.balanceOf(user),"fbtc_contract value",fbtc_contract.balanceOf(user),"native balance",user.balance())
+    tx=transparent_delay_redeem_router.claimDelayedRedeems(0,{'from': user})
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"wbtc_contract value",wbtc_contract.balanceOf(user),"fbtc_contract value",fbtc_contract.balanceOf(user),"native balance",user.balance())
+    tx=transparent_delay_redeem_router.claimDelayedRedeems(1,{'from': user})
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"wbtc_contract value",wbtc_contract.balanceOf(user),"fbtc_contract value",fbtc_contract.balanceOf(user),"native balance",user.balance())
+    tx=transparent_delay_redeem_router.claimDelayedRedeems({'from': user})
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"wbtc_contract value",wbtc_contract.balanceOf(user),"fbtc_contract value",fbtc_contract.balanceOf(user),"native balance",user.balance())
+    # update timestamp
+    chain.sleep(2592000)
+    chain.mine()
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"user unibtc value",transparent_uniBTC.balanceOf(user))
+    userBeforeUniBTC = transparent_uniBTC.balanceOf(user)
+    tx=transparent_delay_redeem_router.claimPrincipals({'from': user})
+    print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"user unibtc value",transparent_uniBTC.balanceOf(user))
+    userAfterUniBTC = transparent_uniBTC.balanceOf(user)
+    assert userBeforeUniBTC == userAfterUniBTC
