@@ -359,7 +359,7 @@ contract DelayRedeemRouter is
     function createDelayedRedeem(
         address _token,
         uint256 _amount
-    ) external nonReentrant whenNotPaused onlyWhitelisted onlyNotBlacklisted {
+    ) external nonReentrant whenNotPaused onlyWhitelisted {
         require(wrapBtcList[_token], "SYS003");
         _updateTotalCap();
         require(_totalCap >= _amount + totalDebt, "USR010");
