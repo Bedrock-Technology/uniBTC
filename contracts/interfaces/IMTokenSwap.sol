@@ -11,8 +11,8 @@ interface IMTokenSwap {
     );
 
     function swapMBtc(bytes32 _txHash, uint256 _amount) external;
-
-    function bridgeAddress() external returns (address);
+    function getMBtcToken() external view returns (address);
+    function bridgeAddress() external view returns (address);
 }
 
 interface ILockNativeTokenWithBridgeFee {

@@ -13,7 +13,6 @@ contract MBTCProxy is Ownable {
     uint256 private BASE_NONCE = uint256(keccak256("BEDROCK_MERLIN"));
 
     address public immutable vault;
-    address public constant mBTC = 0xB880fd278198bd590252621d4CD071b1842E9Bcd;
     address public constant mTokenSwap = 0x72A817715f174a32303e8C33cDCd25E0dACfE60b;
     address public immutable btcLayer2Bridge;
 
@@ -33,6 +32,8 @@ contract MBTCProxy is Ownable {
      * @dev swap '_amount' M-BTC on the Merlin network (layer 2) to '_amount - getBridgeFee()' BTC on the Bitcoin network (layer 1).
      */
     function swapMBTCToBTC(uint256 _amount, string memory _destBtcAddr) external onlyOwner {
+        // 0. read M-BTC token address
+        address mBTC = IMTokenSwap(mTokenSwap).getMBtcToken();
         // 1. Approve '_amount' M-BTC to MTokenSwap contract
         bytes memory data;
         if (IERC20(mBTC).allowance(vault, mTokenSwap) < _amount) {
