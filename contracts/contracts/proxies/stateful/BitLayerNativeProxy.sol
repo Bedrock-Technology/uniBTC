@@ -77,7 +77,10 @@ contract BitLayerNativeProxy is Initializable, AccessControlUpgradeable {
         if (amount > 0) {
             withdrawPendingAmount -= amount;
             delete withdrawPendingQueue[reqId];
-            payable(vault).transfer(amount);
+            (bool success,) = payable(vault).call{value: amount}("");
+            if (!success) {
+                revert("USR025");
+            }
         }
         emit UnboundApproved(reqId, "");
     }
