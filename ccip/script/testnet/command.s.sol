@@ -134,9 +134,10 @@ contract CmdCCIPPeer is Script {
         uint256 fees =
             ccipPeerIns.estimateSendTokenFees(destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8);
         console.log("est fees:%d", fees);
+        uint256 nonce = 123;
         // send to owner, 1uniBTC
         ccipPeerIns.sendToken{value: fees}(
-            destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8, signature
+            destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8, nonce, signature
         );
         vm.stopBroadcast();
     }

@@ -205,7 +205,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     {
         address _receiver = allowlistedDestinationChains[_destinationChainSelector];
         require(_receiver != address(0), "USR007");
-        address _target = CCIPPeer(payable(_receiver)).uniBTC();
+        address _target = targetTokens[_destinationChainSelector];
         bytes memory _callData = abi.encodeWithSelector(IMintableContract.mint.selector, _recipient, _amount);
         bytes memory _message = abi.encode(Request({target: _target, callData: _callData}));
         // Only accept native token.
@@ -235,16 +235,20 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     /// @param _destinationChainSelector  destinationChainSelector.
     /// @param _recipient where the token goes to.
     /// @param _amount amount.
+    /// @param _nonce random nonce.
     /// @param _signature signed whit system signer's private key.
-    function sendToken(uint64 _destinationChainSelector, address _recipient, uint256 _amount, bytes memory _signature)
-        external
-        payable
-        whenNotPaused
-        validateReceiver(_recipient)
-        returns (bytes32 messageId)
-    {
+    function sendToken(
+        uint64 _destinationChainSelector,
+        address _recipient,
+        uint256 _amount,
+        uint256 _nonce,
+        bytes memory _signature
+    ) external payable whenNotPaused validateReceiver(_recipient) returns (bytes32 messageId) {
         require(_amount >= minTransferAmt, "USR006");
-        require(_verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _signature), "USR023");
+        require(
+            _verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _nonce, _signature),
+            "USR023"
+        );
         if (processedSignature[_signature]) revert SignatureProcessed();
         processedSignature[_signature] = true;
         return _sendToken(_destinationChainSelector, _recipient, _amount);
@@ -255,15 +259,17 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     /// @param _destinationChainSelector  destinationChainSelector
     /// @param _recipient where the token goes to.
     /// @param _amount amount.
+    /// @param _nonce random nonce
     /// @param _signature signed with system signer's private key.
     function verifySendTokenSign(
         address _sender,
         uint64 _destinationChainSelector,
         address _recipient,
         uint256 _amount,
+        uint256 _nonce,
         bytes memory _signature
     ) external view returns (bool) {
-        return _verifySendTokenSign(_sender, _destinationChainSelector, _recipient, _amount, _signature);
+        return _verifySendTokenSign(_sender, _destinationChainSelector, _recipient, _amount, _nonce, _signature);
     }
 
     /// @dev estimate fee
@@ -427,6 +433,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
             tokenAmounts: new Client.EVMTokenAmount[](0), // Empty array as no tokens are transferred
             extraArgs: Client._argsToBytes(
                 // Additional arguments, setting gas limit
+                //Client.EVMExtraArgsV1({gasLimit: 200_000})
                 Client.EVMExtraArgsV2({gasLimit: 200_000, allowOutOfOrderExecution: false})
             ),
             // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
@@ -439,11 +446,13 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         uint64 _destinationChainSelector,
         address _recipient,
         uint256 _amount,
+        uint256 _nonce,
         bytes memory _signature
     ) private view returns (bool) {
         require(sysSigner != address(0), "USR024");
-        bytes32 msgDigest =
-            sha256(abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount));
+        bytes32 msgDigest = sha256(
+            abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount, _nonce)
+        );
         address signer = ECDSA.recover(msgDigest, _signature);
         return signer == sysSigner;
     }
