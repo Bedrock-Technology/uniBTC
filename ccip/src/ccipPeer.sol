@@ -68,9 +68,14 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     /// @param amount amount.
     event MinTransferAmtSet(uint256 amount);
 
-    ///Event emitted when set minimal transfer amount.
+    /// Event emitted when set minimal transfer amount.
     /// @param sysSigner system signer.
     event SysSignerChange(address sysSigner);
+
+    /// Event emitted when withdraw fees.
+    /// @param beneficiary where the fee goes to.
+    /// @param amount fee amount.
+    event WithdrawFees(address beneficiary, uint256 amount);
 
     uint256 public constant ONE_BTC = 1e8;
 
@@ -323,6 +328,18 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         // Emit an event with message details
         emit MessageSent(messageId, _destinationChainSelector, _receiver, fees);
         return messageId;
+    }
+
+    /// @dev witthdrawFees called by admin
+    /// @param _beneficiary where the amount goes to.
+    /// @param _amount amount.
+    function withdrawFees(address _beneficiary, uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_amount <= address(this).balance, "USR010");
+        (bool success,) = payable(_beneficiary).call{value: _amount}("");
+        if (!success) {
+            revert("USR025");
+        }
+        emit WithdrawFees(_beneficiary, _amount);
     }
 
     /**
