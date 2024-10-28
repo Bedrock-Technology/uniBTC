@@ -126,6 +126,9 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
      * ======================================================================================
      */
     function initialize(address _defaultAdmin, address _uniBTC, address _sysSigner) external initializer {
+        require(_defaultAdmin != address(0), "SYS001");
+        require(_uniBTC != address(0), "SYS001");
+        require(_sysSigner != address(0), "SYS001");
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         _grantRole(PAUSER_ROLE, _defaultAdmin);
@@ -190,6 +193,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     /// @dev setSysSinger.
     /// @param _sysSigner system signer.
     function setSysSinger(address _sysSigner) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_sysSigner != address(0), "SYS001");
         sysSigner = _sysSigner;
         emit SysSignerChange(_sysSigner);
     }
