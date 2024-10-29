@@ -9,7 +9,7 @@ optimizer_runs = 200
 remappings = [
   "@openzeppelin/contracts/=lib/OpenZeppelin/openzeppelin-contracts@4.8.3/contracts/",
   "@openzeppelin/contracts-upgradeable/=lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/contracts/",
-  "@chainlink/contracts-ccip/=lib/ccip/contracts/",
+  "@chainlink/contracts-ccip/=node_modules/@chainlink/contracts-ccip/",
   "@chainlink/local/src/=lib/chainlink-local/src/",
 ]
 

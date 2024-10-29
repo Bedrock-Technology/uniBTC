@@ -351,7 +351,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
      */
     function supportsInterface(bytes4 interfaceId)
         public
-        view
+        pure
         override(CCIPReceiver, AccessControlUpgradeable)
         returns (bool)
     {
@@ -454,8 +454,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
             tokenAmounts: new Client.EVMTokenAmount[](0), // Empty array as no tokens are transferred
             extraArgs: Client._argsToBytes(
                 // Additional arguments, setting gas limit
-                //Client.EVMExtraArgsV1({gasLimit: 200_000})
-                Client.EVMExtraArgsV2({gasLimit: 200_000, allowOutOfOrderExecution: false})
+                Client.EVMExtraArgsV1({gasLimit: 200_000})
             ),
             // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
             feeToken: _feeTokenAddress
