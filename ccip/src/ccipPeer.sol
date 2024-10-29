@@ -96,7 +96,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     mapping(bytes32 => bool) public processedMessages;
 
     // Mapping to keep track of processed messages.
-    mapping(bytes32 => bool) public processedSignature;
+    mapping(bytes32 => bool) public processedSignatures;
 
     address public uniBTC;
     address public sysSigner;
@@ -255,9 +255,9 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     ) external payable whenNotPaused validateReceiver(_recipient) returns (bytes32 messageId) {
         bytes32 digest = _getDigest(msg.sender, _destinationChainSelector, _recipient, _amount, _nonce);
         require(_amount >= minTransferAmt, "USR006");
-        if (processedSignature[digest]) revert SignatureProcessed();
+        if (processedSignatures[digest]) revert SignatureProcessed();
         require(_verifySendTokenSign(digest, _signature), "USR023");
-        processedSignature[digest] = true;
+        processedSignatures[digest] = true;
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
 
