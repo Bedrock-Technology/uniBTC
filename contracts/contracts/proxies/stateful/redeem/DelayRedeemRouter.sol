@@ -659,7 +659,10 @@ contract DelayRedeemRouter is
                 if (token == NATIVE_BTC) {
                     // transfer native token to the recipient
                     IVault(vault).execute(address(this), "", amountToSend);
-                    payable(recipient).transfer(amountToSend);
+                    (bool success, ) = payable(recipient).call{value: amountToSend}("");
+                    if (success == false) {
+                        revert("USR010");
+                    }
                 } else {
                     data = abi.encodeWithSelector(
                         IERC20.transfer.selector,
