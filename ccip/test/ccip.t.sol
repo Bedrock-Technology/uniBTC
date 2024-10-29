@@ -4,7 +4,7 @@ pragma solidity >=0.8.20;
 import {Test, console} from "forge-std/Test.sol";
 import {uniBTC} from "../src/mocks/uniBTC.sol";
 import {IRouterClient, CCIPLocalSimulator} from "@chainlink/local/src/ccip/CCIPLocalSimulator.sol";
-import {CCIPPeer, IMintableContract} from "../src/CCIPPeer.sol";
+import {CCIPPeer, IMintableContract} from "../src/ccipPeer.sol";
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
