@@ -87,3 +87,4 @@ Please check [here](https://github.com/Bedrock-Technology/uniBTC/tree/main/deplo
 1. USR022: VARIABLE_VALUE_IS_NOT_EXITED
 1. USR023: SIGN_ERROR
 1. USR024: SYS_SIGNER_NOT_SET
+1. USR025: CALL_FAILED

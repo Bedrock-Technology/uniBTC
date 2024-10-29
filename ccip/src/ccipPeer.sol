@@ -68,9 +68,14 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     /// @param amount amount.
     event MinTransferAmtSet(uint256 amount);
 
-    ///Event emitted when set minimal transfer amount.
+    /// Event emitted when set minimal transfer amount.
     /// @param sysSigner system signer.
     event SysSignerChange(address sysSigner);
+
+    /// Event emitted when withdraw fees.
+    /// @param beneficiary where the fee goes to.
+    /// @param amount fee amount.
+    event WithdrawFees(address beneficiary, uint256 amount);
 
     uint256 public constant ONE_BTC = 1e8;
 
@@ -126,6 +131,9 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
      * ======================================================================================
      */
     function initialize(address _defaultAdmin, address _uniBTC, address _sysSigner) external initializer {
+        require(_defaultAdmin != address(0), "SYS001");
+        require(_uniBTC != address(0), "SYS001");
+        require(_sysSigner != address(0), "SYS001");
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         _grantRole(PAUSER_ROLE, _defaultAdmin);
@@ -190,6 +198,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     /// @dev setSysSinger.
     /// @param _sysSigner system signer.
     function setSysSinger(address _sysSigner) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_sysSigner != address(0), "SYS001");
         sysSigner = _sysSigner;
         emit SysSignerChange(_sysSigner);
     }
@@ -245,11 +254,11 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         bytes memory _signature
     ) external payable whenNotPaused validateReceiver(_recipient) returns (bytes32 messageId) {
         require(_amount >= minTransferAmt, "USR006");
+        if (processedSignature[_signature]) revert SignatureProcessed();
         require(
             _verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _nonce, _signature),
             "USR023"
         );
-        if (processedSignature[_signature]) revert SignatureProcessed();
         processedSignature[_signature] = true;
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
@@ -319,6 +328,18 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         // Emit an event with message details
         emit MessageSent(messageId, _destinationChainSelector, _receiver, fees);
         return messageId;
+    }
+
+    /// @dev witthdrawFees called by admin
+    /// @param _beneficiary where the amount goes to.
+    /// @param _amount amount.
+    function withdrawFees(address _beneficiary, uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_amount <= address(this).balance, "USR010");
+        (bool success,) = payable(_beneficiary).call{value: _amount}("");
+        if (!success) {
+            revert("USR025");
+        }
+        emit WithdrawFees(_beneficiary, _amount);
     }
 
     /**

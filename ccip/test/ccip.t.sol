@@ -226,4 +226,22 @@ contract SmokeTest is Test {
         assertTrue(peerB.processedMessages(messageId), "not true");
         vm.stopPrank();
     }
+
+    function test_withdrawFees() public {
+        vm.startPrank(peerAuser);
+        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        deal(peerAuser, 10 ether);
+        bytes32 messageId = peerA.sendToken{value: 1 ether}(chainSelector, peerCuser, 600000000);
+        console.logBytes32(messageId);
+        assert(address(peerA).balance == 1 ether);
+        assert(peerAuser.balance == 9 ether);
+        vm.stopPrank();
+        //withdrawal
+        vm.startPrank(defaultAdmin);
+        vm.deal(defaultAdmin, 1 ether);
+        peerA.withdrawFees(defaultAdmin, 1 ether);
+        assert(address(peerA).balance == 0 ether);
+        assert(defaultAdmin.balance == 2 ether);
+        vm.stopPrank();
+    }
 }
