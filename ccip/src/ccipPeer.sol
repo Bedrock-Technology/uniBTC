@@ -254,11 +254,11 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         bytes memory _signature
     ) external payable whenNotPaused validateReceiver(_recipient) returns (bytes32 messageId) {
         require(_amount >= minTransferAmt, "USR006");
+        if (processedSignature[_signature]) revert SignatureProcessed();
         require(
             _verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _nonce, _signature),
             "USR023"
         );
-        if (processedSignature[_signature]) revert SignatureProcessed();
         processedSignature[_signature] = true;
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
