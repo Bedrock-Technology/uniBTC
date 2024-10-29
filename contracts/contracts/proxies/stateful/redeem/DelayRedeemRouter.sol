@@ -273,6 +273,7 @@ contract DelayRedeemRouter is
         address _token
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         wrapBtcList[_token] = true;
+        emit WrapBtcListAdded(_token);
     }
 
     /**
@@ -282,6 +283,7 @@ contract DelayRedeemRouter is
         address _token
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         wrapBtcList[_token] = false;
+        emit WrapBtcListRemoved(_token);
     }
 
     /**
@@ -300,6 +302,7 @@ contract DelayRedeemRouter is
         address _address
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         whitelist[_address] = true;
+        emit WhitelistAdded(_address);
     }
 
     /**
@@ -309,6 +312,7 @@ contract DelayRedeemRouter is
         address _address
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         whitelist[_address] = false;
+        emit WhitelistRemoved(_address);
     }
 
     /**
@@ -334,6 +338,7 @@ contract DelayRedeemRouter is
         address _address
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         blacklist[_address] = true;
+        emit BlacklistAdded(_address);
     }
 
     /**
@@ -343,6 +348,7 @@ contract DelayRedeemRouter is
         address _address
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         blacklist[_address] = false;
+        emit BlacklistRemoved(_address);
     }
 
     /**
@@ -620,6 +626,7 @@ contract DelayRedeemRouter is
      * @notice internal function for changing the value of `whitelistEnabled`.
      */
     function _setWhitelistEnabled(bool newValue) internal {
+        emit WhitelistEnabledSet(whitelistEnabled, newValue);
         whitelistEnabled = newValue;
     }
 
@@ -758,6 +765,7 @@ contract DelayRedeemRouter is
     function _setDayCap(uint256 newCap) internal {
         require(newCap <= DAY_MAX_ALLOWED_CAP, "USR013");
         _updateTotalCap();
+        emit DayCapSet(dayCap, newCap);
         dayCap = newCap;
     }
 
@@ -920,4 +928,44 @@ contract DelayRedeemRouter is
         uint256 previousValue,
         uint256 newValue
     );
+
+    /**
+     * @notice event for adding a new address in wrapBtcList
+     */
+    event WrapBtcListAdded(address token);
+
+    /**
+     * @notice event for removing an address from wrapBtcList
+     */
+    event WrapBtcListRemoved(address token);
+
+    /**
+     * @notice event for setting the dayCap
+     */
+    event DayCapSet(uint256 previousValue, uint256 newValue);
+
+    /**
+     * @notice event for adding a new address in whitelist
+     */
+    event WhitelistAdded(address account);
+
+    /**
+     * @notice event for removing an address from whitelist
+     */
+    event WhitelistRemoved(address account);
+
+    /**
+     * @notice event for setting the whitelistEnabled
+     */
+    event WhitelistEnabledSet(bool previousValue, bool newValue);
+
+    /**
+     * @notice event for adding a new address in blacklist
+     */
+    event BlacklistAdded(address account);
+
+    /**
+     * @notice event for removing an address from blacklist
+     */
+    event BlacklistRemoved(address account);
 }
