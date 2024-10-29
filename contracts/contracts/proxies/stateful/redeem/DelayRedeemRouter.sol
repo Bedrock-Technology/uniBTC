@@ -654,6 +654,8 @@ contract DelayRedeemRouter is
                 address token = debtAmounts[i].token;
                 uint256 amountUniBTC = debtAmounts[i].amount;
                 uint256 amountToSend = _amounts(token, amountUniBTC);
+                tokenDebts[token].claimedAmount += amountUniBTC;
+                burn_amount += amountUniBTC;
                 if (token == NATIVE_BTC) {
                     // transfer native token to the recipient
                     IVault(vault).execute(address(this), "", amountToSend);
@@ -667,8 +669,6 @@ contract DelayRedeemRouter is
                     // transfer erc20 token to the recipient
                     IVault(vault).execute(token, data, 0);
                 }
-                tokenDebts[token].claimedAmount += amountUniBTC;
-                burn_amount += amountUniBTC;
                 emit DelayedRedeemsClaimed(recipient, token, amountToSend);
             }
             //burn claimed amount unibtc
