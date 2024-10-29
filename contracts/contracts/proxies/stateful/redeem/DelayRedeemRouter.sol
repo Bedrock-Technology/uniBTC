@@ -239,8 +239,8 @@ contract DelayRedeemRouter is
         dayCap = _dayCap;
         redeemStartedTimestamp = block.timestamp;
         _setWhitelistEnabled(_whitelistEnabled);
-        _setRedeemDelayTimestamp(_redeemDelayTimestamp);
         _setRedeemPrincipalDelayTimestamp(MAX_REDEEM_DELAY_DURATION_TIME);
+        _setRedeemDelayTimestamp(_redeemDelayTimestamp);
     }
 
     /**
@@ -606,6 +606,7 @@ contract DelayRedeemRouter is
      */
     function _setRedeemDelayTimestamp(uint256 newValue) internal {
         require(newValue <= MAX_REDEEM_DELAY_DURATION_TIME, "USR012");
+        require(newValue < redeemPrincipalDelayTimestamp, "USR019");
         emit redeemDelayTimestampSet(redeemDelayTimestamp, newValue);
         redeemDelayTimestamp = newValue;
     }
@@ -615,6 +616,7 @@ contract DelayRedeemRouter is
      */
     function _setRedeemPrincipalDelayTimestamp(uint256 newValue) internal {
         require(newValue <= MAX_REDEEM_DELAY_DURATION_TIME, "USR012");
+        require(newValue > redeemDelayTimestamp, "USR019");
         emit redeemPrincipalDelayTimestampSet(
             redeemPrincipalDelayTimestamp,
             newValue
@@ -707,7 +709,6 @@ contract DelayRedeemRouter is
         address recipient,
         uint256 maxNumberOfDelayedRedeemsToClaim
     ) internal {
-        require(redeemPrincipalDelayTimestamp > redeemDelayTimestamp, "USR019");
         uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
             .delayedRedeemsCompleted;
         uint256 numToClaim = 0;
