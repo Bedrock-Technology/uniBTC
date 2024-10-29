@@ -96,7 +96,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     mapping(bytes32 => bool) public processedMessages;
 
     // Mapping to keep track of processed messages.
-    mapping(bytes => bool) public processedSignature;
+    mapping(bytes32 => bool) public processedSignature;
 
     address public uniBTC;
     address public sysSigner;
@@ -253,13 +253,11 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         uint256 _nonce,
         bytes memory _signature
     ) external payable whenNotPaused validateReceiver(_recipient) returns (bytes32 messageId) {
+        bytes32 digest = _getDigest(msg.sender, _destinationChainSelector, _recipient, _amount, _nonce);
         require(_amount >= minTransferAmt, "USR006");
-        if (processedSignature[_signature]) revert SignatureProcessed();
-        require(
-            _verifySendTokenSign(msg.sender, _destinationChainSelector, _recipient, _amount, _nonce, _signature),
-            "USR023"
-        );
-        processedSignature[_signature] = true;
+        if (processedSignature[digest]) revert SignatureProcessed();
+        require(_verifySendTokenSign(digest, _signature), "USR023");
+        processedSignature[digest] = true;
         return _sendToken(_destinationChainSelector, _recipient, _amount);
     }
 
@@ -278,7 +276,8 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         uint256 _nonce,
         bytes memory _signature
     ) external view returns (bool) {
-        return _verifySendTokenSign(_sender, _destinationChainSelector, _recipient, _amount, _nonce, _signature);
+        bytes32 digest = _getDigest(_sender, _destinationChainSelector, _recipient, _amount, _nonce);
+        return _verifySendTokenSign(digest, _signature);
     }
 
     /// @dev estimate fee
@@ -461,19 +460,20 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         });
     }
 
-    function _verifySendTokenSign(
+    function _getDigest(
         address _sender,
-        uint64 _destinationChainSelector,
+        uint256 _destinationChainSelector,
         address _recipient,
         uint256 _amount,
-        uint256 _nonce,
-        bytes memory _signature
-    ) private view returns (bool) {
-        require(sysSigner != address(0), "USR024");
-        bytes32 msgDigest = sha256(
+        uint256 _nonce
+    ) private view returns (bytes32) {
+        return sha256(
             abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount, _nonce)
         );
-        address signer = ECDSA.recover(msgDigest, _signature);
+    }
+
+    function _verifySendTokenSign(bytes32 _digest, bytes memory _signature) private view returns (bool) {
+        address signer = ECDSA.recover(_digest, _signature);
         return signer == sysSigner;
     }
 }
