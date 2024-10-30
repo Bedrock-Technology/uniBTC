@@ -84,13 +84,13 @@ def test_claimFromRedeemRouter(deps):
     with brownie.reverts("USR009"):
          transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})
    
-    transparent_delay_redeem_router.addToWhitelist(user,{'from': owner})
+    transparent_delay_redeem_router.addToWhitelist([user],{'from': owner})
     with brownie.reverts("SYS003"):
          transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})
          
-    transparent_delay_redeem_router.addToWrapBtcList(fbtc_contract,{'from': owner})
-    transparent_delay_redeem_router.addToWrapBtcList(wbtc_contract,{'from': owner})  
-    transparent_delay_redeem_router.addToWrapBtcList(native_token,{'from': owner}) 
+    transparent_delay_redeem_router.addToWrapBtcList([fbtc_contract,wbtc_contract,native_token],{'from': owner})
+    transparent_delay_redeem_router.removeFromWrapBtcList([fbtc_contract,wbtc_contract,native_token],{'from': owner})
+    transparent_delay_redeem_router.addToWrapBtcList([fbtc_contract,wbtc_contract,native_token],{'from': owner})
     
     with brownie.reverts("USR010"):
          transparent_delay_redeem_router.createDelayedRedeem(fbtc_contract,fbtc_claim_uni,{'from': user})   
@@ -202,10 +202,10 @@ def test_claimFromRedeemRouter(deps):
     print("user delay redeems",transparent_delay_redeem_router.getUserDelayedRedeems(user))
     print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy))
     native_origin = user.balance()
-    transparent_delay_redeem_router.addToBlacklist(user,{'from': owner})
+    transparent_delay_redeem_router.addToBlacklist([user],{'from': owner})
     with brownie.reverts("USR009"):
          transparent_delay_redeem_router.claimDelayedRedeems({'from': user})
-    transparent_delay_redeem_router.removeFromBlacklist(user,{'from': owner})
+    transparent_delay_redeem_router.removeFromBlacklist([user],{'from': owner})
     tx=transparent_delay_redeem_router.claimDelayedRedeems({'from': user})
     assert "DelayedRedeemsClaimed" in tx.events
     assert "DelayedRedeemsCompleted" in tx.events

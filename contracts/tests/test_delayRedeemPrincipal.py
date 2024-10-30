@@ -68,11 +68,13 @@ def test_claimPrincipalFromRedeemRouter(deps):
     #simulate redeem case
     #call redeem router createDelayedRedeem directly
     wbtc_claim_uni = 10*10**8      
-    tx=transparent_delay_redeem_router.addToWrapBtcList(wbtc_contract,{'from': owner})
-    assert tx.events["WrapBtcListAdded"]["token"] == wbtc_contract
-    tx=transparent_delay_redeem_router.removeFromWrapBtcList(wbtc_contract,{'from': owner})
-    assert tx.events["WrapBtcListRemoved"]["token"] == wbtc_contract
-    tx=transparent_delay_redeem_router.addToWrapBtcList(wbtc_contract,{'from': owner})
+    tx=transparent_delay_redeem_router.addToWrapBtcList([wbtc_contract,fbtc_contract],{'from': owner})
+    assert tx.events["WrapBtcListAdded"]["tokens"][0] == wbtc_contract
+    assert tx.events["WrapBtcListAdded"]["tokens"][1] == fbtc_contract
+    tx=transparent_delay_redeem_router.removeFromWrapBtcList([wbtc_contract,fbtc_contract],{'from': owner})
+    assert tx.events["WrapBtcListRemoved"]["tokens"][0] == wbtc_contract
+    assert tx.events["WrapBtcListRemoved"]["tokens"][1] == fbtc_contract
+    tx=transparent_delay_redeem_router.addToWrapBtcList([wbtc_contract],{'from': owner})
     
     #only vault can burn uniBTC
     transparent_uniBTC.grantRole(transparent_uniBTC.MINTER_ROLE(), transparent_vault, {'from': owner}) 
@@ -85,8 +87,9 @@ def test_claimPrincipalFromRedeemRouter(deps):
     transparent_uniBTC.approve(delay_redeem_router_proxy,wbtc_claim_uni,{'from': user})
     assert transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == wbtc_claim_uni
     
-    tx=transparent_delay_redeem_router.addToWhitelist(user,{'from': owner})
-    assert tx.events["WhitelistAdded"]["account"] == user
+    tx=transparent_delay_redeem_router.addToWhitelist([user,owner],{'from': owner})
+    assert tx.events["WhitelistAdded"]["accounts"][0] == user
+    assert tx.events["WhitelistAdded"]["accounts"][1] == owner
     tx = transparent_delay_redeem_router.createDelayedRedeem(wbtc_contract,wbtc_claim_uni,{'from': user})
     # time travel to 7 days later
     seven_days_travel = seven_day_time_duration + 60*60
@@ -120,12 +123,12 @@ def test_claimPrincipalFromRedeemRouter(deps):
     print("user delay redeems",transparent_delay_redeem_router.getUserDelayedRedeems(user))
     print("unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy))
     currentUniAmount = transparent_uniBTC.balanceOf(user)
-    tx=transparent_delay_redeem_router.addToBlacklist(user,{'from': owner})
-    assert tx.events["BlacklistAdded"]["account"] == user
+    tx=transparent_delay_redeem_router.addToBlacklist([user],{'from': owner})
+    assert tx.events["BlacklistAdded"]["accounts"][0] == user
     with brownie.reverts("USR009"):
          transparent_delay_redeem_router.claimPrincipals({'from': user})
-    tx=transparent_delay_redeem_router.removeFromBlacklist(user,{'from': owner})
-    assert tx.events["BlacklistRemoved"]["account"] == user
+    tx=transparent_delay_redeem_router.removeFromBlacklist([user],{'from': owner})
+    assert tx.events["BlacklistRemoved"]["accounts"][0] == user
     tx=transparent_delay_redeem_router.claimPrincipals({'from': user})
     assert "DelayedRedeemsPrincipalClaimed" in tx.events
     assert "DelayedRedeemsPrincipalCompleted" in tx.events
