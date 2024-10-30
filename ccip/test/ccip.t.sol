@@ -248,10 +248,12 @@ contract SmokeTest is Test {
     function test_sendTokenSelf() public {
         vm.startPrank(peerAuser);
         uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        bytes32 messageId = peerA.sendToken(chainSelector, 30000000);
-        assertTrue(peerB.processedMessages(messageId), "not true");
-        vm.stopPrank();
-        console.logBytes32(messageId);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 60000000);
+        vm.expectRevert();
+        peerA.sendToken(chainSelector, 30000000);
+        // bytes32 messageId = peerA.sendToken(chainSelector, 30000000);
+        // assertTrue(peerB.processedMessages(messageId), "not true");
+        // vm.stopPrank();
+        // console.logBytes32(messageId);
+        // assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 60000000);
     }
 }

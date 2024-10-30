@@ -10,7 +10,7 @@ import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
 interface IMintableContract is IERC20 {
     function mint(address account, uint256 amount) external;
@@ -238,10 +238,10 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         returns (bytes32 messageId)
     {
         require(!msg.sender.isContract(), "USR026");
+        require(tx.origin == msg.sender, "USR026");
         require(_amount >= minTransferAmt && _amount < SMALL_TRANSFER_MAX, "USR006");
         return _sendToken(_destinationChainSelector, msg.sender, _amount);
     }
-
 
     /// @dev burn uniBTC on sender chain and mint equal amount of uniBTC on the peer chain.
     /// @param _destinationChainSelector  destinationChainSelector.
