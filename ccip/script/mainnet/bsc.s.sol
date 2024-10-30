@@ -11,7 +11,7 @@ import {uniBTC} from "../../src/mocks/uniBTC.sol";
 //forge script script/mainnet/bsc.s.sol:DeployCCIPPeer --rpc-url https://bsc-rpc.publicnode.com --account deploy
 
 //mainnet deploy
-//forge script script/mainnet/bsc.s.sol:DeployCCIPPeer --rpc-url https://bsc-rpc.publicnode.com --account deploy --broadcast  --verify --verifier-url 'https://api.bscscan.com/api' --etherscan-api-key "xxxxxx" --delay 30
+//forge script script/mainnet/bsc.s.sol:DeployCCIPPeer --rpc-url https://bsc-rpc.publicnode.com --account deploy --broadcast  --verify --verifier-url 'https://api.bscscan.com/api' --etherscan-api-key "" --delay 30
 //set Ether peer
 //forge script script/mainnet/bsc.s.sol:DeployCCIPPeer --sig 'initEthPeer()' --rpc-url https://bsc-rpc.publicnode.com --account owner --broadcast
 //set ArbPeer

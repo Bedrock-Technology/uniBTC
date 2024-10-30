@@ -77,10 +77,10 @@ contract SmokeTest is Test {
 
         vm.startPrank(defaultMinter);
         uniBTC(uniBTCProxy).mint(defaultMinter, 12 * 10 ** uniBTC(uniBTCProxy).decimals());
-        uniBTC(uniBTCProxy).transfer(peerBuser, 600000000);
-        uniBTC(uniBTCProxy).transfer(peerAuser, 600000000);
+        uniBTC(uniBTCProxy).transfer(peerBuser, 60000000);
+        uniBTC(uniBTCProxy).transfer(peerAuser, 60000000);
         vm.stopPrank();
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerBuser), 600000000);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerBuser), 60000000);
         deployPeers(address(peerARouter), address(peerBRouter), uniBTCProxy, chainSelector);
         vm.startPrank(defaultAdmin);
         uniBTC(uniBTCProxy).grantRole(uniBTC(uniBTCProxy).MINTER_ROLE(), address(peerA));
@@ -90,13 +90,13 @@ contract SmokeTest is Test {
 
     function test_baseCase() public {
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
-        bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 300000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+        bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 30000000);
         assertTrue(peerB.processedMessages(messageId), "not true");
         vm.stopPrank();
         console.logBytes32(messageId);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 300000000);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 300000000);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 30000000);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 30000000);
     }
 
     function test_paused_A() public {
@@ -105,9 +105,9 @@ contract SmokeTest is Test {
         vm.stopPrank();
 
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
         vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 300000000);
+        peerA.sendToken(chainSelector, peerCuser, 30000000);
         vm.stopPrank();
     }
 
@@ -117,9 +117,9 @@ contract SmokeTest is Test {
         vm.stopPrank();
 
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
         vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 300000000);
+        peerA.sendToken(chainSelector, peerCuser, 30000000);
         vm.stopPrank();
     }
 
@@ -129,9 +129,9 @@ contract SmokeTest is Test {
         vm.stopPrank();
 
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
         vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 300000000);
+        peerA.sendToken(chainSelector, peerCuser, 30000000);
         vm.stopPrank();
     }
 
@@ -141,9 +141,9 @@ contract SmokeTest is Test {
         vm.stopPrank();
 
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
         vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 300000000);
+        peerA.sendToken(chainSelector, peerCuser, 30000000);
         vm.stopPrank();
     }
 
@@ -153,60 +153,60 @@ contract SmokeTest is Test {
         vm.stopPrank();
 
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
         vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 300000000);
+        peerA.sendToken(chainSelector, peerCuser, 30000000);
         vm.stopPrank();
     }
 
     function test_minAmt() public {
         vm.startPrank(defaultAdmin);
-        peerA.setMinTransferAmt(900000000);
+        peerA.setMinTransferAmt(90000000);
         vm.stopPrank();
 
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
         vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 300000000);
+        peerA.sendToken(chainSelector, peerCuser, 30000000);
         vm.stopPrank();
     }
 
     function test_minApprove() public {
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 100000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 10000000);
         vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 300000000);
+        peerA.sendToken(chainSelector, peerCuser, 30000000);
         vm.stopPrank();
     }
 
     function test_sendSign() public {
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
         uint256 _nonce = 12345434;
         bytes32 digest =
-            sha256(abi.encode(peerAuser, address(peerA), block.chainid, chainSelector, peerCuser, 300000000, _nonce));
+            sha256(abi.encode(peerAuser, address(peerA), block.chainid, chainSelector, peerCuser, 30000000, _nonce));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(sysSignKey, digest);
         bytes memory signature = abi.encodePacked(r, s, v);
-        bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 300000000, _nonce, signature);
+        bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 30000000, _nonce, signature);
         console.logBytes32(messageId);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 300000000);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 300000000);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 30000000);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 30000000);
     }
 
     function test_estimateFee() public view {
-        uint256 fee = peerA.estimateSendTokenFees(chainSelector, peerCuser, 30000000);
+        uint256 fee = peerA.estimateSendTokenFees(chainSelector, peerCuser, 3000000);
         console.log(fee);
     }
 
     function test_targetCall() public {
         vm.startPrank(defaultAdmin);
-        bytes memory callData = abi.encodeWithSelector(IMintableContract.mint.selector, peerCuser, 300000000);
+        bytes memory callData = abi.encodeWithSelector(IMintableContract.mint.selector, peerCuser, 30000000);
         bytes32 messageId = peerA.targetCall(chainSelector, peerB.uniBTC(), callData);
         assertTrue(peerB.processedMessages(messageId), "not true");
         vm.stopPrank();
         console.logBytes32(messageId);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 300000000);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 600000000);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 30000000);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 60000000);
     }
 
     event MessageFailed(bytes32 indexed messageId, uint64 indexed sourceChainSelector, address sender);
@@ -229,9 +229,9 @@ contract SmokeTest is Test {
 
     function test_withdrawFees() public {
         vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 600000000);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
         deal(peerAuser, 10 ether);
-        bytes32 messageId = peerA.sendToken{value: 1 ether}(chainSelector, peerCuser, 600000000);
+        bytes32 messageId = peerA.sendToken{value: 1 ether}(chainSelector, peerCuser, 60000000);
         console.logBytes32(messageId);
         assert(address(peerA).balance == 1 ether);
         assert(peerAuser.balance == 9 ether);
@@ -243,5 +243,15 @@ contract SmokeTest is Test {
         assert(address(peerA).balance == 0 ether);
         assert(defaultAdmin.balance == 2 ether);
         vm.stopPrank();
+    }
+
+    function test_sendTokenSelf() public {
+        vm.startPrank(peerAuser);
+        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+        bytes32 messageId = peerA.sendToken(chainSelector, 30000000);
+        assertTrue(peerB.processedMessages(messageId), "not true");
+        vm.stopPrank();
+        console.logBytes32(messageId);
+        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 60000000);
     }
 }
