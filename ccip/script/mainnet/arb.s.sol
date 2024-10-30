@@ -8,14 +8,12 @@ import {CCIPPeer} from "../../src/ccipPeer.sol";
 import {uniBTC} from "../../src/mocks/uniBTC.sol";
 
 //simulate
-//forge script script/mainnet/bsc.s.sol:DeployCCIPPeer --rpc-url https://bsc-rpc.publicnode.com --account deploy
+//forge script script/mainnet/arb.s.sol:DeployCCIPPeer --rpc-url https://arb1.arbitrum.io/rpc --account deploy
 
 //mainnet deploy
-//forge script script/mainnet/bsc.s.sol:DeployCCIPPeer --rpc-url https://bsc-rpc.publicnode.com --account deploy --broadcast  --verify --verifier-url 'https://api.bscscan.com/api' --etherscan-api-key "xxxxxx" --delay 30
-//set Ether peer
-//forge script script/mainnet/bsc.s.sol:DeployCCIPPeer --sig 'initEthPeer()' --rpc-url https://bsc-rpc.publicnode.com --account owner --broadcast
+//forge script script/mainnet/arb.s.sol:DeployCCIPPeer --rpc-url https://arb1.arbitrum.io/rpc --account deploy --broadcast  --verify --verifier-url 'https://api.arbiscan.io/api' --etherscan-api-key "" --delay 30
 //set ArbPeer
-//forge script script/mainnet/bsc.s.sol:DeployCCIPPeer --sig 'initArbPeer()' --rpc-url https://arb1.arbitrum.io/rpc --account owner --broadcast
+//forge script script/mainnet/arb.s.sol:DeployCCIPPeer --sig 'initArbPeer()' --rpc-url https://arb1.arbitrum.io/rpc --account owner --broadcast
 
 contract DeployCCIPPeer is Script {
     address public deploy;
@@ -32,7 +30,7 @@ contract DeployCCIPPeer is Script {
         owner = 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB;
         proxyAdmin = 0xb3f925B430C60bA467F7729975D5151c8DE26698;
         uniBTCAddress = 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a;
-        router = 0x34B03Cb9086d7D758AC55af71584F81A598759FE;
+        router = 0x141fa059441E0ca23ce184B6A78bafD2A517DdE8;
     }
 
     // default function to run, must exist.
@@ -49,11 +47,11 @@ contract DeployCCIPPeer is Script {
         vm.stopBroadcast();
     }
 
-    function initEthPeer() public {
+    function initOpPeer() public {
         //TODO modify
         address peerCcip = address(0);
-        address peeruniBTC = 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568;
-        uint64 peerchainSelect = 11344663589394136015;
+        address peeruniBTC = 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e;
+        uint64 peerchainSelect = 3734403246176062136;
         vm.startBroadcast(owner);
         CCIPPeer(payable(ccipPeerAddress)).allowlistSourceChain(peerchainSelect, peerCcip);
         CCIPPeer(payable(ccipPeerAddress)).allowlistDestinationChain(peerchainSelect, peerCcip);
