@@ -10,6 +10,7 @@ import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/
 import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 interface IMintableContract is IERC20 {
     function mint(address account, uint256 amount) external;
@@ -22,6 +23,8 @@ interface IMintableContract is IERC20 {
 /// @title - messenger contract for sending/receving string data across chains.
 contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
+    using Address for address;
+
     // Custom errors to provide more descriptive revert messages.
     // Used when the destination chain has not been allowlisted by the contract owner.
 
@@ -80,7 +83,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     uint256 public constant ONE_BTC = 1e8;
 
     // amount beyond SMALL_TRANSFER_MAX should use sendToken with signature.
-    uint256 public constant SMALL_TRANSFER_MAX = 10 * ONE_BTC;
+    uint256 public constant SMALL_TRANSFER_MAX = 1 * ONE_BTC;
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
     // Mapping to keep track of allowlisted destination chains and receiver.
@@ -224,6 +227,21 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         // Get the fee required to send the CCIP message
         return router.getFee(_destinationChainSelector, evm2AnyMessage);
     }
+
+    /// @dev burn uniBTC on sender chain and mint equal amount of uniBTC on the peer chain.
+    /// @param _destinationChainSelector  destinationChainSelector.
+    /// @param _amount amount.
+    function sendToken(uint64 _destinationChainSelector, uint256 _amount)
+        external
+        payable
+        whenNotPaused
+        returns (bytes32 messageId)
+    {
+        require(!msg.sender.isContract(), "USR026");
+        require(_amount >= minTransferAmt && _amount < SMALL_TRANSFER_MAX, "USR006");
+        return _sendToken(_destinationChainSelector, msg.sender, _amount);
+    }
+
 
     /// @dev burn uniBTC on sender chain and mint equal amount of uniBTC on the peer chain.
     /// @param _destinationChainSelector  destinationChainSelector.
