@@ -270,20 +270,24 @@ contract DelayRedeemRouter is
      * @dev add a new wrapped or native btc address in wrapBtcList for the contract
      */
     function addToWrapBtcList(
-        address _token
+        address[] memory _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        wrapBtcList[_token] = true;
-        emit WrapBtcListAdded(_token);
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            wrapBtcList[_tokens[i]] = true;
+        }
+        emit WrapBtcListAdded(_tokens);
     }
 
     /**
      * @dev remove an address from wrapBtcList for the contract
      */
     function removeFromWrapBtcList(
-        address _token
+        address[] memory _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        wrapBtcList[_token] = false;
-        emit WrapBtcListRemoved(_token);
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            wrapBtcList[_tokens[i]] = false;
+        }
+        emit WrapBtcListRemoved(_tokens);
     }
 
     /**
@@ -299,20 +303,24 @@ contract DelayRedeemRouter is
      * @dev add a new address in whitelist for the contract
      */
     function addToWhitelist(
-        address _address
+        address[] memory _accounts
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        whitelist[_address] = true;
-        emit WhitelistAdded(_address);
+        for (uint256 i = 0; i < _accounts.length; i++) {
+            whitelist[_accounts[i]] = true;
+        }
+        emit WhitelistAdded(_accounts);
     }
 
     /**
      * @dev remove an address from whitelist for the contract
      */
     function removeFromWhitelist(
-        address _address
+        address[] memory _accounts
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        whitelist[_address] = false;
-        emit WhitelistRemoved(_address);
+        for (uint256 i = 0; i < _accounts.length; i++) {
+            whitelist[_accounts[i]] = false;
+        }
+        emit WhitelistRemoved(_accounts);
     }
 
     /**
@@ -335,20 +343,24 @@ contract DelayRedeemRouter is
      * @dev add a new address in blacklist for the contract
      */
     function addToBlacklist(
-        address _address
+        address[] memory _accounts
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        blacklist[_address] = true;
-        emit BlacklistAdded(_address);
+        for (uint256 i = 0; i < _accounts.length; i++) {
+            blacklist[_accounts[i]] = true;
+        }
+        emit BlacklistAdded(_accounts);
     }
 
     /**
      * @dev remove an address from blacklist for the contract
      */
     function removeFromBlacklist(
-        address _address
+        address[] memory _accounts
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        blacklist[_address] = false;
-        emit BlacklistRemoved(_address);
+        for (uint256 i = 0; i < _accounts.length; i++) {
+            blacklist[_accounts[i]] = false;
+        }
+        emit BlacklistRemoved(_accounts);
     }
 
     /**
@@ -931,14 +943,14 @@ contract DelayRedeemRouter is
     );
 
     /**
-     * @notice event for adding a new address in wrapBtcList
+     * @notice event for adding tokens in wrapBtcList
      */
-    event WrapBtcListAdded(address token);
+    event WrapBtcListAdded(address[] tokens);
 
     /**
-     * @notice event for removing an address from wrapBtcList
+     * @notice event for removing tokens from wrapBtcList
      */
-    event WrapBtcListRemoved(address token);
+    event WrapBtcListRemoved(address[] tokens);
 
     /**
      * @notice event for setting the dayCap
@@ -946,14 +958,14 @@ contract DelayRedeemRouter is
     event DayCapSet(uint256 previousValue, uint256 newValue);
 
     /**
-     * @notice event for adding a new address in whitelist
+     * @notice event for adding accounts in whitelist
      */
-    event WhitelistAdded(address account);
+    event WhitelistAdded(address[] accounts);
 
     /**
-     * @notice event for removing an address from whitelist
+     * @notice event for removing accounts from whitelist
      */
-    event WhitelistRemoved(address account);
+    event WhitelistRemoved(address[] accounts);
 
     /**
      * @notice event for setting the whitelistEnabled
@@ -961,12 +973,12 @@ contract DelayRedeemRouter is
     event WhitelistEnabledSet(bool previousValue, bool newValue);
 
     /**
-     * @notice event for adding a new address in blacklist
+     * @notice event for adding accounts in blacklist
      */
-    event BlacklistAdded(address account);
+    event BlacklistAdded(address[] accounts);
 
     /**
-     * @notice event for removing an address from blacklist
+     * @notice event for removing accounts from blacklist
      */
-    event BlacklistRemoved(address account);
+    event BlacklistRemoved(address[] accounts);
 }
