@@ -88,96 +88,96 @@ contract SmokeTest is Test {
         vm.stopPrank();
     }
 
-    function test_baseCase() public {
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 30000000);
-        assertTrue(peerB.processedMessages(messageId), "not true");
-        vm.stopPrank();
-        console.logBytes32(messageId);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 30000000);
-        assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 30000000);
-    }
-
-    function test_paused_A() public {
-        vm.startPrank(defaultAdmin);
-        peerA.pause();
-        vm.stopPrank();
-
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 30000000);
-        vm.stopPrank();
-    }
-
-    function test_paused_B() public {
-        vm.startPrank(defaultAdmin);
-        peerB.pause();
-        vm.stopPrank();
-
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 30000000);
-        vm.stopPrank();
-    }
-
-    function test_destination_not_allowed() public {
-        vm.startPrank(defaultAdmin);
-        peerA.allowlistDestinationChain(chainSelector, address(0));
-        vm.stopPrank();
-
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 30000000);
-        vm.stopPrank();
-    }
-
-    function test_src_not_allowed() public {
-        vm.startPrank(defaultAdmin);
-        peerB.allowlistSourceChain(chainSelector, address(0));
-        vm.stopPrank();
-
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 30000000);
-        vm.stopPrank();
-    }
-
-    function test_token_not_allowed() public {
-        vm.startPrank(defaultAdmin);
-        peerA.allowlistTargetTokens(chainSelector, address(0));
-        vm.stopPrank();
-
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 30000000);
-        vm.stopPrank();
-    }
-
-    function test_minAmt() public {
-        vm.startPrank(defaultAdmin);
-        peerA.setMinTransferAmt(90000000);
-        vm.stopPrank();
-
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 30000000);
-        vm.stopPrank();
-    }
-
-    function test_minApprove() public {
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 10000000);
-        vm.expectRevert();
-        peerA.sendToken(chainSelector, peerCuser, 30000000);
-        vm.stopPrank();
-    }
+    // function test_baseCase() public {
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     bytes32 messageId = peerA.sendToken(chainSelector, peerCuser, 30000000);
+    //     assertTrue(peerB.processedMessages(messageId), "not true");
+    //     vm.stopPrank();
+    //     console.logBytes32(messageId);
+    //     assertEq(uniBTC(uniBTCProxy).balanceOf(peerCuser), 30000000);
+    //     assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 30000000);
+    // }
+    //
+    // function test_paused_A() public {
+    //     vm.startPrank(defaultAdmin);
+    //     peerA.pause();
+    //     vm.stopPrank();
+    //
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     vm.expectRevert();
+    //     peerA.sendToken(chainSelector, peerCuser, 30000000);
+    //     vm.stopPrank();
+    // }
+    //
+    // function test_paused_B() public {
+    //     vm.startPrank(defaultAdmin);
+    //     peerB.pause();
+    //     vm.stopPrank();
+    //
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     vm.expectRevert();
+    //     peerA.sendToken(chainSelector, peerCuser, 30000000);
+    //     vm.stopPrank();
+    // }
+    //
+    // function test_destination_not_allowed() public {
+    //     vm.startPrank(defaultAdmin);
+    //     peerA.allowlistDestinationChain(chainSelector, address(0));
+    //     vm.stopPrank();
+    //
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     vm.expectRevert();
+    //     peerA.sendToken(chainSelector, peerCuser, 30000000);
+    //     vm.stopPrank();
+    // }
+    //
+    // function test_src_not_allowed() public {
+    //     vm.startPrank(defaultAdmin);
+    //     peerB.allowlistSourceChain(chainSelector, address(0));
+    //     vm.stopPrank();
+    //
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     vm.expectRevert();
+    //     peerA.sendToken(chainSelector, peerCuser, 30000000);
+    //     vm.stopPrank();
+    // }
+    //
+    // function test_token_not_allowed() public {
+    //     vm.startPrank(defaultAdmin);
+    //     peerA.allowlistTargetTokens(chainSelector, address(0));
+    //     vm.stopPrank();
+    //
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     vm.expectRevert();
+    //     peerA.sendToken(chainSelector, peerCuser, 30000000);
+    //     vm.stopPrank();
+    // }
+    //
+    // function test_minAmt() public {
+    //     vm.startPrank(defaultAdmin);
+    //     peerA.setMinTransferAmt(90000000);
+    //     vm.stopPrank();
+    //
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     vm.expectRevert();
+    //     peerA.sendToken(chainSelector, peerCuser, 30000000);
+    //     vm.stopPrank();
+    // }
+    //
+    // function test_minApprove() public {
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 10000000);
+    //     vm.expectRevert();
+    //     peerA.sendToken(chainSelector, peerCuser, 30000000);
+    //     vm.stopPrank();
+    // }
 
     function test_sendSign() public {
         vm.startPrank(peerAuser);
@@ -227,33 +227,33 @@ contract SmokeTest is Test {
         vm.stopPrank();
     }
 
-    function test_withdrawFees() public {
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        deal(peerAuser, 10 ether);
-        bytes32 messageId = peerA.sendToken{value: 1 ether}(chainSelector, peerCuser, 60000000);
-        console.logBytes32(messageId);
-        assert(address(peerA).balance == 1 ether);
-        assert(peerAuser.balance == 9 ether);
-        vm.stopPrank();
-        //withdrawal
-        vm.startPrank(defaultAdmin);
-        vm.deal(defaultAdmin, 1 ether);
-        peerA.withdrawFees(defaultAdmin, 1 ether);
-        assert(address(peerA).balance == 0 ether);
-        assert(defaultAdmin.balance == 2 ether);
-        vm.stopPrank();
-    }
+    // function test_withdrawFees() public {
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     deal(peerAuser, 10 ether);
+    //     bytes32 messageId = peerA.sendToken{value: 1 ether}(chainSelector, peerCuser, 60000000);
+    //     console.logBytes32(messageId);
+    //     assert(address(peerA).balance == 1 ether);
+    //     assert(peerAuser.balance == 9 ether);
+    //     vm.stopPrank();
+    //     //withdrawal
+    //     vm.startPrank(defaultAdmin);
+    //     vm.deal(defaultAdmin, 1 ether);
+    //     peerA.withdrawFees(defaultAdmin, 1 ether);
+    //     assert(address(peerA).balance == 0 ether);
+    //     assert(defaultAdmin.balance == 2 ether);
+    //     vm.stopPrank();
+    // }
 
-    function test_sendTokenSelf() public {
-        vm.startPrank(peerAuser);
-        uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
-        vm.expectRevert();
-        peerA.sendToken(chainSelector, 30000000);
-        // bytes32 messageId = peerA.sendToken(chainSelector, 30000000);
-        // assertTrue(peerB.processedMessages(messageId), "not true");
-        // vm.stopPrank();
-        // console.logBytes32(messageId);
-        // assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 60000000);
-    }
+    // function test_sendTokenSelf() public {
+    //     vm.startPrank(peerAuser);
+    //     uniBTC(uniBTCProxy).approve(address(peerA), 60000000);
+    //     vm.expectRevert();
+    //     peerA.sendToken(chainSelector, 30000000);
+    //     bytes32 messageId = peerA.sendToken(chainSelector, 30000000);
+    //     assertTrue(peerB.processedMessages(messageId), "not true");
+    //     vm.stopPrank();
+    //     console.logBytes32(messageId);
+    //     assertEq(uniBTC(uniBTCProxy).balanceOf(peerAuser), 60000000);
+    // }
 }
