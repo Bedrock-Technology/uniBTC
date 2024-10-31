@@ -74,20 +74,20 @@ contract CmdCCIPPeer is Script {
     //bsc
     //forge script script/testnet/command.s.sol:CmdCCIPPeer --sig sendToken --rpc-url https://bsc-testnet-rpc.publicnode.com --account owner --broadcast
     //fuji
-    function sendToken() public {
-        vm.startBroadcast(owner);
-        uint256 allowance = uniBTCIns.allowance(owner, ccipPeerAddr);
-        console.log("allowance:", allowance);
-        if (allowance < 1e8) {
-            uniBTCIns.approve(ccipPeerAddr, 10e8);
-        }
-        uint256 fees =
-            ccipPeerIns.estimateSendTokenFees(destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8);
-        console.log("est fees:%d", fees);
-        // send to owner, 1uniBTC
-        ccipPeerIns.sendToken{value: fees}(destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8);
-        vm.stopBroadcast();
-    }
+    // function sendToken() public {
+    //     vm.startBroadcast(owner);
+    //     uint256 allowance = uniBTCIns.allowance(owner, ccipPeerAddr);
+    //     console.log("allowance:", allowance);
+    //     if (allowance < 1e8) {
+    //         uniBTCIns.approve(ccipPeerAddr, 10e8);
+    //     }
+    //     uint256 fees =
+    //         ccipPeerIns.estimateSendTokenFees(destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8);
+    //     console.log("est fees:%d", fees);
+    //     // send to owner, 1uniBTC
+    //     ccipPeerIns.sendToken{value: fees}(destinationChainSelector, 0x8cb37518330014E027396E3ED59A231FBe3B011A, 1e8);
+    //     vm.stopBroadcast();
+    // }
 
     //bsc
     //forge script script/testnet/command.s.sol:CmdCCIPPeer --sig targetCall --rpc-url https://bsc-testnet-rpc.publicnode.com --account owner --broadcast
