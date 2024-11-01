@@ -15,6 +15,8 @@ import {uniBTC} from "../../src/mocks/uniBTC.sol";
 //set ArbPeer
 //forge script script/mainnet/eth.s.sol:DeployCCIPPeer --sig 'initArbPeer()' --rpc-url https://mainnet.infura.io/v3/xxxxxxxxxxx --account owner --broadcast
 
+//set ArbPeer
+//forge script script/mainnet/eth.s.sol:DeployCCIPPeer --sig 'initBscPeer()' --rpc-url https://mainnet.infura.io/v3/xxxxxxxxxxx --account owner --broadcast
 contract DeployCCIPPeer is Script {
     address public deploy;
     address public owner;
@@ -22,7 +24,7 @@ contract DeployCCIPPeer is Script {
     address public proxyAdmin;
     address public uniBTCAddress;
     // TODO modify when contract was deployed.
-    address public ccipPeerAddress = address(0);
+    address public ccipPeerAddress = 0x55A67cf07B8a9A09fB6d565279287Cfe4aB60edC;
     address public sysSigner = 0x9ffB3beFBfBe535E68b2d1DDd79aa0e1ef8dC863;
 
     function setUp() public {
@@ -64,6 +66,18 @@ contract DeployCCIPPeer is Script {
         address peerCcip = address(0);
         address peeruniBTC = 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a;
         uint64 peerchainSelect = 4949039107694359620;
+        vm.startBroadcast(owner);
+        CCIPPeer(payable(ccipPeerAddress)).allowlistSourceChain(peerchainSelect, peerCcip);
+        CCIPPeer(payable(ccipPeerAddress)).allowlistDestinationChain(peerchainSelect, peerCcip);
+        CCIPPeer(payable(ccipPeerAddress)).allowlistTargetTokens(peerchainSelect, peeruniBTC);
+        vm.stopBroadcast();
+    }
+
+    function initBscPeer() public {
+        //TODO modify
+        address peerCcip = 0x5e3787fD0bF2178EB15dc03EeF893DaC0258d2F9;
+        address peeruniBTC = 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a;
+        uint64 peerchainSelect = 11344663589394136015;
         vm.startBroadcast(owner);
         CCIPPeer(payable(ccipPeerAddress)).allowlistSourceChain(peerchainSelect, peerCcip);
         CCIPPeer(payable(ccipPeerAddress)).allowlistDestinationChain(peerchainSelect, peerCcip);
