@@ -59,6 +59,9 @@ contract DelayRedeemRouter is
 
     /**
      * @notice struct used to pack data into a single storage slot
+     * @param amount the amount of the delayedRedeem token type
+     * @param timestampCreated the timestamp at which the delayedRedeem was created
+     * @param token the address of the token type
      */
     struct DelayedRedeem {
         uint224 amount;
@@ -68,6 +71,8 @@ contract DelayRedeemRouter is
 
     /**
      * @notice struct used to store a single users delayedRedeem data
+     * @param delayedRedeemsCompleted the number of delayedRedeems that have been completed
+     * @param delayedRedeems an array of delayedRedeems
      */
     struct UserDelayedRedeems {
         uint256 delayedRedeemsCompleted;
@@ -75,7 +80,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice define a structure for temporary storage of ERC20 tokens and corresponding cumulative amounts
+     * @notice define a structure for temporary storage of the debt token type and corresponding cumulative amounts
+     * @param token the address of the token type
+     * @param amount the redeem amount of the token type
      */
     struct DebtTokenAmount {
         address token;
@@ -84,6 +91,8 @@ contract DelayRedeemRouter is
 
     /**
      * @notice struct used to store the total amount of debt and the total amount of claimed debt for a specific token
+     * @param totalAmount the total amount of debt for a specific token
+     * @param claimedAmount the total amount of claimed debt for a specific token
      */
     struct TokenDebtInfo {
         uint256 totalAmount;
@@ -211,7 +220,13 @@ contract DelayRedeemRouter is
      */
 
     /**
-     * @notice admin-only function for modifying the value of the `redeemDelayTimestamp` variable.
+     * @notice admin-only function.
+     * @param _defaultAdmin the default admin address(RBAC)
+     * @param _uniBTC the address of the ERC20 uniBTC token
+     * @param _vault the address of the Bedrock Vault contract
+     * @param _redeemDelayTimestamp the delay time for claiming a delayedRedeem
+     * @param _whitelistEnabled the status of the whitelist feature
+     * @param _dayCap the total redeem cap for a single day
      */
     function initialize(
         address _defaultAdmin,
@@ -259,6 +274,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev set a new delay redeem block timestamp for the contract
+     * @param _newValue the new value for the delay redeem block timestamp,
+     * after the delay redeem block timestamp, the user can claim the delayed redeem
      */
     function setRedeemDelayTimestamp(
         uint256 _newValue
@@ -268,6 +285,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev add a new wrapped or native btc address in wrapBtcList for the contract
+     * @param _tokens the list of the wrapped or native btc address,
+     * user can redeem using unibtc for the address in wrapBtcList
      */
     function addToWrapBtcList(
         address[] memory _tokens
@@ -280,6 +299,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev remove an address from wrapBtcList for the contract
+     * @param _tokens the list of the wrapped or native btc address,
+     * user can't redeem using unibtc for the address in wrapBtcList
      */
     function removeFromWrapBtcList(
         address[] memory _tokens
@@ -292,6 +313,9 @@ contract DelayRedeemRouter is
 
     /**
      * @dev set the whitelistEnabled for the contract
+     * @param _enabled the new value for the whitelistEnabled,
+     * true means only whitelist address can redeem using unibtc,
+     * false means all address can redeem using unibtc
      */
     function setWhitelistEnabled(
         bool _enabled
@@ -300,7 +324,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev add a new address in whitelist for the contract
+     * @dev add some accounts in whitelist for the contract
+     * @param _accounts the new address list for the whitelist,
+     * only the address in the whitelist can redeem using unibtc
      */
     function addToWhitelist(
         address[] memory _accounts
@@ -312,7 +338,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev remove an address from whitelist for the contract
+     * @dev remove some accounts from whitelist for the contract
+     * @param _accounts the new address list removing in the whitelist,
+     * these accounts can not redeem using unibtc
      */
     function removeFromWhitelist(
         address[] memory _accounts
@@ -325,6 +353,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev set a new day Cap for the contract
+     * @param _newCap the new value for the day Cap,
+     * the total redeem cap for a single day
      */
     function setDayCap(uint256 _newCap) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setDayCap(_newCap);
@@ -332,6 +362,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev set a new delay principal redeem block timestamp for the contract
+     * @param _newValue the new value for the delay principal redeem block timestamp,
+     * after the delay principal redeem block timestamp, the user can claim the principal
      */
     function setRedeemPrincipalDelayTimestamp(
         uint256 _newValue
@@ -340,7 +372,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev add a new address in blacklist for the contract
+     * @dev add some accounts in blacklist for the contract
+     * @param _accounts the new address list for the blacklist,
+     * the accounts in the blacklist can not claim the delayed redeem
      */
     function addToBlacklist(
         address[] memory _accounts
@@ -353,6 +387,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev remove an address from blacklist for the contract
+     * @param _accounts the address list removing in the blacklist,
+     * the accounts can claim the delayed redeem
      */
     function removeFromBlacklist(
         address[] memory _accounts
@@ -372,8 +408,10 @@ contract DelayRedeemRouter is
      */
 
     /**
-     * @notice Creates a delayed redeem for `_amount` to the `recipient`.
+     * @notice Creates a delayed redeem for `_amount` to the `recipient(msg.sender)`.
      * @dev check the address is in whitelist or not
+     * @param _token the address of the token type
+     * @param _amount the amount of the delayedRedeem token type
      */
     function createDelayedRedeem(
         address _token,
@@ -407,9 +445,8 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Called in order to claim delayed redeem made to msg.sender that have passed the `redeemDelayTimestamp` period.
+     * @dev that the caller of this function can control when the funds are sent to msg.sender once the redeem becomes claimable.
      * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
-     * @dev that the caller of this function cannot control where the funds are sent, but they can control when the
-     * funds are sent once the redeem becomes claimable and token comeback the contract.
      */
     function claimDelayedRedeems(
         uint256 maxNumberOfDelayedRedeemsToClaim
@@ -432,7 +469,7 @@ contract DelayRedeemRouter is
     /**
      * @notice Called in order to claim delayed redeem made to msg.sender that have passed the `redeemPrincipalDelayTimestamp` period.
      * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
-     * @dev that the caller of this function can control when the funds are sent once the principal becomes claimable.
+     * @dev that the caller of this function can control when the funds are sent to msg.sender once the principal becomes claimable.
      */
     function claimPrincipals(
         uint256 maxNumberOfDelayedRedeemsToClaim
@@ -454,6 +491,8 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Getter function for the mapping `_userRedeems`
+     * @param user the address of the user(who had created the delayedRedeem),
+     * return the UserDelayedRedeems struct for the user
      */
     function userRedeems(
         address user
@@ -463,6 +502,9 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Getter function for fetching the delayedRedeem at the `index`th entry from the `_userRedeems[user].delayedRedeems` array
+     * @param user the address of the user(who had created the delayedRedeem)
+     * @param index the index of the delayedRedeem in the `_userRedeems[user].delayedRedeems` array
+     * return the DelayedRedeem struct for the delayedRedeem at the `index`th entry
      */
     function userDelayedRedeemByIndex(
         address user,
@@ -473,6 +515,8 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Getter function for fetching the length of the delayedRedeems array of a specific user
+     * @param user the address of the user(who had created the delayedRedeem)
+     * return the length of the delayedRedeems array of the user
      */
     function userRedeemsLength(address user) external view returns (uint256) {
         return _userRedeems[user].delayedRedeems.length;
@@ -481,6 +525,9 @@ contract DelayRedeemRouter is
     /**
      * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from
      * the `_userRedeems[user].delayedRedeems` array is currently claimable
+     * @param user the address of the user(who had created the delayedRedeem)
+     * @param index the index of the delayedRedeem in the `_userRedeems[user].delayedRedeems` array
+     * return true if the delayedRedeem at the `index`th entry is currently claimable, false otherwise
      */
     function canClaimDelayedRedeem(
         address user,
@@ -495,6 +542,9 @@ contract DelayRedeemRouter is
     /**
      * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from
      * the `_userRedeems[user].delayedRedeems` array is currently principal claimable
+     * @param user the address of the user(who had created the delayedRedeem)
+     * @param index the index of the delayedRedeem in the `_userRedeems[user].delayedRedeems` array
+     * return true if the delayedRedeem at the `index`th entry is currently principal claimable, false otherwise
      */
     function canClaimDelayedRedeemPrincipal(
         address user,
@@ -509,6 +559,8 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Getter function to get all delayedRedeems of the `user`
+     * @param user the address of the user(who had created the delayedRedeem)
+     * return an array of DelayedRedeem structs for all not redeemable delayedRedeems of the user
      */
     function getUserDelayedRedeems(
         address user
@@ -531,6 +583,8 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Getter function to get all delayedRedeems that are currently claimable by the `user`
+     * @param user the address of the user(who had created the delayedRedeem)
+     * return an array of DelayedRedeem structs for all claimable delayedRedeems of the user
      */
     function getClaimableUserDelayedRedeems(
         address user
@@ -695,6 +749,7 @@ contract DelayRedeemRouter is
                 }
                 emit DelayedRedeemsClaimed(recipient, token, amountToSend);
             }
+
             //burn claimed amount unibtc
             if (IERC20(uniBTC).allowance(address(this), vault) < burn_amount) {
                 IERC20(uniBTC).safeApprove(vault, burn_amount);
@@ -784,6 +839,9 @@ contract DelayRedeemRouter is
 
     /**
      * @dev determine the valid wrapped and native BTC amount.
+     * @param token the address of the token type
+     * @param amount the amount of the uniBTC token
+     * return the valid amount of the delayedRedeem token type
      */
     function _amounts(
         address token,
@@ -802,6 +860,11 @@ contract DelayRedeemRouter is
 
     /**
      * @dev get the claimable debt list from _userRedeems through delayTimestamp
+     * @param recipient the address of the user(who had created the delayedRedeem)
+     * @param delayedRedeemsCompletedBefore the number of delayedRedeems that have been completed
+     * @param delayTimestamp the delay time for claiming a delayedRedeem
+     * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
+     * return the number of delayedRedeems that can be claimed and the DebtTokenAmount array(record the debt token type and amount)
      */
     function _getDebtTokenAmount(
         address recipient,
@@ -820,6 +883,7 @@ contract DelayRedeemRouter is
             // copy delayedRedeem from storage to memory
             DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
                 .delayedRedeems[delayedRedeemsCompletedBefore + numToClaim];
+
             // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem cannot be claimed
             if (
                 block.timestamp <
@@ -827,6 +891,7 @@ contract DelayRedeemRouter is
             ) {
                 break;
             }
+
             // increment i to account for the delayedRedeem being claimed
             unchecked {
                 ++numToClaim;
@@ -859,10 +924,12 @@ contract DelayRedeemRouter is
                 }
             }
 
+            // the token type count is equal to the number of the delayedRedeems length
             if (tokenCount == debtAmounts.length) {
                 return (numToClaim, debtAmounts);
             }
 
+            // some of the delayedRedeems have the same token type
             DebtTokenAmount[] memory finalAmounts = new DebtTokenAmount[](
                 tokenCount
             );
