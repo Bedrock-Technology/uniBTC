@@ -28,3 +28,6 @@
 [submodule "contracts/lib/forge-std"]
 	path = contracts/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "cct/lib/forge-std"]
+	path = cct/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
