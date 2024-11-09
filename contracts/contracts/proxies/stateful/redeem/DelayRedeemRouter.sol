@@ -129,24 +129,24 @@ contract DelayRedeemRouter is
     bool public whitelistEnabled;
 
     /**
-     * @notice the max free cap for once redeem
+     * @notice the max free cap for tokens once redeem
      */
-    mapping(address => uint256) public maxFreeQuota;
+    mapping(address => uint256) public maxFreeQuotas;
 
     /**
-     * @notice the base redeem cap for duration history timestamp
+     * @notice the base redeem cap for tokens duration history timestamp
      */
-    mapping(address => uint256) public baseCap;
+    mapping(address => uint256) public baseCaps;
 
     /**
      * @notice redeem token speed for each redeem token type
      */
-    mapping(address => uint256) public adjustSpeed;
+    mapping(address => uint256) public adjustedSpeeds;
 
     /**
      * @notice the last updated timestamp for update the token redeem quota
      */
-    mapping(address => uint256) public lastUpdatedTimestamp;
+    mapping(address => uint256) public lastUpdatedTimestamps;
 
     /**
      * @notice the total debt of all delayedRedeems
@@ -388,19 +388,19 @@ contract DelayRedeemRouter is
      * @param _tokens the list of the token address
      * @param _quotas the list of the max free quota for the token address
      */
-    function setMaxFreeQuota(
+    function setMaxFreeQuotas(
         address[] calldata _tokens,
         uint256[] calldata _quotas
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_tokens.length == _quotas.length, "SYS006");
         for (uint256 i = 0; i < _tokens.length; i++) {
             require(_quotas[i] < DAY_MAX_ALLOWED_CAP, "USR013");
-            emit MaxFreeQuotaSet(
+            emit MaxFreeQuotasSet(
                 _tokens[i],
-                maxFreeQuota[_tokens[i]],
+                maxFreeQuotas[_tokens[i]],
                 _quotas[i]
             );
-            maxFreeQuota[_tokens[i]] = _quotas[i];
+            maxFreeQuotas[_tokens[i]] = _quotas[i];
         }
     }
 
@@ -409,7 +409,7 @@ contract DelayRedeemRouter is
      * @param _tokens the list of the token address
      * @param _quotas the list of the adjust speed for the token address
      */
-    function setAdjustSpeed(
+    function setAdjustedSpeeds(
         address[] calldata _tokens,
         uint256[] calldata _quotas
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -417,12 +417,12 @@ contract DelayRedeemRouter is
         for (uint256 i = 0; i < _tokens.length; i++) {
             uint256 quota = _getQuota(_tokens[i]);
             _checkPoint(_tokens[i], quota);
-            emit AdjustSpeedSet(
+            emit AdjustedSpeedsSet(
                 _tokens[i],
-                adjustSpeed[_tokens[i]],
+                adjustedSpeeds[_tokens[i]],
                 _quotas[i]
             );
-            adjustSpeed[_tokens[i]] = _quotas[i];
+            adjustedSpeeds[_tokens[i]] = _quotas[i];
         }
     }
 
@@ -882,8 +882,8 @@ contract DelayRedeemRouter is
      * @notice internal function for changing the value of baseCap and timestamp.
      */
     function _checkPoint(address token, uint256 quota) internal {
-        baseCap[token] = quota;
-        lastUpdatedTimestamp[token] = block.timestamp;
+        baseCaps[token] = quota;
+        lastUpdatedTimestamps[token] = block.timestamp;
     }
 
     /**
@@ -913,16 +913,16 @@ contract DelayRedeemRouter is
      */
     function _getIncreseQuota(address token) internal view returns (uint256) {
         uint256 increaseQuato = 0;
-        if (lastUpdatedTimestamp[token] > redeemStartedTimestamp) {
+        if (lastUpdatedTimestamps[token] > redeemStartedTimestamp) {
             increaseQuato =
-                baseCap[token] +
-                (block.timestamp - lastUpdatedTimestamp[token]) *
-                adjustSpeed[token];
+                baseCaps[token] +
+                (block.timestamp - lastUpdatedTimestamps[token]) *
+                adjustedSpeeds[token];
         } else {
             increaseQuato =
-                baseCap[token] +
+                baseCaps[token] +
                 (block.timestamp - redeemStartedTimestamp) *
-                adjustSpeed[token];
+                adjustedSpeeds[token];
         }
         return increaseQuato;
     }
@@ -936,7 +936,7 @@ contract DelayRedeemRouter is
         return (
             min(
                 increaseQuato,
-                tokenDebts[token].totalAmount + maxFreeQuota[token]
+                tokenDebts[token].totalAmount + maxFreeQuotas[token]
             )
         );
     }
@@ -1138,7 +1138,7 @@ contract DelayRedeemRouter is
     /**
      * @notice event for setting the max free quota
      */
-    event MaxFreeQuotaSet(
+    event MaxFreeQuotasSet(
         address token,
         uint256 previousValue,
         uint256 newValue
@@ -1147,7 +1147,7 @@ contract DelayRedeemRouter is
     /**
      * @notice event for setting the adjust speed
      */
-    event AdjustSpeedSet(
+    event AdjustedSpeedsSet(
         address token,
         uint256 previousValue,
         uint256 newValue
