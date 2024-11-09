@@ -106,21 +106,21 @@ def test_claimFromRedeemRouter(deps):
             fbtc_contract, fbtc_claim_uni, {"from": user}
         )
 
-    tx = transparent_delay_redeem_router.setAdjustedSpeeds(
+    tx = transparent_delay_redeem_router.setNumTokensPerSecond(
         [fbtc_contract, wbtc_contract, native_token],
         [fbtc_speed, wbtc_speed, native_speed],
         {"from": owner},
     )
-    assert "AdjustedSpeedsSet" in tx.events
-    assert tx.events["AdjustedSpeedsSet"][0]["token"] == fbtc_contract
-    assert tx.events["AdjustedSpeedsSet"][0]["previousValue"] == 0
-    assert tx.events["AdjustedSpeedsSet"][0]["newValue"] == fbtc_speed
-    assert tx.events["AdjustedSpeedsSet"][1]["token"] == wbtc_contract
-    assert tx.events["AdjustedSpeedsSet"][1]["previousValue"] == 0
-    assert tx.events["AdjustedSpeedsSet"][1]["newValue"] == wbtc_speed
-    assert tx.events["AdjustedSpeedsSet"][2]["token"] == native_token
-    assert tx.events["AdjustedSpeedsSet"][2]["previousValue"] == 0
-    assert tx.events["AdjustedSpeedsSet"][2]["newValue"] == native_speed
+    assert "NumTokensPerSecondSet" in tx.events
+    assert tx.events["NumTokensPerSecondSet"][0]["token"] == fbtc_contract
+    assert tx.events["NumTokensPerSecondSet"][0]["previousValue"] == 0
+    assert tx.events["NumTokensPerSecondSet"][0]["newValue"] == fbtc_speed
+    assert tx.events["NumTokensPerSecondSet"][1]["token"] == wbtc_contract
+    assert tx.events["NumTokensPerSecondSet"][1]["previousValue"] == 0
+    assert tx.events["NumTokensPerSecondSet"][1]["newValue"] == wbtc_speed
+    assert tx.events["NumTokensPerSecondSet"][2]["token"] == native_token
+    assert tx.events["NumTokensPerSecondSet"][2]["previousValue"] == 0
+    assert tx.events["NumTokensPerSecondSet"][2]["newValue"] == native_speed
 
     tx = transparent_delay_redeem_router.setMaxFreeQuotas(
         [fbtc_contract, wbtc_contract, native_token],
@@ -237,7 +237,7 @@ def test_claimFromRedeemRouter(deps):
     chain.mine()
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user, 0) == True
 
-    tx = transparent_delay_redeem_router.setAdjustedSpeeds(
+    tx = transparent_delay_redeem_router.setNumTokensPerSecond(
         [wbtc_contract],
         [wbtc_speed],
         {"from": owner},

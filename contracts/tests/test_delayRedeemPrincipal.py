@@ -74,7 +74,7 @@ def test_claimPrincipalFromRedeemRouter(deps):
     fbtc_max_free = 8 * 10**8
     native_max_free = 5 * 10**8
 
-    tx = transparent_delay_redeem_router.setAdjustedSpeeds(
+    tx = transparent_delay_redeem_router.setNumTokensPerSecond(
         [fbtc_contract, wbtc_contract],
         [fbtc_speed, wbtc_speed],
         {"from": owner},

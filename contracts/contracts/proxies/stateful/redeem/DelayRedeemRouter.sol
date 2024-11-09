@@ -134,14 +134,14 @@ contract DelayRedeemRouter is
     mapping(address => uint256) public maxFreeQuotas;
 
     /**
-     * @notice the base redeem cap for tokens duration history timestamp
+     * @notice the base redeem quota for tokens duration history timestamp
      */
-    mapping(address => uint256) public baseCaps;
+    mapping(address => uint256) public baseQuotas;
 
     /**
-     * @notice redeem token speed for each redeem token type
+     * @notice redeem token amount per second for each redeem token type
      */
-    mapping(address => uint256) public adjustedSpeeds;
+    mapping(address => uint256) public numTokensPerSecond;
 
     /**
      * @notice the last updated timestamp for update the token redeem quota
@@ -405,24 +405,25 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev set the adjust speed for the each redeem token type
+     * @dev set the redeem amount persecond for the each redeem token type
      * @param _tokens the list of the token address
-     * @param _quotas the list of the adjust speed for the token address
+     * @param _quotas the list of the redeem amount persecond for the token address
      */
-    function setAdjustedSpeeds(
+    function setNumTokensPerSecond(
         address[] calldata _tokens,
         uint256[] calldata _quotas
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_tokens.length == _quotas.length, "SYS006");
         for (uint256 i = 0; i < _tokens.length; i++) {
+            // this time need using old quota per second update the base quota
             uint256 quota = _getQuota(_tokens[i]);
             _checkPoint(_tokens[i], quota);
-            emit AdjustedSpeedsSet(
+            emit NumTokensPerSecondSet(
                 _tokens[i],
-                adjustedSpeeds[_tokens[i]],
+                numTokensPerSecond[_tokens[i]],
                 _quotas[i]
             );
-            adjustedSpeeds[_tokens[i]] = _quotas[i];
+            numTokensPerSecond[_tokens[i]] = _quotas[i];
         }
     }
 
@@ -486,7 +487,10 @@ contract DelayRedeemRouter is
         require(wrapBtcList[token] && !pausedTokenlist[token], "SYS003");
         uint256 quota = _getQuota(token);
         require(quota >= amount + tokenDebts[token].totalAmount, "USR010");
+
+        // this time need using min quota update the base quota
         _checkPoint(token, quota);
+
         //lock unibtc in the contract
         IERC20(uniBTC).safeTransferFrom(msg.sender, address(this), amount);
         uint224 RedeemAmount = uint224(amount);
@@ -882,7 +886,7 @@ contract DelayRedeemRouter is
      * @notice internal function for changing the value of baseCap and timestamp.
      */
     function _checkPoint(address token, uint256 quota) internal {
-        baseCaps[token] = quota;
+        baseQuotas[token] = quota;
         lastUpdatedTimestamps[token] = block.timestamp;
     }
 
@@ -915,14 +919,14 @@ contract DelayRedeemRouter is
         uint256 increaseQuato = 0;
         if (lastUpdatedTimestamps[token] > redeemStartedTimestamp) {
             increaseQuato =
-                baseCaps[token] +
+                baseQuotas[token] +
                 (block.timestamp - lastUpdatedTimestamps[token]) *
-                adjustedSpeeds[token];
+                numTokensPerSecond[token];
         } else {
             increaseQuato =
-                baseCaps[token] +
+                baseQuotas[token] +
                 (block.timestamp - redeemStartedTimestamp) *
-                adjustedSpeeds[token];
+                numTokensPerSecond[token];
         }
         return increaseQuato;
     }
@@ -1145,9 +1149,9 @@ contract DelayRedeemRouter is
     );
 
     /**
-     * @notice event for setting the adjust speed
+     * @notice event for setting the redeem token amount per second
      */
-    event AdjustedSpeedsSet(
+    event NumTokensPerSecondSet(
         address token,
         uint256 previousValue,
         uint256 newValue
