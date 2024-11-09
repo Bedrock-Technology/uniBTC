@@ -409,9 +409,8 @@ contract DelayRedeemRouter is
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_tokens.length == _quotas.length, "SYS006");
         for (uint256 i = 0; i < _tokens.length; i++) {
-            // this time need using old quota per second update the base quota
-            uint256 quota = _getQuota(_tokens[i]);
-            _checkPoint(_tokens[i], quota);
+            // this time need using old quota per second to rebase quota and timestamp
+            _rebase(_tokens[i]);
             emit NumTokensPerSecondSet(
                 _tokens[i],
                 numTokensPerSecond[_tokens[i]],
@@ -482,8 +481,8 @@ contract DelayRedeemRouter is
         uint256 quota = _getQuota(token);
         require(quota >= amount + tokenDebts[token].totalAmount, "USR010");
 
-        // this time need using min quota update the base quota
-        _checkPoint(token, quota);
+        // this time need to rebase quota and timestamp
+        _rebase(token);
 
         //lock unibtc in the contract
         IERC20(uniBTC).safeTransferFrom(msg.sender, address(this), amount);
@@ -877,9 +876,10 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice internal function for changing the value of baseCap and timestamp.
+     * @notice internal function to rebase the value of baseQuota and timestamp.
      */
-    function _checkPoint(address token, uint256 quota) internal {
+    function _rebase(address token) internal {
+        uint256 quota = _getQuota(token);
         baseQuotas[token] = quota;
         lastUpdatedTimestamps[token] = block.timestamp;
     }
@@ -911,19 +911,15 @@ contract DelayRedeemRouter is
      */
     function _getQuota(address token) internal view returns (uint256) {
         uint256 quota = baseQuotas[token] +
-                (block.timestamp - lastUpdatedTimestamps[token]) *
-                numTokensPerSecond[token];
-        return (
-            min(
-                quota,
-                tokenDebts[token].totalAmount + maxFreeQuotas[token]
-            )
-        );
+            (block.timestamp - lastUpdatedTimestamps[token]) * numTokensPerSecond[token];
+        uint256 maxFreeQuota = tokenDebts[token].totalAmount + maxFreeQuotas[token];
+        if (quota <= maxFreeQuota) {
+            return (quota);
+        } else {
+            return (maxFreeQuota);
+        }
     }
 
-    function min(uint256 a, uint256 b) public pure returns (uint256) {
-        return a < b ? a : b;
-    }
     /**
      * @dev get the claimable debt list from _userRedeems through delayTimestamp
      * @param recipient the address of the user(who had created the delayedRedeem)
