@@ -43,11 +43,6 @@ contract DelayRedeemRouter is
     uint256 public redeemDelayTimestamp;
 
     /**
-     * @notice The timestamp at which the redeem functionality was enabled for the first time.
-     */
-    uint256 public redeemStartedTimestamp;
-
-    /**
      * @notice The address of the ERC20 uniBTC token.
      */
     address public uniBTC;
@@ -258,7 +253,6 @@ contract DelayRedeemRouter is
 
         uniBTC = _uniBTC;
         vault = _vault;
-        redeemStartedTimestamp = block.timestamp;
         _setWhitelistEnabled(_whitelistEnabled);
         _setRedeemPrincipalDelayTimestamp(MAX_REDEEM_DELAY_DURATION_TIME);
         _setRedeemDelayTimestamp(_redeemDelayTimestamp);
@@ -912,34 +906,16 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev get the increase redeem token type cap
-     * @param token the address of the token type
-     */
-    function _getIncreseQuota(address token) internal view returns (uint256) {
-        uint256 increaseQuato = 0;
-        if (lastUpdatedTimestamps[token] > redeemStartedTimestamp) {
-            increaseQuato =
-                baseQuotas[token] +
-                (block.timestamp - lastUpdatedTimestamps[token]) *
-                numTokensPerSecond[token];
-        } else {
-            increaseQuato =
-                baseQuotas[token] +
-                (block.timestamp - redeemStartedTimestamp) *
-                numTokensPerSecond[token];
-        }
-        return increaseQuato;
-    }
-
-    /**
-     * @dev get available redeem token type cap
+     * @dev get accumulative redeem quota for different token type
      * @param token the address of the token type
      */
     function _getQuota(address token) internal view returns (uint256) {
-        uint256 increaseQuato = _getIncreseQuota(token);
+        uint256 quota = baseQuotas[token] +
+                (block.timestamp - lastUpdatedTimestamps[token]) *
+                numTokensPerSecond[token];
         return (
             min(
-                increaseQuato,
+                quota,
                 tokenDebts[token].totalAmount + maxFreeQuotas[token]
             )
         );
