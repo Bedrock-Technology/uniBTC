@@ -915,9 +915,8 @@ contract DelayRedeemRouter is
         uint256 maxFreeQuota = tokenDebts[token].totalAmount + maxFreeQuotas[token];
         if (quota <= maxFreeQuota) {
             return (quota);
-        } else {
-            return (maxFreeQuota);
         }
+        return (maxFreeQuota);
     }
 
     /**
