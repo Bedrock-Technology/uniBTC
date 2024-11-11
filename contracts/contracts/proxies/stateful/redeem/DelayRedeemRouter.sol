@@ -523,7 +523,8 @@ contract DelayRedeemRouter is
         if (amount != 0) {
             // user bill need to pay the redeem manage fee
             uint224 userRedeemAmount = uint224(amount * (REDEEM_MANAGE_RANGE - redeemManageRate) / REDEEM_MANAGE_RANGE);
-            redeemManageFee += amount - userRedeemAmount;
+            uint256 userRedeemFee = amount - userRedeemAmount;
+            redeemManageFee += userRedeemFee;
 
             DelayedRedeem memory delayedRedeem = DelayedRedeem({
                 amount: userRedeemAmount,
@@ -539,7 +540,7 @@ contract DelayRedeemRouter is
                 token,
                 userRedeemAmount,
                 _userRedeems[msg.sender].delayedRedeems.length - 1,
-                redeemManageRate
+                userRedeemFee
             );
         }
     }
@@ -1064,7 +1065,7 @@ contract DelayRedeemRouter is
         address token,
         uint256 amount,
         uint256 index,
-        uint256 rate
+        uint256 redeemFee
     );
 
     /**
