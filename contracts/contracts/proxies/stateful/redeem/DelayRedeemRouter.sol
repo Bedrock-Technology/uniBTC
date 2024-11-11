@@ -413,14 +413,14 @@ contract DelayRedeemRouter is
 
     /**
      * @dev withdraw the manage fee from the contract
-     * @param amount the amount of the manage fee
-     * @param recipient the recipient address of the manage fee
+     * @param _amount the amount of the manage fee
+     * @param _recipient the recipient address of the manage fee
      */
-    function withdrawManageFee(uint256 amount, address recipient)  external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(amount <= redeemManageFee, "USR003");
-        redeemManageFee -= amount;
-        IERC20(uniBTC).safeTransfer(recipient, amount);
-        emit ManageFeeWithdrawn(recipient, amount);
+    function withdrawManageFee(uint256 _amount, address _recipient)  external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_amount <= redeemManageFee, "USR003");
+        redeemManageFee -= _amount;
+        IERC20(uniBTC).safeTransfer(_recipient, _amount);
+        emit ManageFeeWithdrawn(_recipient, _amount);
     }
 
     /**
