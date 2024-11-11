@@ -94,17 +94,17 @@ def test_claimPrincipalFromRedeemRouter(deps):
     # simulate redeem case
     # call redeem router createDelayedRedeem directly
     wbtc_claim_uni = 10 * 10**8
-    tx = transparent_delay_redeem_router.addToWrapBtcList(
+    tx = transparent_delay_redeem_router.addToBtclist(
         [wbtc_contract, fbtc_contract], {"from": owner}
     )
-    assert tx.events["WrapBtcListAdded"]["tokens"][0] == wbtc_contract
-    assert tx.events["WrapBtcListAdded"]["tokens"][1] == fbtc_contract
-    tx = transparent_delay_redeem_router.removeFromWrapBtcList(
+    assert tx.events["BtclistAdded"]["tokens"][0] == wbtc_contract
+    assert tx.events["BtclistAdded"]["tokens"][1] == fbtc_contract
+    tx = transparent_delay_redeem_router.removeFromBtclist(
         [wbtc_contract, fbtc_contract], {"from": owner}
     )
-    assert tx.events["WrapBtcListRemoved"]["tokens"][0] == wbtc_contract
-    assert tx.events["WrapBtcListRemoved"]["tokens"][1] == fbtc_contract
-    tx = transparent_delay_redeem_router.addToWrapBtcList(
+    assert tx.events["BtclistRemoved"]["tokens"][0] == wbtc_contract
+    assert tx.events["BtclistRemoved"]["tokens"][1] == fbtc_contract
+    tx = transparent_delay_redeem_router.addToBtclist(
         [wbtc_contract], {"from": owner}
     )
 
@@ -164,12 +164,12 @@ def test_claimPrincipalFromRedeemRouter(deps):
     assert (
         transparent_delay_redeem_router.canClaimDelayedRedeemPrincipal(user, 0) == False
     )
-    assert "redeemPrincipalDelayTimestampSet" in tx.events
+    assert "RedeemPrincipalDelayTimestampSet" in tx.events
     assert (
-        tx.events["redeemPrincipalDelayTimestampSet"]["previousValue"]
+        tx.events["RedeemPrincipalDelayTimestampSet"]["previousValue"]
         == transparent_delay_redeem_router.MAX_REDEEM_DELAY_DURATION_TIME()
     )
-    assert tx.events["redeemPrincipalDelayTimestampSet"]["newValue"] == validTimestamp
+    assert tx.events["RedeemPrincipalDelayTimestampSet"]["newValue"] == validTimestamp
 
     # time travel to 7 days later
     # update timestamp
