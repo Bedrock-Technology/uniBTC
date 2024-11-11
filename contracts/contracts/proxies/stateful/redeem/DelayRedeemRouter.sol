@@ -26,12 +26,7 @@ contract DelayRedeemRouter is
     uint256 public constant MAX_REDEEM_DELAY_DURATION_TIME = 2592000;
 
     /**
-     * @notice the duration time in 1 day (60 * 60 * 24 = 86,400)
-     */
-    uint256 public constant DAY_DELAY_DURATION_TIME = 86400;
-
-    /**
-     * @notice the maximum amount of unibtc that can be burned setting in a single day
+     * @notice the maximum amount of unibtc that can be burned setting in a single day for each specific btc token
      */
     uint256 public constant DAY_MAX_ALLOWED_CAP = 100e8;
 
@@ -53,10 +48,10 @@ contract DelayRedeemRouter is
     address public vault;
 
     /**
-     * @notice struct used to pack data into a single storage slot
-     * @param amount the amount of the delayedRedeem token type
-     * @param timestampCreated the timestamp at which the delayedRedeem was created
-     * @param token the address of the token type
+     * @notice struct used to store delayed redeem information
+     * @param amount the amount of the delayed redeem for a specific btc token
+     * @param timestampCreated the timestamp at which the `DelayedRedeem` was created
+     * @param token the address of a specific btc token
      */
     struct DelayedRedeem {
         uint224 amount;
@@ -75,9 +70,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice define a structure for temporary storage of the debt token type and corresponding cumulative amounts
-     * @param token the address of the token type
-     * @param amount the redeem amount of the token type
+     * @notice define a structure for temporary storage of the debt btc token type and corresponding cumulative amounts
+     * @param token the address of a specific btc token
+     * @param amount the redeem amount of a specific btc token
      */
     struct DebtTokenAmount {
         address token;
@@ -85,9 +80,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice struct used to store the total amount of debt and the total amount of claimed debt for a specific token
-     * @param totalAmount the total amount of debt for a specific token
-     * @param claimedAmount the total amount of claimed debt for a specific token
+     * @notice struct used to store the total amount of debt and the total amount of claimed debt for a specific btc token
+     * @param totalAmount the total amount of debt for a specific btc token
+     * @param claimedAmount the total amount of claimed debt for a specific btc token
      */
     struct TokenDebtInfo {
         uint256 totalAmount;
@@ -106,20 +101,20 @@ contract DelayRedeemRouter is
     mapping(address => TokenDebtInfo) public tokenDebts;
 
     /**
-     * @notice mapping to store the whitelist status of an address.
-     * only whitelist address can redeem using unibtc
+     * @notice mapping to store the whitelist status of an account.
+     * only in whitelist addresses can redeem using unibtc
      */
     mapping(address => bool) private whitelist;
 
     /**
-     * @notice mapping to store the wrapBtcList status of an address.
-     * only wrapBtcList address(contain wrapped and native BTC) can redeem using unibtc
+     * @notice mapping to store a specific btc token status.
+     * only in btclist tokens(wrapped or native BTC) can redeem using unibtc
      */
-    mapping(address => bool) private wrapBtcList;
+    mapping(address => bool) private btclist;
 
     /**
      * @notice flag to enable/disable the whitelist feature.
-     * If enabled, only whitelisted addresses can redeem using unibtc.
+     * If enabled, only in whitelist addresses can redeem using unibtc.
      */
     bool public whitelistEnabled;
 
@@ -129,27 +124,22 @@ contract DelayRedeemRouter is
     mapping(address => uint256) public maxFreeQuotas;
 
     /**
-     * @notice the base redeem quota for tokens duration history timestamp
+     * @notice the base redeem quota of the different btc token in duration history timestamp
      */
     mapping(address => uint256) public baseQuotas;
 
     /**
-     * @notice redeem token amount per second for each redeem token type
+     * @notice redeem specific btc token amount per second
      */
     mapping(address => uint256) public numTokensPerSecond;
 
     /**
-     * @notice the last updated timestamp for update the token redeem quota
+     * @notice record the last rebase timestamp for each specific btc token
      */
-    mapping(address => uint256) public lastUpdatedTimestamps;
+    mapping(address => uint256) public lastRebaseTimestamps;
 
     /**
-     * @notice the total debt of all delayedRedeems
-     */
-    uint256 public totalDebt;
-
-    /**
-     * @notice the address of the native BTC token
+     * @notice define the native BTC token
      */
     address public constant NATIVE_BTC =
         address(0xbeDFFfFfFFfFfFfFFfFfFFFFfFFfFFffffFFFFFF);
@@ -165,14 +155,14 @@ contract DelayRedeemRouter is
     uint256 public redeemPrincipalDelayTimestamp;
 
     /**
-     * @notice mapping to store the blacklist status of an address.
-     * only not in blacklist address can redeem using unibtc
+     * @notice mapping to store the blacklist status of an account.
+     * only not in blacklist accounts can redeem using unibtc
      */
     mapping(address => bool) private blacklist;
 
     /**
      * @notice mapping to store the pausedTokenlist status of an address.
-     * only not in pausedTokenlist token, user can create redeem using unibtc and claim the token delayed redeem
+     * only not in pausedTokenlist tokens, user can create redeem using unibtc and claim the specific btc token.
      */
     mapping(address => bool) private pausedTokenlist;
 
@@ -284,38 +274,38 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev add a new wrapped or native btc address in wrapBtcList for the contract
-     * @param _tokens the list of the wrapped or native btc address,
-     * user can redeem using unibtc for the address in wrapBtcList
+     * @dev add a new wrapped or native btc token in btclist for the contract
+     * @param _tokens the list of the wrapped or native btc token,
+     * user can redeem using unibtc for the tokens in btclist
      */
-    function addToWrapBtcList(
+    function addToBtclist(
         address[] calldata _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
-            wrapBtcList[_tokens[i]] = true;
+            btclist[_tokens[i]] = true;
         }
-        emit WrapBtcListAdded(_tokens);
+        emit BtclistAdded(_tokens);
     }
 
     /**
-     * @dev remove an address from wrapBtcList for the contract
-     * @param _tokens the list of the wrapped or native btc address,
-     * user can't redeem using unibtc for the address in wrapBtcList
+     * @dev remove a token from btclist for the contract
+     * @param _tokens the list of the wrapped or native btc token,
+     * user can't redeem using unibtc for the tokens in btclist
      */
-    function removeFromWrapBtcList(
+    function removeFromBtclist(
         address[] calldata _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
-            wrapBtcList[_tokens[i]] = false;
+            btclist[_tokens[i]] = false;
         }
-        emit WrapBtcListRemoved(_tokens);
+        emit BtclistRemoved(_tokens);
     }
 
     /**
      * @dev set the whitelistEnabled for the contract
      * @param _enabled the new value for the whitelistEnabled,
-     * true means only whitelist address can redeem using unibtc,
-     * false means all address can redeem using unibtc
+     * true means only in whitelist accounts can redeem using unibtc,
+     * false means all accounts can redeem using unibtc
      */
     function setWhitelistEnabled(
         bool _enabled
@@ -325,8 +315,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev add some accounts in whitelist for the contract
-     * @param _accounts the new address list for the whitelist,
-     * only the address in the whitelist can redeem using unibtc
+     * @param _accounts the accounts list for the whitelist,
+     * only the accounts in the whitelist can redeem using unibtc
      */
     function addToWhitelist(
         address[] calldata _accounts
@@ -339,7 +329,7 @@ contract DelayRedeemRouter is
 
     /**
      * @dev remove some accounts from whitelist for the contract
-     * @param _accounts the new address list removing in the whitelist,
+     * @param _accounts the accounts list removing in the whitelist,
      * these accounts can not redeem using unibtc
      */
     function removeFromWhitelist(
@@ -353,7 +343,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev add some tokens to the paused list for the contract
-     * @param _tokens the list of the token address
+     * @param _tokens the tokens list for the pausedTokenlist,
+     * these tokens can not used to be redeemed using unibtc and claimed.
      */
     function addToPausedTokenlist(
         address[] calldata _tokens
@@ -366,7 +357,8 @@ contract DelayRedeemRouter is
 
     /**
      * @dev remove some tokens from the paused list for the contract
-     * @param _tokens the list of the token address
+     * @param _tokens the tokens list for removing in the pausedTokenlist
+     * these tokens resume to be redeemed using unibtc and claimed.
      */
     function removeFromPausedTokenlist(
         address[] calldata _tokens
@@ -380,7 +372,7 @@ contract DelayRedeemRouter is
     /**
      * @dev set the max free quota for the each redeem token type
      * @param _tokens the list of the token address
-     * @param _quotas the list of the max free quota for the token address
+     * @param _quotas the list of the max free quota for each specific btc token
      */
     function setMaxFreeQuotas(
         address[] calldata _tokens,
@@ -399,9 +391,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev set the redeem amount persecond for the each redeem token type
-     * @param _tokens the list of the token address
-     * @param _quotas the list of the redeem amount persecond for the token address
+     * @dev set the redeem amount persecond for each specific btc token
+     * @param _tokens the list of the specific btc tokens
+     * @param _quotas the list of the redeem amount persecond for each specific btc token
      */
     function setNumTokensPerSecond(
         address[] calldata _tokens,
@@ -433,7 +425,7 @@ contract DelayRedeemRouter is
 
     /**
      * @dev add some accounts in blacklist for the contract
-     * @param _accounts the new address list for the blacklist,
+     * @param _accounts the accounts list for the blacklist,
      * the accounts in the blacklist can not claim the delayed redeem
      */
     function addToBlacklist(
@@ -446,8 +438,8 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev remove an address from blacklist for the contract
-     * @param _accounts the address list removing in the blacklist,
+     * @dev remove some accounts from blacklist for the contract
+     * @param _accounts the accounts list removing in the blacklist,
      * the accounts can claim the delayed redeem
      */
     function removeFromBlacklist(
@@ -468,16 +460,16 @@ contract DelayRedeemRouter is
      */
 
     /**
-     * @notice Creates a delayed redeem for `_amount` to the `recipient(msg.sender)`.
-     * @dev check the address is in whitelist or not
-     * @param token the address of the token type
-     * @param amount the amount of the delayedRedeem token type
+     * @notice creates a delayed redeem for `amount` to the `msg.sender`.
+     * @dev need to check whether the amount provided meets the amount redeemed by the user
+     * @param token the specific btc token
+     * @param amount the specific btc token delayed redeem amount
      */
     function createDelayedRedeem(
         address token,
         uint256 amount
     ) external nonReentrant whenNotPaused onlyWhitelisted {
-        require(wrapBtcList[token] && !pausedTokenlist[token], "SYS003");
+        require(btclist[token] && !pausedTokenlist[token], "SYS003");
         uint256 quota = _getQuota(token);
         require(quota >= amount + tokenDebts[token].totalAmount, "USR010");
 
@@ -496,7 +488,6 @@ contract DelayRedeemRouter is
             _userRedeems[msg.sender].delayedRedeems.push(delayedRedeem);
 
             tokenDebts[token].totalAmount += amount;
-            totalDebt += amount;
 
             emit DelayedRedeemCreated(
                 msg.sender,
@@ -508,9 +499,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Called in order to claim delayed redeem made to msg.sender that have passed the `redeemDelayTimestamp` period.
-     * @dev that the caller of this function can control when the funds are sent to msg.sender once the redeem becomes claimable.
-     * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
+     * @notice called in order to claim delayed redeem made to msg.sender that have passed the `redeemDelayTimestamp` period.
+     * @dev the caller of this function can control when the funds are sent to msg.sender once the redeem becomes claimable.
+     * @param maxNumberOfDelayedRedeemsToClaim used to limit the maximum number of delayedRedeems to loop through claiming.
      */
     function claimDelayedRedeems(
         uint256 maxNumberOfDelayedRedeemsToClaim
@@ -519,7 +510,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Called in order to claim delayed redeem made to the caller that have passed the `redeemDelayTimestamp` period.
+     * @notice called in order to claim delayed redeem made to the caller that have passed the `redeemDelayTimestamp` period.
      */
     function claimDelayedRedeems()
         external
@@ -531,8 +522,8 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Called in order to claim delayed redeem made to msg.sender that have passed the `redeemPrincipalDelayTimestamp` period.
-     * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
+     * @notice called in order to claim delayed redeem made to msg.sender that have passed the `redeemPrincipalDelayTimestamp` period.
+     * @param maxNumberOfDelayedRedeemsToClaim used to limit the maximum number of delayedRedeems to loop through claiming.
      * @dev that the caller of this function can control when the funds are sent to msg.sender once the principal becomes claimable.
      */
     function claimPrincipals(
@@ -542,7 +533,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Called in order to claim delayed redeem made to the caller that have passed the `redeemPrincipalDelayTimestamp` period.
+     * @notice called in order to claim delayed redeem made to the caller that have passed the `redeemPrincipalDelayTimestamp` period.
      */
     function claimPrincipals()
         external
@@ -554,8 +545,8 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Getter function for the mapping `_userRedeems`
-     * @param user the address of the user(who had created the delayedRedeem),
+     * @notice getter function for the mapping `_userRedeems`
+     * @param user the account had created the delayedRedeem
      * return the UserDelayedRedeems struct for the user
      */
     function userRedeems(
@@ -565,8 +556,8 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Getter function for fetching the delayedRedeem at the `index`th entry from the `_userRedeems[user].delayedRedeems` array
-     * @param user the address of the user(who had created the delayedRedeem)
+     * @notice getter function for fetching the delayedRedeem at the `index`th entry from the `_userRedeems[user].delayedRedeems` array
+     * @param user the account had created the delayedRedeem
      * @param index the index of the delayedRedeem in the `_userRedeems[user].delayedRedeems` array
      * return the DelayedRedeem struct for the delayedRedeem at the `index`th entry
      */
@@ -578,8 +569,8 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Getter function for fetching the length of the delayedRedeems array of a specific user
-     * @param user the address of the user(who had created the delayedRedeem)
+     * @notice getter function for fetching the length of the delayedRedeems array of a specific user
+     * @param user the account had created the delayedRedeem
      * return the length of the delayedRedeems array of the user
      */
     function userRedeemsLength(address user) external view returns (uint256) {
@@ -587,9 +578,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from
+     * @notice convenience function for checking whether or not the delayedRedeem at the `index`th entry from
      * the `_userRedeems[user].delayedRedeems` array is currently claimable
-     * @param user the address of the user(who had created the delayedRedeem)
+     * @param user the account had created the delayedRedeem
      * @param index the index of the delayedRedeem in the `_userRedeems[user].delayedRedeems` array
      * return true if the delayedRedeem at the `index`th entry is currently claimable, false otherwise
      */
@@ -604,9 +595,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Convenience function for checking whether or not the delayedRedeem at the `index`th entry from
+     * @notice convenience function for checking whether or not the delayedRedeem at the `index`th entry from
      * the `_userRedeems[user].delayedRedeems` array is currently principal claimable
-     * @param user the address of the user(who had created the delayedRedeem)
+     * @param user the account had created the delayedRedeem
      * @param index the index of the delayedRedeem in the `_userRedeems[user].delayedRedeems` array
      * return true if the delayedRedeem at the `index`th entry is currently principal claimable, false otherwise
      */
@@ -622,9 +613,9 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Getter function to get all delayedRedeems of the `user`
-     * @param user the address of the user(who had created the delayedRedeem)
-     * return an array of DelayedRedeem structs for all not redeemable delayedRedeems of the user
+     * @notice getter function to get all delayedRedeems of the `user`
+     * @param user the account had created the delayedRedeem
+     * return an array of DelayedRedeem structs for all not claimed delayedRedeems of the user
      */
     function getUserDelayedRedeems(
         address user
@@ -646,8 +637,8 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Getter function to get all delayedRedeems that are currently claimable by the `user`
-     * @param user the address of the user(who had created the delayedRedeem)
+     * @notice getter function to get all delayedRedeems that are currently claimable by the `user`
+     * @param user the account had created the delayedRedeem
      * return an array of DelayedRedeem structs for all claimable delayedRedeems of the user
      */
     function getClaimableUserDelayedRedeems(
@@ -664,7 +655,7 @@ contract DelayRedeemRouter is
         for (uint256 i = 0; i < userDelayedRedeemsLength; i++) {
             DelayedRedeem memory delayedRedeem = _userRedeems[user]
                 .delayedRedeems[delayedRedeemsCompleted + i];
-            // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem cannot be claimed
+            // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem can not be claimed
             if (
                 block.timestamp <
                 delayedRedeem.timestampCreated + redeemDelayTimestamp
@@ -689,10 +680,10 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice get current redeem token type available Cap
+     * @notice get a specific btc token available redeemed cap
      */
     function getAvailableCap(address token) external view returns (uint256) {
-        if (wrapBtcList[token]) {
+        if (btclist[token]) {
             return (_getQuota(token) - tokenDebts[token].totalAmount);
         }
         return (0);
@@ -706,10 +697,10 @@ contract DelayRedeemRouter is
     }
 
     /*
-     * @dev check the address is in wrap-btc list or not
+     * @dev check the specific btc token is in btclist or not
      */
-    function isWrapBtcListed(address token) external view returns (bool) {
-        return wrapBtcList[token];
+    function isBtclisted(address token) external view returns (bool) {
+        return btclist[token];
     }
 
     /**
@@ -733,7 +724,7 @@ contract DelayRedeemRouter is
     function _setRedeemDelayTimestamp(uint256 newValue) internal {
         require(newValue <= MAX_REDEEM_DELAY_DURATION_TIME, "USR012");
         require(newValue < redeemPrincipalDelayTimestamp, "USR019");
-        emit redeemDelayTimestampSet(redeemDelayTimestamp, newValue);
+        emit RedeemDelayTimestampSet(redeemDelayTimestamp, newValue);
         redeemDelayTimestamp = newValue;
     }
 
@@ -743,7 +734,7 @@ contract DelayRedeemRouter is
     function _setRedeemPrincipalDelayTimestamp(uint256 newValue) internal {
         require(newValue <= MAX_REDEEM_DELAY_DURATION_TIME, "USR012");
         require(newValue > redeemDelayTimestamp, "USR019");
-        emit redeemPrincipalDelayTimestampSet(
+        emit RedeemPrincipalDelayTimestampSet(
             redeemPrincipalDelayTimestamp,
             newValue
         );
@@ -876,19 +867,19 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice internal function to rebase the value of baseQuota and timestamp.
+     * @notice internal function to rebase the base quota and timestamp for the specific btc token.
      */
     function _rebase(address token) internal {
         uint256 quota = _getQuota(token);
         baseQuotas[token] = quota;
-        lastUpdatedTimestamps[token] = block.timestamp;
+        lastRebaseTimestamps[token] = block.timestamp;
     }
 
     /**
      * @dev determine the valid wrapped and native BTC amount.
-     * @param token the address of the token type
-     * @param amount the amount of the uniBTC token
-     * return the valid amount of the delayedRedeem token type
+     * @param token a specific btc token
+     * @param amount the redeem amount of the uniBTC token
+     * return the valid amount of the delayedRedeem btc token
      */
     function _amounts(
         address token,
@@ -906,12 +897,12 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev get accumulative redeem quota for different token type
-     * @param token the address of the token type
+     * @dev get accumulative redeem quota for different btc token
+     * @param token the specific btc token
      */
     function _getQuota(address token) internal view returns (uint256) {
         uint256 quota = baseQuotas[token] +
-            (block.timestamp - lastUpdatedTimestamps[token]) * numTokensPerSecond[token];
+            (block.timestamp - lastRebaseTimestamps[token]) * numTokensPerSecond[token];
         uint256 maxFreeQuota = tokenDebts[token].totalAmount + maxFreeQuotas[token];
         if (quota <= maxFreeQuota) {
             return (quota);
@@ -921,11 +912,11 @@ contract DelayRedeemRouter is
 
     /**
      * @dev get the claimable debt list from _userRedeems through delayTimestamp
-     * @param recipient the address of the user(who had created the delayedRedeem)
+     * @param recipient the account had created the delayedRedeem
      * @param delayedRedeemsCompletedBefore the number of delayedRedeems that have been completed
      * @param delayTimestamp the delay time for claiming a delayedRedeem
-     * @param maxNumberOfDelayedRedeemsToClaim Used to limit the maximum number of delayedRedeems to loop through claiming.
-     * return the number of delayedRedeems that can be claimed and the DebtTokenAmount array(record the debt token type and amount)
+     * @param maxNumberOfDelayedRedeemsToClaim used to limit the maximum number of delayedRedeems to loop through claiming.
+     * return the number of delayedRedeems that can be claimed and the DebtTokenAmount array(record the debt btc token and amount)
      */
     function _getDebtTokenAmount(
         address recipient,
@@ -1060,30 +1051,25 @@ contract DelayRedeemRouter is
     /**
      * @notice Emitted when the `redeemDelayTimestamp` variable is modified from `previousValue` to `newValue`.
      */
-    event redeemDelayTimestampSet(uint256 previousValue, uint256 newValue);
+    event RedeemDelayTimestampSet(uint256 previousValue, uint256 newValue);
 
     /**
      * @notice Emitted when the `redeemPrincipalDelayTimestamp` variable is modified from `previousValue` to `newValue`.
      */
-    event redeemPrincipalDelayTimestampSet(
+    event RedeemPrincipalDelayTimestampSet(
         uint256 previousValue,
         uint256 newValue
     );
 
     /**
-     * @notice event for adding tokens in wrapBtcList
+     * @notice event for adding tokens in btclist
      */
-    event WrapBtcListAdded(address[] tokens);
+    event BtclistAdded(address[] tokens);
 
     /**
-     * @notice event for removing tokens from wrapBtcList
+     * @notice event for removing tokens from btclist
      */
-    event WrapBtcListRemoved(address[] tokens);
-
-    /**
-     * @notice event for setting the dayCap
-     */
-    event DayCapSet(uint256 previousValue, uint256 newValue);
+    event BtclistRemoved(address[] tokens);
 
     /**
      * @notice event for adding accounts in whitelist
@@ -1120,7 +1106,7 @@ contract DelayRedeemRouter is
     );
 
     /**
-     * @notice event for setting the redeem token amount per second
+     * @notice event for setting the redeem btc token amount per second
      */
     event NumTokensPerSecondSet(
         address token,
