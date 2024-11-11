@@ -224,8 +224,8 @@ def test_claimFromRedeemRouter(deps):
     assert tx.events["DelayedRedeemCreated"]["amount"] == user_real_fbtc_claim_uni
     assert tx.events["DelayedRedeemCreated"]["index"] == 0
     assert (
-        tx.events["DelayedRedeemCreated"]["rate"]
-        == transparent_delay_redeem_router.REDEEM_MANAGE_DEFAULT()
+        tx.events["DelayedRedeemCreated"]["redeemFee"]
+        == fbtc_claim_uni - user_real_fbtc_claim_uni
     )
     assert transparent_uniBTC.balanceOf(user) == user_uniBTC - fbtc_claim_uni
     assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == fbtc_claim_uni
@@ -292,7 +292,7 @@ def test_claimFromRedeemRouter(deps):
     assert tx.events["DelayedRedeemCreated"]["token"] == wbtc_contract
     assert tx.events["DelayedRedeemCreated"]["amount"] == user_real_wbtc_claim_uni
     assert tx.events["DelayedRedeemCreated"]["index"] == 1
-    assert tx.events["DelayedRedeemCreated"]["rate"] == 100
+    assert tx.events["DelayedRedeemCreated"]["redeemFee"] == wbtc_claim_uni - user_real_wbtc_claim_uni
     assert (
         transparent_uniBTC.balanceOf(user)
         == user_uniBTC - fbtc_claim_uni - wbtc_claim_uni
