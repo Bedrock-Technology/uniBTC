@@ -31,6 +31,16 @@ contract DelayRedeemRouter is
     uint256 public constant DAY_MAX_ALLOWED_CAP = 100e8;
 
     /**
+     * @notice define redeem manage rate range, precision to ten thousandths
+     */
+    uint256 public constant REDEEM_MANAGE_RANGE = 10000;
+
+    /**
+     * @notice default redeem manage rate(2%)
+     */
+    uint256 public constant REDEEM_MANAGE_DEFAULT = 200;
+
+    /**
      * @notice Delay enforced by this contract for completing any delayedRedeem, Measured in timestamp,
      * and adjustable by this contract's owner,up to a maximum of `MAX_REDEEM_DELAY_DURATION_TIME`.
      * Minimum value is 0 (i.e. no delay enforced).
@@ -166,6 +176,16 @@ contract DelayRedeemRouter is
      */
     mapping(address => bool) private pausedTokenlist;
 
+    /**
+     * @notice track the redeem manage rate for the contract
+     */
+    uint256 public redeemManageRate;
+
+    /**
+     * @notice track the redeem manage fee for the contract
+     */
+    uint256 public redeemManageFee;
+
     receive() external payable {}
 
     /**
@@ -246,6 +266,7 @@ contract DelayRedeemRouter is
         _setWhitelistEnabled(_whitelistEnabled);
         _setRedeemPrincipalDelayTimestamp(MAX_REDEEM_DELAY_DURATION_TIME);
         _setRedeemDelayTimestamp(_redeemDelayTimestamp);
+        _setRedeemManageRate(REDEEM_MANAGE_DEFAULT);
     }
 
     /**
@@ -391,6 +412,18 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev withdraw the manage fee from the contract
+     * @param _amount the amount of the manage fee
+     * @param _recipient the recipient address of the manage fee
+     */
+    function withdrawManageFee(uint256 _amount, address _recipient)  external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_amount <= redeemManageFee, "USR003");
+        redeemManageFee -= _amount;
+        IERC20(uniBTC).safeTransfer(_recipient, _amount);
+        emit ManageFeeWithdrawn(_recipient, _amount);
+    }
+
+    /**
      * @dev set the redeem amount persecond for each specific btc token
      * @param _tokens the list of the specific btc tokens
      * @param _quotas the list of the redeem amount persecond for each specific btc token
@@ -452,6 +485,15 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev set the redeem manage rate for the contract
+     * @param _newValue the new value for the redeem manage rate,
+     * the redeem manage rate is used to calculate the redeem manage fee
+     */
+    function setRedeemManageRate(uint256 _newValue) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setRedeemManageRate(_newValue);
+    }
+
+    /**
      * ======================================================================================
      *
      * EXTERNAL FUNCTIONS
@@ -478,22 +520,26 @@ contract DelayRedeemRouter is
 
         //lock unibtc in the contract
         IERC20(uniBTC).safeTransferFrom(msg.sender, address(this), amount);
-        uint224 RedeemAmount = uint224(amount);
-        if (RedeemAmount != 0) {
+        if (amount != 0) {
+            // user bill need to pay the redeem manage fee
+            uint224 userRedeemAmount = uint224(amount * (REDEEM_MANAGE_RANGE - redeemManageRate) / REDEEM_MANAGE_RANGE);
+            redeemManageFee += amount - userRedeemAmount;
+
             DelayedRedeem memory delayedRedeem = DelayedRedeem({
-                amount: RedeemAmount,
+                amount: userRedeemAmount,
                 timestampCreated: uint32(block.timestamp),
                 token: token
             });
             _userRedeems[msg.sender].delayedRedeems.push(delayedRedeem);
 
-            tokenDebts[token].totalAmount += amount;
+            tokenDebts[token].totalAmount += userRedeemAmount;
 
             emit DelayedRedeemCreated(
                 msg.sender,
                 token,
-                RedeemAmount,
-                _userRedeems[msg.sender].delayedRedeems.length - 1
+                userRedeemAmount,
+                _userRedeems[msg.sender].delayedRedeems.length - 1,
+                redeemManageRate
             );
         }
     }
@@ -747,6 +793,14 @@ contract DelayRedeemRouter is
     function _setWhitelistEnabled(bool newValue) internal {
         emit WhitelistEnabledSet(whitelistEnabled, newValue);
         whitelistEnabled = newValue;
+    }
+
+    /**
+     * @notice internal function for changing the value of `redeemManageRate`.
+     */
+    function _setRedeemManageRate(uint256 newValue) internal {
+        emit RedeemManageRateSet(redeemManageRate, newValue);
+        redeemManageRate = newValue;
     }
 
     /**
@@ -1009,7 +1063,8 @@ contract DelayRedeemRouter is
         address recipient,
         address token,
         uint256 amount,
-        uint256 index
+        uint256 index,
+        uint256 rate
     );
 
     /**
@@ -1123,4 +1178,14 @@ contract DelayRedeemRouter is
      * @notice event for removing accounts from pausedTokenlist
      */
     event PausedTokenlistRemoved(address[] tokens);
+
+    /**
+     * @notice event for setting the redeem manage rate
+     */
+    event RedeemManageRateSet(uint256 previousValue, uint256 newValue);
+
+    /**
+     * @notice event for withdrawing the manage fee
+     */
+    event ManageFeeWithdrawn(address recipient, uint256 amount);
 }

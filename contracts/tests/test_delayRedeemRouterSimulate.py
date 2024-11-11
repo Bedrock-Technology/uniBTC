@@ -90,11 +90,8 @@ def test_claimFromRedeemRouter(deps):
     # simulate redeem case
     # call redeem router createDelayedRedeem directly
     fbtc_claim_uni = 8 * 10**8
-    fbtc_claim = 8 * 10**8
     wbtc_claim_uni = 10 * 10**8
-    wbtc_claim = 10 * 10**18
     native_claim_uni = 5 * 10**8
-    native_claim = 5 * 10**18
     with brownie.reverts("USR009"):
         transparent_delay_redeem_router.createDelayedRedeem(
             fbtc_contract, fbtc_claim_uni, {"from": user}
@@ -208,11 +205,28 @@ def test_claimFromRedeemRouter(deps):
         fbtc_contract, fbtc_claim_uni, {"from": user}
     )
     # check some status
+    assert (
+        transparent_delay_redeem_router.redeemManageRate()
+        == transparent_delay_redeem_router.REDEEM_MANAGE_DEFAULT()
+    )
+    user_real_fbtc_claim_uni = (
+        fbtc_claim_uni
+        * (
+            transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+            - transparent_delay_redeem_router.redeemManageRate()
+        )
+        / transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+    )
+    print("user_real_fbtc_claim_uni", user_real_fbtc_claim_uni)
     assert "DelayedRedeemCreated" in tx.events
     assert tx.events["DelayedRedeemCreated"]["recipient"] == user
     assert tx.events["DelayedRedeemCreated"]["token"] == fbtc_contract
-    assert tx.events["DelayedRedeemCreated"]["amount"] == fbtc_claim_uni
+    assert tx.events["DelayedRedeemCreated"]["amount"] == user_real_fbtc_claim_uni
     assert tx.events["DelayedRedeemCreated"]["index"] == 0
+    assert (
+        tx.events["DelayedRedeemCreated"]["rate"]
+        == transparent_delay_redeem_router.REDEEM_MANAGE_DEFAULT()
+    )
     assert transparent_uniBTC.balanceOf(user) == user_uniBTC - fbtc_claim_uni
     assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == fbtc_claim_uni
     assert transparent_delay_redeem_router.userRedeemsLength(user) == 1
@@ -221,14 +235,20 @@ def test_claimFromRedeemRouter(deps):
         transparent_delay_redeem_router.tokenDebts(fbtc_contract),
     )
     assert (
-        transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim_uni
+        transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0]
+        == user_real_fbtc_claim_uni
     )
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user, 0) == False
 
     transparent_delay_redeem_router.claimDelayedRedeems({"from": user})
     assert (
-        transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim_uni
+        transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0]
+        == user_real_fbtc_claim_uni
     )
+
+    manageFee = fbtc_claim_uni - user_real_fbtc_claim_uni
+    print("manageFee", manageFee)
+    assert transparent_delay_redeem_router.redeemManageFee() == manageFee
 
     # time travel to 7 days later
     seven_days_travel = seven_day_time_duration + 60 * 60
@@ -249,14 +269,30 @@ def test_claimFromRedeemRouter(deps):
     assert (
         transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == wbtc_claim_uni
     )
+
+    tx = transparent_delay_redeem_router.setRedeemManageRate(100, {"from": owner})
+    assert "RedeemManageRateSet" in tx.events
+    assert tx.events["RedeemManageRateSet"]["previousValue"] == 200
+    assert tx.events["RedeemManageRateSet"]["newValue"] == 100
+    user_real_wbtc_claim_uni = (
+        wbtc_claim_uni
+        * (
+            transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+            - transparent_delay_redeem_router.redeemManageRate()
+        )
+        / transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+    )
+    print("user_real_wbtc_claim_uni", user_real_wbtc_claim_uni)
+
     tx = transparent_delay_redeem_router.createDelayedRedeem(
         wbtc_contract, wbtc_claim_uni, {"from": user}
     )
     assert "DelayedRedeemCreated" in tx.events
     assert tx.events["DelayedRedeemCreated"]["recipient"] == user
     assert tx.events["DelayedRedeemCreated"]["token"] == wbtc_contract
-    assert tx.events["DelayedRedeemCreated"]["amount"] == wbtc_claim_uni
+    assert tx.events["DelayedRedeemCreated"]["amount"] == user_real_wbtc_claim_uni
     assert tx.events["DelayedRedeemCreated"]["index"] == 1
+    assert tx.events["DelayedRedeemCreated"]["rate"] == 100
     assert (
         transparent_uniBTC.balanceOf(user)
         == user_uniBTC - fbtc_claim_uni - wbtc_claim_uni
@@ -267,12 +303,27 @@ def test_claimFromRedeemRouter(deps):
     )
     assert transparent_delay_redeem_router.userRedeemsLength(user) == 2
     assert (
-        transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0] == fbtc_claim_uni
+        transparent_delay_redeem_router.tokenDebts(fbtc_contract)[0]
+        == user_real_fbtc_claim_uni
     )
     assert (
-        transparent_delay_redeem_router.tokenDebts(wbtc_contract)[0] == wbtc_claim_uni
+        transparent_delay_redeem_router.tokenDebts(wbtc_contract)[0]
+        == user_real_wbtc_claim_uni
     )
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user, 1) == False
+    manageFee += wbtc_claim_uni - user_real_wbtc_claim_uni
+    print("manageFee now", manageFee)
+    assert transparent_delay_redeem_router.redeemManageFee() == manageFee
+    print("unibtc balance of accounts[4]", transparent_uniBTC.balanceOf(accounts[4]))
+    tx = transparent_delay_redeem_router.withdrawManageFee(
+        manageFee, accounts[4], {"from": owner}
+    )
+    assert "ManageFeeWithdrawn" in tx.events
+    assert tx.events["ManageFeeWithdrawn"]["recipient"] == accounts[4]
+    assert tx.events["ManageFeeWithdrawn"]["amount"] == manageFee
+    print(
+        "unibtc balance of accounts[4] now", transparent_uniBTC.balanceOf(accounts[4])
+    )
 
     # create native token delayed redeem
     transparent_uniBTC.approve(
@@ -282,6 +333,16 @@ def test_claimFromRedeemRouter(deps):
         transparent_uniBTC.allowance(user, delay_redeem_router_proxy)
         == native_claim_uni
     )
+
+    user_real_native_claim_uni = (
+        native_claim_uni
+        * (
+            transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+            - transparent_delay_redeem_router.redeemManageRate()
+        )
+        / transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+    )
+    print("user_real_native_claim_uni", user_real_native_claim_uni)
     tx = transparent_delay_redeem_router.createDelayedRedeem(
         native_token, native_claim_uni, {"from": user}
     )
@@ -312,7 +373,7 @@ def test_claimFromRedeemRouter(deps):
     tx=transparent_delay_redeem_router.claimPrincipals({'from': user})
     print("burn unibtc amount",transparent_uniBTC.balanceOf(delay_redeem_router_proxy),"user unibtc value",transparent_uniBTC.balanceOf(user))
     userAfterUniBTC = transparent_uniBTC.balanceOf(user)
-    assert userBeforeUniBTC+fbtc_claim_uni + wbtc_claim_uni + native_claim_uni == userAfterUniBTC
+    assert userBeforeUniBTC+ user_real_fbtc_claim_uni + user_real_wbtc_claim_uni + user_real_native_claim_uni == userAfterUniBTC
     """
     print(
         "burn unibtc amount",
@@ -362,33 +423,60 @@ def test_claimFromRedeemRouter(deps):
     assert "DelayedRedeemsClaimed" in tx.events
     assert "DelayedRedeemsCompleted" in tx.events
     assert tx.events["DelayedRedeemsClaimed"][0]["recipient"] == user
-    assert tx.events["DelayedRedeemsClaimed"][0]["amountClaimed"] == fbtc_claim
+    assert (
+        tx.events["DelayedRedeemsClaimed"][0]["amountClaimed"]
+        == user_real_fbtc_claim_uni
+    )
     assert tx.events["DelayedRedeemsClaimed"][0]["token"] == fbtc_contract
     assert tx.events["DelayedRedeemsClaimed"][1]["recipient"] == user
-    assert tx.events["DelayedRedeemsClaimed"][1]["amountClaimed"] == wbtc_claim
+    assert (
+        tx.events["DelayedRedeemsClaimed"][1]["amountClaimed"]
+        == user_real_wbtc_claim_uni
+        * transparent_delay_redeem_router.EXCHANGE_RATE_BASE()
+    )
     assert tx.events["DelayedRedeemsClaimed"][1]["token"] == wbtc_contract
     assert (
         tx.events["DelayedRedeemsCompleted"]["amountBurned"]
-        == fbtc_claim_uni + wbtc_claim_uni + native_claim_uni
+        == user_real_fbtc_claim_uni
+        + user_real_wbtc_claim_uni
+        + user_real_native_claim_uni
     )
     assert tx.events["DelayedRedeemsCompleted"]["delayedRedeemsCompleted"] == 3
-    assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == 0
-    assert wbtc_contract.balanceOf(user) == wbtc_claim
-    assert fbtc_contract.balanceOf(user) == fbtc_claim
-    assert user.balance() == native_origin + native_claim
     assert (
-        web3.eth.get_balance(vault_proxy.address) == vault_native_balance - native_claim
+        transparent_uniBTC.balanceOf(delay_redeem_router_proxy)
+        == transparent_delay_redeem_router.redeemManageFee()
     )
     assert (
-        transparent_delay_redeem_router.tokenDebts(fbtc_contract)[1] == fbtc_claim_uni
+        wbtc_contract.balanceOf(user)
+        == user_real_wbtc_claim_uni
+        * transparent_delay_redeem_router.EXCHANGE_RATE_BASE()
+    )
+    assert fbtc_contract.balanceOf(user) == user_real_fbtc_claim_uni
+    assert (
+        user.balance()
+        == native_origin
+        + user_real_native_claim_uni
+        * transparent_delay_redeem_router.EXCHANGE_RATE_BASE()
     )
     assert (
-        transparent_delay_redeem_router.tokenDebts(wbtc_contract)[1] == wbtc_claim_uni
+        web3.eth.get_balance(vault_proxy.address)
+        == vault_native_balance
+        - user_real_native_claim_uni
+        * transparent_delay_redeem_router.EXCHANGE_RATE_BASE()
     )
     assert (
-        transparent_delay_redeem_router.tokenDebts(native_token)[1] == native_claim_uni
+        transparent_delay_redeem_router.tokenDebts(fbtc_contract)[1]
+        == user_real_fbtc_claim_uni
     )
-    # check the debet status
+    assert (
+        transparent_delay_redeem_router.tokenDebts(wbtc_contract)[1]
+        == user_real_wbtc_claim_uni
+    )
+    assert (
+        transparent_delay_redeem_router.tokenDebts(native_token)[1]
+        == user_real_native_claim_uni
+    )
+    # check the debt status
     assert len(transparent_delay_redeem_router.getUserDelayedRedeems(user)) == 0
 
     # double check the claim logic

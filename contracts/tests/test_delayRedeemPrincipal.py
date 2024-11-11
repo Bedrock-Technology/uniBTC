@@ -104,9 +104,7 @@ def test_claimPrincipalFromRedeemRouter(deps):
     )
     assert tx.events["BtclistRemoved"]["tokens"][0] == wbtc_contract
     assert tx.events["BtclistRemoved"]["tokens"][1] == fbtc_contract
-    tx = transparent_delay_redeem_router.addToBtclist(
-        [wbtc_contract], {"from": owner}
-    )
+    tx = transparent_delay_redeem_router.addToBtclist([wbtc_contract], {"from": owner})
 
     # only vault can burn uniBTC
     transparent_uniBTC.grantRole(
@@ -134,9 +132,18 @@ def test_claimPrincipalFromRedeemRouter(deps):
     tx = transparent_delay_redeem_router.addToWhitelist([user, owner], {"from": owner})
     assert tx.events["WhitelistAdded"]["accounts"][0] == user
     assert tx.events["WhitelistAdded"]["accounts"][1] == owner
-    
-    chain.sleep(one_day_travel+100)
+
+    chain.sleep(one_day_travel + 100)
     chain.mine()
+    user_real_wbtc_claim_uni = (
+        wbtc_claim_uni
+        * (
+            transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+            - transparent_delay_redeem_router.redeemManageRate()
+        )
+        / transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+    )
+    print("user_real_wbtc_claim_uni", user_real_wbtc_claim_uni)
     tx = transparent_delay_redeem_router.createDelayedRedeem(
         wbtc_contract, wbtc_claim_uni, {"from": user}
     )
@@ -202,18 +209,25 @@ def test_claimPrincipalFromRedeemRouter(deps):
     assert tx.events["DelayedRedeemsPrincipalClaimed"][0]["recipient"] == user
     assert (
         tx.events["DelayedRedeemsPrincipalClaimed"][0]["amountClaimed"]
-        == wbtc_claim_uni
+        == user_real_wbtc_claim_uni
     )
     assert tx.events["DelayedRedeemsPrincipalClaimed"][0]["token"] == wbtc_contract
     assert tx.events["DelayedRedeemsPrincipalCompleted"]["recipient"] == user
     assert (
         tx.events["DelayedRedeemsPrincipalCompleted"]["amountPrincipal"]
-        == wbtc_claim_uni
+        == user_real_wbtc_claim_uni
     )
     assert tx.events["DelayedRedeemsPrincipalCompleted"]["delayedRedeemsCompleted"] == 1
-    assert transparent_uniBTC.balanceOf(delay_redeem_router_proxy) == 0
     assert (
-        transparent_delay_redeem_router.tokenDebts(wbtc_contract)[1] == wbtc_claim_uni
+        transparent_uniBTC.balanceOf(delay_redeem_router_proxy)
+        == transparent_delay_redeem_router.redeemManageFee()
+    )
+    assert (
+        transparent_delay_redeem_router.tokenDebts(wbtc_contract)[1]
+        == user_real_wbtc_claim_uni
     )
     assert len(transparent_delay_redeem_router.getUserDelayedRedeems(user)) == 0
-    assert transparent_uniBTC.balanceOf(user) == currentUniAmount + wbtc_claim_uni
+    assert (
+        transparent_uniBTC.balanceOf(user)
+        == currentUniAmount + user_real_wbtc_claim_uni
+    )
