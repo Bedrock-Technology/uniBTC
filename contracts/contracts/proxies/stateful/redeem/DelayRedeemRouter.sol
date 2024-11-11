@@ -800,6 +800,7 @@ contract DelayRedeemRouter is
      * @notice internal function for changing the value of `redeemManageRate`.
      */
     function _setRedeemManageRate(uint256 newValue) internal {
+        require(newValue <= REDEEM_MANAGE_RANGE, "USR011");
         emit RedeemManageRateSet(redeemManageRate, newValue);
         redeemManageRate = newValue;
     }
