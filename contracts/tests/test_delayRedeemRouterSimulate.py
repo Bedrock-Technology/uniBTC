@@ -97,29 +97,29 @@ def test_claimFromRedeemRouter(deps):
             fbtc_contract, fbtc_claim_uni, {"from": user}
         )
 
-    transparent_delay_redeem_router.addToWhitelist([user], {"from": owner})
+    transparent_delay_redeem_router.addAccountsToWhitelist([user], {"from": owner})
     with brownie.reverts("SYS003"):
         transparent_delay_redeem_router.createDelayedRedeem(
             fbtc_contract, fbtc_claim_uni, {"from": user}
         )
 
-    tx = transparent_delay_redeem_router.setNumTokensPerSecond(
+    tx = transparent_delay_redeem_router.setRedeemQuotaPerSecond(
         [fbtc_contract, wbtc_contract, native_token],
         [fbtc_speed, wbtc_speed, native_speed],
         {"from": owner},
     )
-    assert "NumTokensPerSecondSet" in tx.events
-    assert tx.events["NumTokensPerSecondSet"][0]["token"] == fbtc_contract
-    assert tx.events["NumTokensPerSecondSet"][0]["previousValue"] == 0
-    assert tx.events["NumTokensPerSecondSet"][0]["newValue"] == fbtc_speed
-    assert tx.events["NumTokensPerSecondSet"][1]["token"] == wbtc_contract
-    assert tx.events["NumTokensPerSecondSet"][1]["previousValue"] == 0
-    assert tx.events["NumTokensPerSecondSet"][1]["newValue"] == wbtc_speed
-    assert tx.events["NumTokensPerSecondSet"][2]["token"] == native_token
-    assert tx.events["NumTokensPerSecondSet"][2]["previousValue"] == 0
-    assert tx.events["NumTokensPerSecondSet"][2]["newValue"] == native_speed
+    assert "RedeemQuotaPerSecondSet" in tx.events
+    assert tx.events["RedeemQuotaPerSecondSet"][0]["token"] == fbtc_contract
+    assert tx.events["RedeemQuotaPerSecondSet"][0]["previousValue"] == 0
+    assert tx.events["RedeemQuotaPerSecondSet"][0]["newValue"] == fbtc_speed
+    assert tx.events["RedeemQuotaPerSecondSet"][1]["token"] == wbtc_contract
+    assert tx.events["RedeemQuotaPerSecondSet"][1]["previousValue"] == 0
+    assert tx.events["RedeemQuotaPerSecondSet"][1]["newValue"] == wbtc_speed
+    assert tx.events["RedeemQuotaPerSecondSet"][2]["token"] == native_token
+    assert tx.events["RedeemQuotaPerSecondSet"][2]["previousValue"] == 0
+    assert tx.events["RedeemQuotaPerSecondSet"][2]["newValue"] == native_speed
 
-    tx = transparent_delay_redeem_router.setMaxFreeQuotas(
+    tx = transparent_delay_redeem_router.setMaxFreeQuotasForTokens(
         [fbtc_contract, wbtc_contract, native_token],
         [fbtc_max_free, wbtc_max_free, native_max_free],
         {"from": owner},
@@ -135,24 +135,24 @@ def test_claimFromRedeemRouter(deps):
     assert tx.events["MaxFreeQuotasSet"][2]["previousValue"] == 0
     assert tx.events["MaxFreeQuotasSet"][2]["newValue"] == native_max_free
 
-    transparent_delay_redeem_router.addToBtclist(
+    transparent_delay_redeem_router.addTokensToBtclist(
         [fbtc_contract, wbtc_contract, native_token], {"from": owner}
     )
-    transparent_delay_redeem_router.removeFromBtclist(
+    transparent_delay_redeem_router.removeTokensFromBtclist(
         [fbtc_contract, wbtc_contract, native_token], {"from": owner}
     )
-    transparent_delay_redeem_router.addToBtclist(
+    transparent_delay_redeem_router.addTokensToBtclist(
         [fbtc_contract, wbtc_contract, native_token], {"from": owner}
     )
 
-    transparent_delay_redeem_router.addToPausedTokenlist(
+    transparent_delay_redeem_router.pauseTokens(
         [fbtc_contract], {"from": owner}
     )
     with brownie.reverts("SYS003"):
         transparent_delay_redeem_router.createDelayedRedeem(
             fbtc_contract, fbtc_claim_uni, {"from": user}
         )
-    transparent_delay_redeem_router.removeFromPausedTokenlist(
+    transparent_delay_redeem_router.unpauseTokens(
         [fbtc_contract], {"from": owner}
     )
     with brownie.reverts("USR010"):
@@ -206,16 +206,16 @@ def test_claimFromRedeemRouter(deps):
     )
     # check some status
     assert (
-        transparent_delay_redeem_router.redeemManageRate()
-        == transparent_delay_redeem_router.REDEEM_MANAGE_DEFAULT()
+        transparent_delay_redeem_router.redeemFeeRate()
+        == transparent_delay_redeem_router.DEFAULT_REDEEM_FEE_RATE()
     )
     user_real_fbtc_claim_uni = (
         fbtc_claim_uni
         * (
-            transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
-            - transparent_delay_redeem_router.redeemManageRate()
+            transparent_delay_redeem_router.REDEEM_FEE_RATE_RANGE()
+            - transparent_delay_redeem_router.redeemFeeRate()
         )
-        / transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+        / transparent_delay_redeem_router.REDEEM_FEE_RATE_RANGE()
     )
     print("user_real_fbtc_claim_uni", user_real_fbtc_claim_uni)
     assert "DelayedRedeemCreated" in tx.events
@@ -248,7 +248,7 @@ def test_claimFromRedeemRouter(deps):
 
     manageFee = fbtc_claim_uni - user_real_fbtc_claim_uni
     print("manageFee", manageFee)
-    assert transparent_delay_redeem_router.redeemManageFee() == manageFee
+    assert transparent_delay_redeem_router.managementFee() == manageFee
 
     # time travel to 7 days later
     seven_days_travel = seven_day_time_duration + 60 * 60
@@ -257,7 +257,7 @@ def test_claimFromRedeemRouter(deps):
     chain.mine()
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user, 0) == True
 
-    tx = transparent_delay_redeem_router.setNumTokensPerSecond(
+    tx = transparent_delay_redeem_router.setRedeemQuotaPerSecond(
         [wbtc_contract],
         [wbtc_speed],
         {"from": owner},
@@ -270,17 +270,17 @@ def test_claimFromRedeemRouter(deps):
         transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == wbtc_claim_uni
     )
 
-    tx = transparent_delay_redeem_router.setRedeemManageRate(100, {"from": owner})
-    assert "RedeemManageRateSet" in tx.events
-    assert tx.events["RedeemManageRateSet"]["previousValue"] == 200
-    assert tx.events["RedeemManageRateSet"]["newValue"] == 100
+    tx = transparent_delay_redeem_router.setRedeemFeeRate(100, {"from": owner})
+    assert "RedeemFeeRateSet" in tx.events
+    assert tx.events["RedeemFeeRateSet"]["previousValue"] == 200
+    assert tx.events["RedeemFeeRateSet"]["newValue"] == 100
     user_real_wbtc_claim_uni = (
         wbtc_claim_uni
         * (
-            transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
-            - transparent_delay_redeem_router.redeemManageRate()
+            transparent_delay_redeem_router.REDEEM_FEE_RATE_RANGE()
+            - transparent_delay_redeem_router.redeemFeeRate()
         )
-        / transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+        / transparent_delay_redeem_router.REDEEM_FEE_RATE_RANGE()
     )
     print("user_real_wbtc_claim_uni", user_real_wbtc_claim_uni)
 
@@ -313,14 +313,14 @@ def test_claimFromRedeemRouter(deps):
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user, 1) == False
     manageFee += wbtc_claim_uni - user_real_wbtc_claim_uni
     print("manageFee now", manageFee)
-    assert transparent_delay_redeem_router.redeemManageFee() == manageFee
+    assert transparent_delay_redeem_router.managementFee() == manageFee
     print("unibtc balance of accounts[4]", transparent_uniBTC.balanceOf(accounts[4]))
-    tx = transparent_delay_redeem_router.withdrawManageFee(
+    tx = transparent_delay_redeem_router.withdrawManagementFee(
         manageFee, accounts[4], {"from": owner}
     )
-    assert "ManageFeeWithdrawn" in tx.events
-    assert tx.events["ManageFeeWithdrawn"]["recipient"] == accounts[4]
-    assert tx.events["ManageFeeWithdrawn"]["amount"] == manageFee
+    assert "ManagementFeeWithdrawn" in tx.events
+    assert tx.events["ManagementFeeWithdrawn"]["recipient"] == accounts[4]
+    assert tx.events["ManagementFeeWithdrawn"]["amount"] == manageFee
     print(
         "unibtc balance of accounts[4] now", transparent_uniBTC.balanceOf(accounts[4])
     )
@@ -337,10 +337,10 @@ def test_claimFromRedeemRouter(deps):
     user_real_native_claim_uni = (
         native_claim_uni
         * (
-            transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
-            - transparent_delay_redeem_router.redeemManageRate()
+            transparent_delay_redeem_router.REDEEM_FEE_RATE_RANGE()
+            - transparent_delay_redeem_router.redeemFeeRate()
         )
-        / transparent_delay_redeem_router.REDEEM_MANAGE_RANGE()
+        / transparent_delay_redeem_router.REDEEM_FEE_RATE_RANGE()
     )
     print("user_real_native_claim_uni", user_real_native_claim_uni)
     tx = transparent_delay_redeem_router.createDelayedRedeem(
@@ -406,17 +406,17 @@ def test_claimFromRedeemRouter(deps):
     )
     print("burn unibtc amount", transparent_uniBTC.balanceOf(delay_redeem_router_proxy))
     native_origin = user.balance()
-    transparent_delay_redeem_router.addToBlacklist([user], {"from": owner})
+    transparent_delay_redeem_router.addAccountsToBlacklist([user], {"from": owner})
     with brownie.reverts("USR009"):
         transparent_delay_redeem_router.claimDelayedRedeems({"from": user})
-    transparent_delay_redeem_router.removeFromBlacklist([user], {"from": owner})
+    transparent_delay_redeem_router.removeAccountsFromBlacklist([user], {"from": owner})
 
-    transparent_delay_redeem_router.addToPausedTokenlist(
+    transparent_delay_redeem_router.pauseTokens(
         [fbtc_contract], {"from": owner}
     )
     with brownie.reverts("SYS003"):
         tx = transparent_delay_redeem_router.claimDelayedRedeems({"from": user})
-    transparent_delay_redeem_router.removeFromPausedTokenlist(
+    transparent_delay_redeem_router.unpauseTokens(
         [fbtc_contract], {"from": owner}
     )
     tx = transparent_delay_redeem_router.claimDelayedRedeems({"from": user})
@@ -444,7 +444,7 @@ def test_claimFromRedeemRouter(deps):
     assert tx.events["DelayedRedeemsCompleted"]["delayedRedeemsCompleted"] == 3
     assert (
         transparent_uniBTC.balanceOf(delay_redeem_router_proxy)
-        == transparent_delay_redeem_router.redeemManageFee()
+        == transparent_delay_redeem_router.managementFee()
     )
     assert (
         wbtc_contract.balanceOf(user)
