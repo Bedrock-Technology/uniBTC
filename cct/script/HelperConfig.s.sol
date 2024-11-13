@@ -94,8 +94,8 @@ contract HelperConfig is Script {
             chainSelector: 5009297550715157269,
             router: 0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D,
             rmnProxy: 0x411dE17f12D1A34ecC7F45f49844626267c75e81,
-            tokenAdminRegistry: address(0),
-            registryModuleOwnerCustom: address(0),
+            tokenAdminRegistry: 0xb22764f98dD05c789929716D677382Df22C05Cb6,
+            registryModuleOwnerCustom: 0x13022e3e6C77524308BD56AEd716E88311b2E533,
             tokenAddress: 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
         });
         return ethConfig;
@@ -106,8 +106,8 @@ contract HelperConfig is Script {
             chainSelector: 4949039107694359620,
             router: 0x141fa059441E0ca23ce184B6A78bafD2A517DdE8,
             rmnProxy: 0xC311a21e6fEf769344EB1515588B9d535662a145,
-            tokenAdminRegistry: address(0),
-            registryModuleOwnerCustom: address(0),
+            tokenAdminRegistry: 0x39AE1032cF4B334a1Ed41cdD0833bdD7c7E7751E,
+            registryModuleOwnerCustom: 0x818792C958Ac33C01c58D5026cEc91A86e9071d7,
             tokenAddress: 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a
         });
         return arbConfig;
@@ -118,8 +118,8 @@ contract HelperConfig is Script {
             chainSelector: 11344663589394136015,
             router: 0x34B03Cb9086d7D758AC55af71584F81A598759FE,
             rmnProxy: 0x9e09697842194f77d315E0907F1Bda77922e8f84,
-            tokenAdminRegistry: address(0),
-            registryModuleOwnerCustom: address(0),
+            tokenAdminRegistry: 0x736Fd8660c443547a85e4Eaf70A49C1b7Bb008fc,
+            registryModuleOwnerCustom: 0xfa4C3f58D2659AFe4F964C023e6AfD183C374435,
             tokenAddress: 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a
         });
         return bscConfig;
@@ -130,8 +130,8 @@ contract HelperConfig is Script {
             chainSelector: 3734403246176062136,
             router: 0x3206695CaE29952f4b0c22a169725a865bc8Ce0f,
             rmnProxy: 0x55b3FCa23EdDd28b1f5B4a3C7975f63EFd2d06CE,
-            tokenAdminRegistry: address(0),
-            registryModuleOwnerCustom: address(0),
+            tokenAdminRegistry: 0x657c42abE4CD8aa731Aec322f871B5b90cf6274F,
+            registryModuleOwnerCustom: 0x3E2f636Ff8e12728638C4c4b34d282a7fDF0e5B8,
             tokenAddress: 0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
         });
         return optConfig;
@@ -142,8 +142,8 @@ contract HelperConfig is Script {
             chainSelector: 7264351850409363825,
             router: 0x24C40f13E77De2aFf37c280BA06c333531589bf1,
             rmnProxy: 0xA0876B45271615c737781185C2B5ada60ed2D2B9,
-            tokenAdminRegistry: address(0),
-            registryModuleOwnerCustom: address(0),
+            tokenAdminRegistry: 0xB4b40c010A547dff6A22d94bC2C1c1e745b62aB2,
+            registryModuleOwnerCustom: 0xF54d38E4844c5f6E5Aab0AF7557ef5cb1cA4253e,
             tokenAddress: 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a
         });
         return modeConfig;

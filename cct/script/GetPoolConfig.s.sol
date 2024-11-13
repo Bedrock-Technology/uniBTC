@@ -24,7 +24,7 @@ contract GetPoolConfig is Script {
         // Fetch the list of supported chains
         uint64[] memory remoteChains = poolContract.getSupportedChains();
 
-        console.log("Fetching configuration for pool at address:", poolAddress);
+        console.log("Fetching %s configuration for pool at address:", chainName, poolAddress);
 
         for (uint256 i = 0; i < remoteChains.length; i++) {
             uint64 chainSelector = remoteChains[i];
@@ -45,6 +45,7 @@ contract GetPoolConfig is Script {
 
             // Get human-readable chain name (if possible)
             console.log("\nConfiguration for Remote Chain:", uint256(chainSelector));
+            console.log("  ChainName:", HelperUtils.getChainName(chainSelector));
 
             console.log("  Allowed: true"); // Since all chains in getSupportedChains() are considered allowed
             console.log("  Remote Pool Address:", remotePoolAddress);

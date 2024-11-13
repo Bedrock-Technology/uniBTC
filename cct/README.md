@@ -2,41 +2,50 @@
 
 ## BurnMintTokenPool
 
-1. ETH
+- ETH
 
 ```bash
 forge script script/DeployBurnMintTokenPool.s.sol --rpc-url $RPC_ETH --account $DEPLOYER --broadcast --verify --verifier-url $RPC_ETH_SCAN --etherscan-api-key $KEY_ETH_SCAN --delay 30
 ```
 
-2. BSC
+- BSC
 
 ```bash
 forge script script/DeployBurnMintTokenPool.s.sol --rpc-url $RPC_BSC --account $DEPLOYER --broadcast --verify --verifier-url $RPC_BSC_SCAN --etherscan-api-key $KEY_BSC_SCAN --delay 30
 ```
 
-3. ARB
+- ARB
 
 ```bash
-
 forge script script/DeployBurnMintTokenPool.s.sol --rpc-url $RPC_ARB --account $DEPLOYER --broadcast --verify --verifier-url $RPC_ARB_SCAN --etherscan-api-key $KEY_ARB_SCAN --delay 30
 ```
 
-4. OP
+- OP
 
 ```bash
 forge script script/DeployBurnMintTokenPool.s.sol --rpc-url $RPC_OP --account $DEPLOYER --broadcast --verify --verifier-url $RPC_OP_SCAN --etherscan-api-key $KEY_OP_SCAN --delay 30
 ```
 
-# Setup
+- Mode
+
+```bash
+forge script script/DeployBurnMintTokenPool.s.sol --rpc-url $RPC_MODE --account $DEPLOYER --broadcast --verify --verifier-url $RPC_MODE_SCAN --etherscan-api-key $KEY_MODE_SCAN --delay 30
+```
 
 ## Claim Admin Role
 
 ask chainlink Team for manual registration  
-fork test below
+fork test below, tokenAdminRegistry's owner on ETH is 0x44835bBBA9D40DEDa9b64858095EcFB2693c9449
 
 ```bash
 cast rpc anvil_impersonateAccount {tokenAdminRegistry owner address} --rpc-url $RPC_ETH
-forge script script/ClaimAdmin.s.sol --rpc-url $RPC_ETH --broadcast --unlocked {tokenAdminRegistry owner address}
+forge script script/ClaimAdmin.s.sol --rpc-url $RPC_ETH --broadcast --sender {tokenAdminRegistry owner address} --unlocked {tokenAdminRegistry owner address}
+```
+
+## Accept Admin Role
+
+```bash
+forge script script/AcceptAdminRole.s.sol --rpc-url $RPC_ETH --account $OWNER --broadcast
 ```
 
 ## Set Token Pool
@@ -47,13 +56,7 @@ Setting the pool to address(0) effectively delists the token from CCIP. Setting 
 forge script script/SetPool.s.sol --rpc-url $RPC_ETH --account $OWNER --broadcast
 ```
 
-## Accept Admin Role
-
-```bash
-forge script script/AcceptAdminRole.s.sol --rpc-url $RPC_ETH --account $OWNER --broadcast
-```
-
-## Applye Chain Updates
+## Apply Chain Updates
 
 | Parameter       | Description                                                                                                                                       |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -71,7 +74,65 @@ forge script script/AcceptAdminRole.s.sol --rpc-url $RPC_ETH --account $OWNER --
 applyChain(uint256 \_remoteChainId, bool \_allowed, RateLimiter.Config memory \_outbound, RateLimiter.Config memory \_inbound)
 
 ```bash
-forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 123 true "(true,123,123)" "(true,456,456)" --rpc-url $RPC_ETH --account $OWNER --broadcast
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 123 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_ETH --account $OWNER --broadcast
+```
+
+### for eth
+
+- to bnbChain
+
+```bash
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 56 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_ETH --account $OWNER --broadcast
+```
+
+- to arb
+
+```bash
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 42161 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_ETH --account $OWNER --broadcast
+```
+
+### for bnbChain
+
+- to eth
+
+```bash
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 1 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_BSC --account $OWNER --broadcast
+```
+
+- to arb
+
+```bash
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 42161 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_BSC --account $OWNER --broadcast
+```
+
+### for arb
+
+- to eth
+
+```bash
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 1 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_ARB --account $OWNER --broadcast
+```
+
+- to bnbChain
+
+```bash
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 56 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_ARB --account $OWNER --broadcast
+```
+
+### for op
+
+- to mode
+
+```bash
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 34443 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_OP --account $OWNER --broadcast
+```
+
+### for mode
+
+- to op
+
+```bash
+forge script script/ApplyChainUpdates.s.sol --sig 'applyChain(uint256,bool,(bool,uint128,uint128),(bool,uint128,uint128))' 10 true "(true,200000000,2315)" "(true,200000000,2315)" --rpc-url $RPC_MODE --account $OWNER --broadcast
 ```
 
 ## Update RateLimit(OPTIONAL)
@@ -85,7 +146,7 @@ forge script script/UpdateRateLimiters.s.sol --sig 'updateRL(uint256,(bool,uint1
 ## Get Pool Config
 
 ```bash
-forge script script/GetPoolConfig.s.sol --rpc-url $RPC_ETH
+forge script script/GetPoolConfig.s.sol --rpc-url $RPC_ETH --account $OWNER
 ```
 
 ## Transfer Tokens
