@@ -290,13 +290,13 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev Sets a new delay redeem timestamp.
-     * @param _newValue New delay time, after which users can claim the delayed redeem.
+     * @dev Sets a new delay redeem duration.
+     * @param _newDuration New delay time, after which users can claim the delayed redeem.
      */
     function setRedeemDelayDuration(
-        uint256 _newValue
+        uint256 _newDuration
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setRedeemDelayDuration(_newValue);
+        _setRedeemDelayDuration(_newDuration);
     }
 
     /**
@@ -475,23 +475,23 @@ contract DelayRedeemRouter is
 
     /**
      * @dev Sets a new delay for principal redemption.
-     * @param _newValue New delay time after which users can claim the principal.
+     * @param _newDuration New delay time after which users can claim the principal.
      */
     function setRedeemPrincipalDelayDuration(
-        uint256 _newValue
+        uint256 _newDuration
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setRedeemPrincipalDelayDuration(_newValue);
+        _setRedeemPrincipalDelayDuration(_newDuration);
     }
 
     /**
      * @dev Sets the redeem management rate for the contract.
-     * @param _newValue The new value for the redeem management rate,
+     * @param _newFeeRate The new value for the redeem management rate,
      * which is used to calculate the redemption management fee.
      */
     function setRedeemFeeRate(
-        uint256 _newValue
+        uint256 _newFeeRate
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setRedeemFeeRate(_newValue);
+        _setRedeemFeeRate(_newFeeRate);
     }
 
     /**
@@ -777,46 +777,46 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Internal function to update `redeemDelayDuration`. Includes a sanity check and emits an event.
-     * @param newValue The new timestamp value for the redemption delay.
+     * @param newDuration The new delayed time for the redemption delay.
      */
-    function _setRedeemDelayDuration(uint256 newValue) internal {
-        require(newValue <= MAX_REDEEM_DELAY_DURATION, "USR012");
-        require(newValue < redeemPrincipalDelayDuration, "USR019");
-        emit RedeemDelayDurationSet(redeemDelayDuration, newValue);
-        redeemDelayDuration = newValue;
+    function _setRedeemDelayDuration(uint256 newDuration) internal {
+        require(newDuration <= MAX_REDEEM_DELAY_DURATION, "USR012");
+        require(newDuration < redeemPrincipalDelayDuration, "USR019");
+        emit RedeemDelayDurationSet(redeemDelayDuration, newDuration);
+        redeemDelayDuration = newDuration;
     }
 
     /**
      * @notice Internal function to update `redeemPrincipalDelayDuration`. Includes a sanity check and emits an event.
-     * @param newValue The new timestamp value for the redemption principal delay.
+     * @param newDuration The new delayed time for the redemption principal delay.
      */
-    function _setRedeemPrincipalDelayDuration(uint256 newValue) internal {
-        require(newValue <= MAX_REDEEM_DELAY_DURATION, "USR012");
-        require(newValue > redeemDelayDuration, "USR019");
+    function _setRedeemPrincipalDelayDuration(uint256 newDuration) internal {
+        require(newDuration <= MAX_REDEEM_DELAY_DURATION, "USR012");
+        require(newDuration > redeemDelayDuration, "USR019");
         emit RedeemPrincipalDelayDurationSet(
             redeemPrincipalDelayDuration,
-            newValue
+            newDuration
         );
-        redeemPrincipalDelayDuration = newValue;
+        redeemPrincipalDelayDuration = newDuration;
     }
 
     /**
      * @notice Internal function to update `whitelistEnabled`.
-     * @param newValue The new boolean value for whitelist status.
+     * @param enabled The new boolean value for whitelist status.
      */
-    function _setWhitelistEnabled(bool newValue) internal {
-        emit WhitelistEnabledSet(whitelistEnabled, newValue);
-        whitelistEnabled = newValue;
+    function _setWhitelistEnabled(bool enabled) internal {
+        emit WhitelistEnabledSet(enabled);
+        whitelistEnabled = enabled;
     }
 
     /**
      * @notice Internal function to update `redeemFeeRate`.
-     * @param newValue The new management rate for redemption.
+     * @param newFeeRate The new management rate for redemption.
      */
-    function _setRedeemFeeRate(uint256 newValue) internal {
-        require(newValue <= REDEEM_FEE_RATE_RANGE, "USR011");
-        emit RedeemFeeRateSet(redeemFeeRate, newValue);
-        redeemFeeRate = newValue;
+    function _setRedeemFeeRate(uint256 newFeeRate) internal {
+        require(newFeeRate <= REDEEM_FEE_RATE_RANGE, "USR011");
+        emit RedeemFeeRateSet(redeemFeeRate, newFeeRate);
+        redeemFeeRate = newFeeRate;
     }
 
     /**
@@ -846,7 +846,7 @@ contract DelayRedeemRouter is
                 numToClaim;
 
             // transfer the delayedRedeems to the recipient
-            uint256 burn_amount = 0;
+            uint256 burnAmount = 0;
             bytes memory data;
             for (uint256 i = 0; i < debtAmounts.length; i++) {
                 address token = debtAmounts[i].token;
@@ -854,7 +854,7 @@ contract DelayRedeemRouter is
                 uint256 amountUniBTC = debtAmounts[i].amount;
                 uint256 amountToSend = _amounts(token, amountUniBTC);
                 tokenDebts[token].claimedAmount += amountUniBTC;
-                burn_amount += amountUniBTC;
+                burnAmount += amountUniBTC;
                 if (token == NATIVE_BTC) {
                     // transfer native token to the recipient
                     IVault(vault).execute(address(this), "", amountToSend);
@@ -877,19 +877,19 @@ contract DelayRedeemRouter is
             }
 
             //burn claimed amount unibtc
-            if (IERC20(uniBTC).allowance(address(this), vault) < burn_amount) {
-                IERC20(uniBTC).safeApprove(vault, burn_amount);
+            if (IERC20(uniBTC).allowance(address(this), vault) < burnAmount) {
+                IERC20(uniBTC).safeApprove(vault, burnAmount);
             }
             data = abi.encodeWithSelector(
                 IMintableContract.burnFrom.selector,
                 address(this),
-                burn_amount
+                burnAmount
             );
             IVault(vault).execute(uniBTC, data, 0);
 
             emit DelayedRedeemsCompleted(
                 recipient,
-                burn_amount,
+                burnAmount,
                 delayedRedeemsCompletedBefore + numToClaim
             );
         }
@@ -1003,13 +1003,13 @@ contract DelayRedeemRouter is
         uint256 delayTimestamp,
         uint256 maxNumberOfDelayedRedeemsToClaim
     ) internal view returns (uint256, DebtTokenAmount[] memory) {
-        uint256 _userRedeemsLength = _userRedeems[recipient]
+        uint256 redeemsLength = _userRedeems[recipient]
             .delayedRedeems
             .length;
         uint256 numToClaim = 0;
         while (
             numToClaim < maxNumberOfDelayedRedeemsToClaim &&
-            (delayedRedeemsCompletedBefore + numToClaim) < _userRedeemsLength
+            (delayedRedeemsCompletedBefore + numToClaim) < redeemsLength
         ) {
             // copy delayedRedeem from storage to memory
             DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
@@ -1131,14 +1131,14 @@ contract DelayRedeemRouter is
     /**
      * @notice Event emitted when the `redeemDelayDuration` variable is modified.
      */
-    event RedeemDelayDurationSet(uint256 previousValue, uint256 newValue);
+    event RedeemDelayDurationSet(uint256 previousDuration, uint256 newDuration);
 
     /**
      * @notice Event emitted when the `redeemPrincipalDelayDuration` variable is modified.
      */
     event RedeemPrincipalDelayDurationSet(
-        uint256 previousValue,
-        uint256 newValue
+        uint256 previousDuration,
+        uint256 newDuration
     );
 
     /**
@@ -1164,7 +1164,7 @@ contract DelayRedeemRouter is
     /**
      * @notice Event emitted when the whitelistEnabled flag is set.
      */
-    event WhitelistEnabledSet(bool previousValue, bool newValue);
+    event WhitelistEnabledSet(bool enabled);
 
     /**
      * @notice Event emitted when accounts are added to the blacklist.
@@ -1181,8 +1181,8 @@ contract DelayRedeemRouter is
      */
     event MaxFreeQuotasSet(
         address token,
-        uint256 previousValue,
-        uint256 newValue
+        uint256 previousQuota,
+        uint256 newQuota
     );
 
     /**
@@ -1190,8 +1190,8 @@ contract DelayRedeemRouter is
      */
     event RedeemQuotaPerSecondSet(
         address token,
-        uint256 previousValue,
-        uint256 newValue
+        uint256 previousQuota,
+        uint256 newQuota
     );
 
     /**
@@ -1207,7 +1207,7 @@ contract DelayRedeemRouter is
     /**
      * @notice Event emitted when the redeem fee rate is set.
      */
-    event RedeemFeeRateSet(uint256 previousValue, uint256 newValue);
+    event RedeemFeeRateSet(uint256 previousFeeRate, uint256 newFeeRate);
 
     /**
      * @notice Event emitted when the management fee is withdrawn.

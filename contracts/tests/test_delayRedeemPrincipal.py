@@ -173,10 +173,10 @@ def test_claimPrincipalFromRedeemRouter(deps):
     )
     assert "RedeemPrincipalDelayDurationSet" in tx.events
     assert (
-        tx.events["RedeemPrincipalDelayDurationSet"]["previousValue"]
+        tx.events["RedeemPrincipalDelayDurationSet"]["previousDuration"]
         == transparent_delay_redeem_router.MAX_REDEEM_DELAY_DURATION()
     )
-    assert tx.events["RedeemPrincipalDelayDurationSet"]["newValue"] == validTimestamp
+    assert tx.events["RedeemPrincipalDelayDurationSet"]["newDuration"] == validTimestamp
 
     # time travel to 7 days later
     # update timestamp
