@@ -108,32 +108,32 @@ def test_claimFromRedeemRouter(deps):
         [fbtc_speed, wbtc_speed, native_speed],
         {"from": owner},
     )
-    assert "RedeemQuotaPerSecondSet" in tx.events
-    assert tx.events["RedeemQuotaPerSecondSet"][0]["token"] == fbtc_contract
-    assert tx.events["RedeemQuotaPerSecondSet"][0]["previousQuota"] == 0
-    assert tx.events["RedeemQuotaPerSecondSet"][0]["newQuota"] == fbtc_speed
-    assert tx.events["RedeemQuotaPerSecondSet"][1]["token"] == wbtc_contract
-    assert tx.events["RedeemQuotaPerSecondSet"][1]["previousQuota"] == 0
-    assert tx.events["RedeemQuotaPerSecondSet"][1]["newQuota"] == wbtc_speed
-    assert tx.events["RedeemQuotaPerSecondSet"][2]["token"] == native_token
-    assert tx.events["RedeemQuotaPerSecondSet"][2]["previousQuota"] == 0
-    assert tx.events["RedeemQuotaPerSecondSet"][2]["newQuota"] == native_speed
+    assert "RateSet" in tx.events
+    assert tx.events["RateSet"][0]["token"] == fbtc_contract
+    assert tx.events["RateSet"][0]["previousQuota"] == 0
+    assert tx.events["RateSet"][0]["newQuota"] == fbtc_speed
+    assert tx.events["RateSet"][1]["token"] == wbtc_contract
+    assert tx.events["RateSet"][1]["previousQuota"] == 0
+    assert tx.events["RateSet"][1]["newQuota"] == wbtc_speed
+    assert tx.events["RateSet"][2]["token"] == native_token
+    assert tx.events["RateSet"][2]["previousQuota"] == 0
+    assert tx.events["RateSet"][2]["newQuota"] == native_speed
 
     tx = transparent_delay_redeem_router.setMaxQuotaForTokens(
         [fbtc_contract, wbtc_contract, native_token],
         [fbtc_max_free, wbtc_max_free, native_max_free],
         {"from": owner},
     )
-    assert "MaxFreeQuotasSet" in tx.events
-    assert tx.events["MaxFreeQuotasSet"][0]["token"] == fbtc_contract
-    assert tx.events["MaxFreeQuotasSet"][0]["previousQuota"] == 0
-    assert tx.events["MaxFreeQuotasSet"][0]["newQuota"] == fbtc_max_free
-    assert tx.events["MaxFreeQuotasSet"][1]["token"] == wbtc_contract
-    assert tx.events["MaxFreeQuotasSet"][1]["previousQuota"] == 0
-    assert tx.events["MaxFreeQuotasSet"][1]["newQuota"] == wbtc_max_free
-    assert tx.events["MaxFreeQuotasSet"][2]["token"] == native_token
-    assert tx.events["MaxFreeQuotasSet"][2]["previousQuota"] == 0
-    assert tx.events["MaxFreeQuotasSet"][2]["newQuota"] == native_max_free
+    assert "MaxQuotaSet" in tx.events
+    assert tx.events["MaxQuotaSet"][0]["token"] == fbtc_contract
+    assert tx.events["MaxQuotaSet"][0]["previousQuota"] == 0
+    assert tx.events["MaxQuotaSet"][0]["newQuota"] == fbtc_max_free
+    assert tx.events["MaxQuotaSet"][1]["token"] == wbtc_contract
+    assert tx.events["MaxQuotaSet"][1]["previousQuota"] == 0
+    assert tx.events["MaxQuotaSet"][1]["newQuota"] == wbtc_max_free
+    assert tx.events["MaxQuotaSet"][2]["token"] == native_token
+    assert tx.events["MaxQuotaSet"][2]["previousQuota"] == 0
+    assert tx.events["MaxQuotaSet"][2]["newQuota"] == native_max_free
 
     transparent_delay_redeem_router.addTokensToBtclist(
         [fbtc_contract, wbtc_contract, native_token], {"from": owner}

@@ -29,7 +29,7 @@ contract DelayRedeemRouter is
     /**
      * @notice The duration time set to 30 days (60 * 60 * 24 * 30 = 2,592,000).
      */
-    uint256 public constant MAX_REDEEM_DELAY_DURATION = 2592000;
+    uint256 public constant MAX_REDEEM_DELAY = 2592000;
 
     /**
      * @notice The maximum amount of uniBTC that can be burned in a single day for each specific BTC token.
@@ -48,10 +48,10 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Delay for completing any delayed redeem, measured in timestamps.
-     * Adjustable by the contract owner, with a maximum limit of `MAX_REDEEM_DELAY_DURATION`.
+     * Adjustable by the contract owner, with a maximum limit of `MAX_REDEEM_DELAY`.
      * The minimum value is 0 (i.e., no enforced delay).
      */
-    uint256 public redeemDelayDuration;
+    uint256 public redeemDelay;
 
     /**
      * @notice The address of the ERC20 uniBTC token.
@@ -168,7 +168,7 @@ contract DelayRedeemRouter is
     /**
      * @notice Principal redemption period.
      */
-    uint256 public redeemPrincipalDelayDuration;
+    uint256 public redeemPrincipalDelay;
 
     /**
      * @notice Mapping to store the blacklist status of accounts.
@@ -246,14 +246,14 @@ contract DelayRedeemRouter is
      * @param _defaultAdmin The default admin address (RBAC).
      * @param _uniBTC The address of the ERC20 uniBTC token.
      * @param _vault The address of the Bedrock Vault contract.
-     * @param _redeemDelayDuration The delay time before claiming a delayed redeem.
+     * @param _redeemDelay The delay time before claiming a delayed redeem.
      * @param _whitelistEnabled Enables or disables the whitelist feature.
      */
     function initialize(
         address _defaultAdmin,
         address _uniBTC,
         address _vault,
-        uint256 _redeemDelayDuration,
+        uint256 _redeemDelay,
         bool _whitelistEnabled
     ) public initializer {
         __AccessControl_init();
@@ -270,8 +270,8 @@ contract DelayRedeemRouter is
         uniBTC = _uniBTC;
         vault = _vault;
         _setWhitelistEnabled(_whitelistEnabled);
-        _setRedeemPrincipalDelayDuration(MAX_REDEEM_DELAY_DURATION);
-        _setRedeemDelayDuration(_redeemDelayDuration);
+        _setRedeemPrincipalDelay(MAX_REDEEM_DELAY);
+        _setRedeemDelay(_redeemDelay);
         _setRedeemFeeRate(DEFAULT_REDEEM_FEE_RATE);
     }
 
@@ -290,13 +290,13 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @dev Sets a new delay redeem duration.
-     * @param _newDuration New delay time, after which users can claim the delayed redeem.
+     * @dev Sets a new delay redeem delay.
+     * @param _newDelay New delay time, after which users can claim the delayed redeem.
      */
-    function setRedeemDelayDuration(
-        uint256 _newDuration
+    function setRedeemDelay(
+        uint256 _newDelay
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setRedeemDelayDuration(_newDuration);
+        _setRedeemDelay(_newDelay);
     }
 
     /**
@@ -425,11 +425,7 @@ contract DelayRedeemRouter is
         require(_tokens.length == _quotas.length, "SYS006");
         for (uint256 i = 0; i < _tokens.length; i++) {
             require(_quotas[i] < MAX_DAILY_REDEEM_CAP, "USR013");
-            emit MaxFreeQuotasSet(
-                _tokens[i],
-                maxQuotas[_tokens[i]],
-                _quotas[i]
-            );
+            emit MaxQuotaSet(_tokens[i], maxQuotas[_tokens[i]], _quotas[i]);
             maxQuotas[_tokens[i]] = _quotas[i];
         }
     }
@@ -466,23 +462,19 @@ contract DelayRedeemRouter is
             // For this instance, the old quota per second must be applied to rebase the quota
             // and update the timestamp.
             _rebase(_tokens[i]);
-            emit RedeemQuotaPerSecondSet(
-                _tokens[i],
-                quotaRates[_tokens[i]],
-                _quotas[i]
-            );
+            emit RateSet(_tokens[i], quotaRates[_tokens[i]], _quotas[i]);
             quotaRates[_tokens[i]] = _quotas[i];
         }
     }
 
     /**
      * @dev Sets a new delay for principal redemption.
-     * @param _newDuration New delay time after which users can claim the principal.
+     * @param _newDelay New delay time after which users can claim the principal.
      */
-    function setRedeemPrincipalDelayDuration(
-        uint256 _newDuration
+    function setRedeemPrincipalDelay(
+        uint256 _newDelay
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setRedeemPrincipalDelayDuration(_newDuration);
+        _setRedeemPrincipalDelay(_newDelay);
     }
 
     /**
@@ -559,7 +551,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Claims delayed redemptions that have passed the `redeemDelayDuration` period for `msg.sender`.
+     * @notice Claims delayed redemptions that have passed the `redeemDelay` period for `msg.sender`.
      * @dev The caller controls when funds are released to `msg.sender` once the redemption is claimable.
      * @param maxNumberOfDelayedRedeemsToClaim Limits the maximum number of delayed redemptions to claim in a loop.
      */
@@ -570,7 +562,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Claims all delayed redemptions that have passed the `redeemDelayDuration` period for `msg.sender`.
+     * @notice Claims all delayed redemptions that have passed the `redeemDelay` period for `msg.sender`.
      */
     function claimDelayedRedeems()
         external
@@ -582,7 +574,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Claims delayed redemption principals that have passed the `redeemPrincipalDelayDuration` period.
+     * @notice Claims delayed redemption principals that have passed the `redeemPrincipalDelay` period.
      * @dev The caller controls when funds are released once the principal becomes claimable.
      * @param maxNumberOfDelayedRedeemsToClaim Limits the maximum number of delayed redemption principals to claim in a loop.
      */
@@ -593,7 +585,7 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Claims all delayed redemption principals that have passed the `redeemPrincipalDelayDuration` period.
+     * @notice Claims all delayed redemption principals that have passed the `redeemPrincipalDelay` period.
      */
     function claimPrincipals()
         external
@@ -650,7 +642,7 @@ contract DelayRedeemRouter is
         return ((index >= _userRedeems[user].delayedRedeemsCompleted) &&
             (block.timestamp >=
                 _userRedeems[user].delayedRedeems[index].createdAt +
-                    redeemDelayDuration));
+                    redeemDelay));
     }
 
     /**
@@ -663,11 +655,11 @@ contract DelayRedeemRouter is
         address user,
         uint256 index
     ) external view returns (bool) {
-        return ((redeemPrincipalDelayDuration > redeemDelayDuration &&
+        return ((redeemPrincipalDelay > redeemDelay &&
             index >= _userRedeems[user].delayedRedeemsCompleted) &&
             (block.timestamp >=
                 _userRedeems[user].delayedRedeems[index].createdAt +
-                    redeemPrincipalDelayDuration));
+                    redeemPrincipalDelay));
     }
 
     /**
@@ -719,9 +711,7 @@ contract DelayRedeemRouter is
 
             // Check if the delayed redemption can be claimed, and break the loop as soon as a delayed
             // redemption is found that cannot be claimed.
-            if (
-                block.timestamp < delayedRedeem.createdAt + redeemDelayDuration
-            ) {
+            if (block.timestamp < delayedRedeem.createdAt + redeemDelay) {
                 firstNonClaimableRedeemIndex = i;
                 break;
             }
@@ -748,11 +738,11 @@ contract DelayRedeemRouter is
     }
 
     /**
-     * @notice Retrieves the available redemption cap for a specific BTC token.
-     * @param token The BTC token address for which to get the available redemption cap.
-     * @return The available redemption cap for the specified token.
+     * @notice Retrieves the current redemption cap for a specific BTC token.
+     * @param token The BTC token address for which to get the current redemption cap.
+     * @return The current redemption cap for the specified token.
      */
-    function getAvailableCap(address token) external view returns (uint256) {
+    function getCurrentCap(address token) external view returns (uint256) {
         if (btclist[token]) {
             return (_getQuota(token) - tokenDebts[token].totalDebts);
         }
@@ -795,28 +785,25 @@ contract DelayRedeemRouter is
      */
 
     /**
-     * @notice Internal function to update `redeemDelayDuration`. Includes a sanity check and emits an event.
-     * @param newDuration The new delayed time for the redemption delay.
+     * @notice Internal function to update `redeemDelay`. Includes a sanity check and emits an event.
+     * @param newDelay The new delayed time for the redemption delay.
      */
-    function _setRedeemDelayDuration(uint256 newDuration) internal {
-        require(newDuration <= MAX_REDEEM_DELAY_DURATION, "USR012");
-        require(newDuration < redeemPrincipalDelayDuration, "USR019");
-        emit RedeemDelayDurationSet(redeemDelayDuration, newDuration);
-        redeemDelayDuration = newDuration;
+    function _setRedeemDelay(uint256 newDelay) internal {
+        require(newDelay <= MAX_REDEEM_DELAY, "USR012");
+        require(newDelay < redeemPrincipalDelay, "USR019");
+        emit RedeemDelaySet(redeemDelay, newDelay);
+        redeemDelay = newDelay;
     }
 
     /**
-     * @notice Internal function to update `redeemPrincipalDelayDuration`. Includes a sanity check and emits an event.
-     * @param newDuration The new delayed time for the redemption principal delay.
+     * @notice Internal function to update `redeemPrincipalDelay`. Includes a sanity check and emits an event.
+     * @param newDelay The new delayed time for the redemption principal delay.
      */
-    function _setRedeemPrincipalDelayDuration(uint256 newDuration) internal {
-        require(newDuration <= MAX_REDEEM_DELAY_DURATION, "USR012");
-        require(newDuration > redeemDelayDuration, "USR019");
-        emit RedeemPrincipalDelayDurationSet(
-            redeemPrincipalDelayDuration,
-            newDuration
-        );
-        redeemPrincipalDelayDuration = newDuration;
+    function _setRedeemPrincipalDelay(uint256 newDelay) internal {
+        require(newDelay <= MAX_REDEEM_DELAY, "USR012");
+        require(newDelay > redeemDelay, "USR019");
+        emit RedeemPrincipalDelaySet(redeemPrincipalDelay, newDelay);
+        redeemPrincipalDelay = newDelay;
     }
 
     /**
@@ -858,7 +845,7 @@ contract DelayRedeemRouter is
         (numToClaim, debtAmounts) = _getDebtTokenAmount(
             recipient,
             delayedRedeemsCompletedBefore,
-            redeemDelayDuration,
+            redeemDelay,
             maxNumberOfDelayedRedeemsToClaim
         );
 
@@ -942,7 +929,7 @@ contract DelayRedeemRouter is
         (numToClaim, debtAmounts) = _getDebtTokenAmount(
             recipient,
             delayedRedeemsCompletedBefore,
-            redeemPrincipalDelayDuration,
+            redeemPrincipalDelay,
             maxNumberOfDelayedRedeemsToClaim
         );
 
@@ -1165,17 +1152,14 @@ contract DelayRedeemRouter is
     );
 
     /**
-     * @notice Event emitted when the `redeemDelayDuration` variable is modified.
+     * @notice Event emitted when the `redeemDelay` variable is modified.
      */
-    event RedeemDelayDurationSet(uint256 previousDuration, uint256 newDuration);
+    event RedeemDelaySet(uint256 previousDelay, uint256 newDelay);
 
     /**
-     * @notice Event emitted when the `redeemPrincipalDelayDuration` variable is modified.
+     * @notice Event emitted when the `redeemPrincipalDelay` variable is modified.
      */
-    event RedeemPrincipalDelayDurationSet(
-        uint256 previousDuration,
-        uint256 newDuration
-    );
+    event RedeemPrincipalDelaySet(uint256 previousDelay, uint256 newDelay);
 
     /**
      * @notice Event emitted when tokens are added to the BTC list.
@@ -1213,22 +1197,14 @@ contract DelayRedeemRouter is
     event BlacklistRemoved(address[] accounts);
 
     /**
-     * @notice Event emitted when the maximum free quota is set.
+     * @notice Event emitted when the maximum quota is set.
      */
-    event MaxFreeQuotasSet(
-        address token,
-        uint256 previousQuota,
-        uint256 newQuota
-    );
+    event MaxQuotaSet(address token, uint256 previousQuota, uint256 newQuota);
 
     /**
      * @notice Event emitted when the number of redeemable BTC tokens per second is set.
      */
-    event RedeemQuotaPerSecondSet(
-        address token,
-        uint256 previousQuota,
-        uint256 newQuota
-    );
+    event RateSet(address token, uint256 previousQuota, uint256 newQuota);
 
     /**
      * @notice Event emitted when tokens are added to the paused token list.
