@@ -419,19 +419,19 @@ def test_claimFromRedeemRouter(deps):
     assert "DelayedRedeemsCompleted" in tx.events
     assert tx.events["DelayedRedeemsClaimed"][0]["recipient"] == user
     assert (
-        tx.events["DelayedRedeemsClaimed"][0]["amountClaimed"]
+        tx.events["DelayedRedeemsClaimed"][0]["claimedAmount"]
         == user_real_fbtc_claim_uni
     )
     assert tx.events["DelayedRedeemsClaimed"][0]["token"] == fbtc_contract
     assert tx.events["DelayedRedeemsClaimed"][1]["recipient"] == user
     assert (
-        tx.events["DelayedRedeemsClaimed"][1]["amountClaimed"]
+        tx.events["DelayedRedeemsClaimed"][1]["claimedAmount"]
         == user_real_wbtc_claim_uni
         * transparent_delay_redeem_router.EXCHANGE_RATE_BASE()
     )
     assert tx.events["DelayedRedeemsClaimed"][1]["token"] == wbtc_contract
     assert (
-        tx.events["DelayedRedeemsCompleted"]["amountBurned"]
+        tx.events["DelayedRedeemsCompleted"]["burnedAmount"]
         == user_real_fbtc_claim_uni
         + user_real_wbtc_claim_uni
         + user_real_native_claim_uni

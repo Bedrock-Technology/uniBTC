@@ -98,11 +98,11 @@ contract DelayRedeemRouter is
     /**
      * @notice Struct for tracking the total and claimed debt amounts for a specific BTC token.
      * @param totalDebts The total debt amount for a specific BTC token.
-     * @param claimedAmount The total claimed debt amount for a specific BTC token.
+     * @param totalCleared The total cleared debt amount for a specific BTC token.
      */
     struct TokenDebtInfo {
         uint256 totalDebts;
-        uint256 claimedAmount;
+        uint256 totalCleared;
     }
 
     /**
@@ -864,10 +864,10 @@ contract DelayRedeemRouter is
             for (uint256 i = 0; i < debtAmounts.length; i++) {
                 address token = debtAmounts[i].token;
                 require(!pausedTokens[token], "SYS003");
-                uint256 amountUniBTC = debtAmounts[i].amount;
-                uint256 amountToSend = _amounts(token, amountUniBTC);
-                tokenDebts[token].claimedAmount += amountUniBTC;
-                burnAmount += amountUniBTC;
+                uint256 uniBTCAmount = debtAmounts[i].amount;
+                uint256 amountToSend = _amounts(token, uniBTCAmount);
+                tokenDebts[token].totalCleared += uniBTCAmount;
+                burnAmount += uniBTCAmount;
                 if (token == NATIVE_BTC) {
                     // Transfer the native token to the recipient.
                     IVault(vault).execute(address(this), "", amountToSend);
@@ -945,13 +945,13 @@ contract DelayRedeemRouter is
             uint256 amountToSend = 0;
             for (uint256 i = 0; i < debtAmounts.length; i++) {
                 address token = debtAmounts[i].token;
-                uint256 amountUniBTC = debtAmounts[i].amount;
-                tokenDebts[token].claimedAmount += amountUniBTC;
-                amountToSend += amountUniBTC;
+                uint256 uniBTCAmount = debtAmounts[i].amount;
+                tokenDebts[token].totalCleared += uniBTCAmount;
+                amountToSend += uniBTCAmount;
                 emit DelayedRedeemsPrincipalClaimed(
                     recipient,
                     token,
-                    amountUniBTC
+                    uniBTCAmount
                 );
             }
             IERC20(uniBTC).safeTransfer(recipient, amountToSend);
@@ -1121,7 +1121,7 @@ contract DelayRedeemRouter is
     event DelayedRedeemsClaimed(
         address recipient,
         address token,
-        uint256 amountClaimed
+        uint256 claimedAmount
     );
 
     /**
@@ -1130,7 +1130,7 @@ contract DelayRedeemRouter is
     event DelayedRedeemsPrincipalClaimed(
         address recipient,
         address token,
-        uint256 amountClaimed
+        uint256 claimedAmount
     );
 
     /**
@@ -1138,7 +1138,7 @@ contract DelayRedeemRouter is
      */
     event DelayedRedeemsCompleted(
         address recipient,
-        uint256 amountBurned,
+        uint256 burnedAmount,
         uint256 delayedRedeemsCompleted
     );
 
@@ -1147,7 +1147,7 @@ contract DelayRedeemRouter is
      */
     event DelayedRedeemsPrincipalCompleted(
         address recipient,
-        uint256 amountPrincipal,
+        uint256 principalAmount,
         uint256 delayedRedeemsCompleted
     );
 
