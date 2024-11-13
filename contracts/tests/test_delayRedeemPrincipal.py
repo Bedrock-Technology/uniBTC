@@ -164,23 +164,23 @@ def test_claimPrincipalFromRedeemRouter(deps):
     # set redeemPrincipalDelayTimestamp
     invalidTimestamp = 2592000 + 100
     with brownie.reverts("USR012"):
-        tx = transparent_delay_redeem_router.setRedeemPrincipalDelayDuration(
+        tx = transparent_delay_redeem_router.setRedeemPrincipalDelay(
             invalidTimestamp, {"from": owner}
         )
     validTimestamp = 2 * 604800
-    tx = transparent_delay_redeem_router.setRedeemPrincipalDelayDuration(
+    tx = transparent_delay_redeem_router.setRedeemPrincipalDelay(
         validTimestamp, {"from": owner}
     )
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user, 0) == True
     assert (
         transparent_delay_redeem_router.canClaimDelayedRedeemPrincipal(user, 0) == False
     )
-    assert "RedeemPrincipalDelayDurationSet" in tx.events
+    assert "RedeemPrincipalDelaySet" in tx.events
     assert (
-        tx.events["RedeemPrincipalDelayDurationSet"]["previousDuration"]
-        == transparent_delay_redeem_router.MAX_REDEEM_DELAY_DURATION()
+        tx.events["RedeemPrincipalDelaySet"]["previousDelay"]
+        == transparent_delay_redeem_router.MAX_REDEEM_DELAY()
     )
-    assert tx.events["RedeemPrincipalDelayDurationSet"]["newDuration"] == validTimestamp
+    assert tx.events["RedeemPrincipalDelaySet"]["newDelay"] == validTimestamp
 
     # time travel to 7 days later
     # update timestamp
