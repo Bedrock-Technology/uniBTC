@@ -97,13 +97,13 @@ def test_claimFromRedeemRouter(deps):
             fbtc_contract, fbtc_claim_uni, {"from": user}
         )
 
-    transparent_delay_redeem_router.addAccountsToWhitelist([user], {"from": owner})
+    transparent_delay_redeem_router.addToWhitelist([user], {"from": owner})
     with brownie.reverts("SYS003"):
         transparent_delay_redeem_router.createDelayedRedeem(
             fbtc_contract, fbtc_claim_uni, {"from": user}
         )
 
-    tx = transparent_delay_redeem_router.setRedeemQuotaPerSecond(
+    tx = transparent_delay_redeem_router.setQuotaRates(
         [fbtc_contract, wbtc_contract, native_token],
         [fbtc_speed, wbtc_speed, native_speed],
         {"from": owner},
@@ -119,7 +119,7 @@ def test_claimFromRedeemRouter(deps):
     assert tx.events["RedeemQuotaPerSecondSet"][2]["previousQuota"] == 0
     assert tx.events["RedeemQuotaPerSecondSet"][2]["newQuota"] == native_speed
 
-    tx = transparent_delay_redeem_router.setMaxFreeQuotasForTokens(
+    tx = transparent_delay_redeem_router.setMaxQuotaForTokens(
         [fbtc_contract, wbtc_contract, native_token],
         [fbtc_max_free, wbtc_max_free, native_max_free],
         {"from": owner},
@@ -145,16 +145,12 @@ def test_claimFromRedeemRouter(deps):
         [fbtc_contract, wbtc_contract, native_token], {"from": owner}
     )
 
-    transparent_delay_redeem_router.pauseTokens(
-        [fbtc_contract], {"from": owner}
-    )
+    transparent_delay_redeem_router.pauseTokens([fbtc_contract], {"from": owner})
     with brownie.reverts("SYS003"):
         transparent_delay_redeem_router.createDelayedRedeem(
             fbtc_contract, fbtc_claim_uni, {"from": user}
         )
-    transparent_delay_redeem_router.unpauseTokens(
-        [fbtc_contract], {"from": owner}
-    )
+    transparent_delay_redeem_router.unpauseTokens([fbtc_contract], {"from": owner})
     with brownie.reverts("USR010"):
         transparent_delay_redeem_router.createDelayedRedeem(
             fbtc_contract, fbtc_claim_uni, {"from": user}
@@ -257,7 +253,7 @@ def test_claimFromRedeemRouter(deps):
     chain.mine()
     assert transparent_delay_redeem_router.canClaimDelayedRedeem(user, 0) == True
 
-    tx = transparent_delay_redeem_router.setRedeemQuotaPerSecond(
+    tx = transparent_delay_redeem_router.setQuotaRates(
         [wbtc_contract],
         [wbtc_speed],
         {"from": owner},
@@ -292,7 +288,10 @@ def test_claimFromRedeemRouter(deps):
     assert tx.events["DelayedRedeemCreated"]["token"] == wbtc_contract
     assert tx.events["DelayedRedeemCreated"]["amount"] == user_real_wbtc_claim_uni
     assert tx.events["DelayedRedeemCreated"]["index"] == 1
-    assert tx.events["DelayedRedeemCreated"]["redeemFee"] == wbtc_claim_uni - user_real_wbtc_claim_uni
+    assert (
+        tx.events["DelayedRedeemCreated"]["redeemFee"]
+        == wbtc_claim_uni - user_real_wbtc_claim_uni
+    )
     assert (
         transparent_uniBTC.balanceOf(user)
         == user_uniBTC - fbtc_claim_uni - wbtc_claim_uni
@@ -406,19 +405,15 @@ def test_claimFromRedeemRouter(deps):
     )
     print("burn unibtc amount", transparent_uniBTC.balanceOf(delay_redeem_router_proxy))
     native_origin = user.balance()
-    transparent_delay_redeem_router.addAccountsToBlacklist([user], {"from": owner})
+    transparent_delay_redeem_router.addToBlacklist([user], {"from": owner})
     with brownie.reverts("USR009"):
         transparent_delay_redeem_router.claimDelayedRedeems({"from": user})
-    transparent_delay_redeem_router.removeAccountsFromBlacklist([user], {"from": owner})
+    transparent_delay_redeem_router.removeFromBlacklist([user], {"from": owner})
 
-    transparent_delay_redeem_router.pauseTokens(
-        [fbtc_contract], {"from": owner}
-    )
+    transparent_delay_redeem_router.pauseTokens([fbtc_contract], {"from": owner})
     with brownie.reverts("SYS003"):
         tx = transparent_delay_redeem_router.claimDelayedRedeems({"from": user})
-    transparent_delay_redeem_router.unpauseTokens(
-        [fbtc_contract], {"from": owner}
-    )
+    transparent_delay_redeem_router.unpauseTokens([fbtc_contract], {"from": owner})
     tx = transparent_delay_redeem_router.claimDelayedRedeems({"from": user})
     assert "DelayedRedeemsClaimed" in tx.events
     assert "DelayedRedeemsCompleted" in tx.events

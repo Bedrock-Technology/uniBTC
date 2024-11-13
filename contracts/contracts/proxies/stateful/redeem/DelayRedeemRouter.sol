@@ -66,12 +66,12 @@ contract DelayRedeemRouter is
     /**
      * @notice Struct for storing delayed redeem information.
      * @param amount The amount of the delayed redeem for a specific BTC token.
-     * @param timestampCreated The timestamp at which the `DelayedRedeem` was created.
+     * @param createdAt The timestamp at which the `DelayedRedeem` was created.
      * @param token The address of a specific BTC token.
      */
     struct DelayedRedeem {
         uint224 amount;
-        uint32 timestampCreated;
+        uint32 createdAt;
         address token;
     }
 
@@ -97,11 +97,11 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Struct for tracking the total and claimed debt amounts for a specific BTC token.
-     * @param totalAmount The total debt amount for a specific BTC token.
+     * @param totalDebts The total debt amount for a specific BTC token.
      * @param claimedAmount The total claimed debt amount for a specific BTC token.
      */
     struct TokenDebtInfo {
-        uint256 totalAmount;
+        uint256 totalDebts;
         uint256 claimedAmount;
     }
 
@@ -135,19 +135,19 @@ contract DelayRedeemRouter is
     bool public whitelistEnabled;
 
     /**
-     * @notice The maximum free quota for tokens per redemption.
+     * @notice The maximum quota for tokens per redemption.
      */
-    mapping(address => uint256) public maxFreeQuotas;
+    mapping(address => uint256) public maxQuotas;
 
     /**
-     * @notice The base redeem quota for different BTC tokens over a defined historical timestamp duration.
+     * @notice Redeem quota base for different BTC tokens over a defined historical timestamp duration.
      */
-    mapping(address => uint256) public baseQuotas;
+    mapping(address => uint256) public quotaBases;
 
     /**
      * @notice The redeem amount per second for each specific BTC token.
      */
-    mapping(address => uint256) public numTokensPerSecond;
+    mapping(address => uint256) public quotaRates;
 
     /**
      * @notice Records the last rebase timestamp for each specific BTC token.
@@ -178,9 +178,9 @@ contract DelayRedeemRouter is
 
     /**
      * @notice Mapping to store the status of paused tokens.
-     * Only tokens not in the pausedTokenList can be used for redemption or specific BTC token claims.
+     * Only tokens not in the `pausedTokens` can be used for redemption or specific BTC token claims.
      */
-    mapping(address => bool) private pausedTokenlist;
+    mapping(address => bool) private pausedTokens;
 
     /**
      * @notice Tracks the user redeem fee rate for the contract.
@@ -339,7 +339,7 @@ contract DelayRedeemRouter is
      * @dev Adds accounts to the whitelist, allowing them to redeem with uniBTC.
      * @param _accounts List of accounts to be added to the whitelist.
      */
-    function addAccountsToWhitelist(
+    function addToWhitelist(
         address[] calldata _accounts
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _accounts.length; i++) {
@@ -352,7 +352,7 @@ contract DelayRedeemRouter is
      * @dev Removes accounts from the whitelist, restricting their redemption access.
      * @param _accounts List of accounts to be removed from the whitelist.
      */
-    function removeAccountsFromWhitelist(
+    function removeFromWhitelist(
         address[] calldata _accounts
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _accounts.length; i++) {
@@ -365,7 +365,7 @@ contract DelayRedeemRouter is
      * @dev Adds accounts to the blacklist, preventing them from claiming delayed redeems.
      * @param _accounts List of accounts to be blacklisted.
      */
-    function addAccountsToBlacklist(
+    function addToBlacklist(
         address[] calldata _accounts
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _accounts.length; i++) {
@@ -378,7 +378,7 @@ contract DelayRedeemRouter is
      * @dev Removes accounts from the blacklist, allowing them to claim delayed redeems.
      * @param _accounts List of accounts to be removed from the blacklist.
      */
-    function removeAccountsFromBlacklist(
+    function removeFromBlacklist(
         address[] calldata _accounts
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _accounts.length; i++) {
@@ -395,9 +395,9 @@ contract DelayRedeemRouter is
         address[] calldata _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
-            pausedTokenlist[_tokens[i]] = true;
+            pausedTokens[_tokens[i]] = true;
         }
-        emit PausedTokenlistAdded(_tokens);
+        emit TokensPaused(_tokens);
     }
 
     /**
@@ -408,17 +408,17 @@ contract DelayRedeemRouter is
         address[] calldata _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
-            pausedTokenlist[_tokens[i]] = false;
+            pausedTokens[_tokens[i]] = false;
         }
-        emit PausedTokenlistRemoved(_tokens);
+        emit TokensUnpaused(_tokens);
     }
 
     /**
-     * @dev Sets the maximum free quota for each redeemable token type.
+     * @dev Sets the maximum quota for each redeemable token type.
      * @param _tokens List of token addresses.
-     * @param _quotas List of maximum free quotas for each token.
+     * @param _quotas List of maximum quota for each token.
      */
-    function setMaxFreeQuotasForTokens(
+    function setMaxQuotaForTokens(
         address[] calldata _tokens,
         uint256[] calldata _quotas
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -427,10 +427,10 @@ contract DelayRedeemRouter is
             require(_quotas[i] < MAX_DAILY_REDEEM_CAP, "USR013");
             emit MaxFreeQuotasSet(
                 _tokens[i],
-                maxFreeQuotas[_tokens[i]],
+                maxQuotas[_tokens[i]],
                 _quotas[i]
             );
-            maxFreeQuotas[_tokens[i]] = _quotas[i];
+            maxQuotas[_tokens[i]] = _quotas[i];
         }
     }
 
@@ -452,9 +452,9 @@ contract DelayRedeemRouter is
     /**
      * @dev Sets the redeem amount per second for each specific BTC token.
      * @param _tokens List of BTC tokens.
-     * @param _quotas List of redeem amounts per second for each BTC token.
+     * @param _quotas Number of tokens per second.
      */
-    function setRedeemQuotaPerSecond(
+    function setQuotaRates(
         address[] calldata _tokens,
         uint256[] calldata _quotas
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -468,10 +468,10 @@ contract DelayRedeemRouter is
             _rebase(_tokens[i]);
             emit RedeemQuotaPerSecondSet(
                 _tokens[i],
-                numTokensPerSecond[_tokens[i]],
+                quotaRates[_tokens[i]],
                 _quotas[i]
             );
-            numTokensPerSecond[_tokens[i]] = _quotas[i];
+            quotaRates[_tokens[i]] = _quotas[i];
         }
     }
 
@@ -518,9 +518,9 @@ contract DelayRedeemRouter is
         // 1. Validate the legality of the token and amount, then update the redemption baseline by
         //    adjusting the base quota and timestamp.
         //================================================================================================
-        require(btclist[token] && !pausedTokenlist[token], "SYS003");
+        require(btclist[token] && !pausedTokens[token], "SYS003");
         uint256 quota = _getQuota(token);
-        require(quota >= amount + tokenDebts[token].totalAmount, "USR010");
+        require(quota >= amount + tokenDebts[token].totalDebts, "USR010");
 
         // This time, the quota and timestamp need to be rebased.
         _rebase(token);
@@ -541,12 +541,12 @@ contract DelayRedeemRouter is
 
             DelayedRedeem memory delayedRedeem = DelayedRedeem({
                 amount: userRedeemAmount,
-                timestampCreated: uint32(block.timestamp),
+                createdAt: uint32(block.timestamp),
                 token: token
             });
             _userRedeems[msg.sender].delayedRedeems.push(delayedRedeem);
 
-            tokenDebts[token].totalAmount += userRedeemAmount;
+            tokenDebts[token].totalDebts += userRedeemAmount;
 
             emit DelayedRedeemCreated(
                 msg.sender,
@@ -649,7 +649,7 @@ contract DelayRedeemRouter is
     ) external view returns (bool) {
         return ((index >= _userRedeems[user].delayedRedeemsCompleted) &&
             (block.timestamp >=
-                _userRedeems[user].delayedRedeems[index].timestampCreated +
+                _userRedeems[user].delayedRedeems[index].createdAt +
                     redeemDelayDuration));
     }
 
@@ -666,7 +666,7 @@ contract DelayRedeemRouter is
         return ((redeemPrincipalDelayDuration > redeemDelayDuration &&
             index >= _userRedeems[user].delayedRedeemsCompleted) &&
             (block.timestamp >=
-                _userRedeems[user].delayedRedeems[index].timestampCreated +
+                _userRedeems[user].delayedRedeems[index].createdAt +
                     redeemPrincipalDelayDuration));
     }
 
@@ -710,6 +710,9 @@ contract DelayRedeemRouter is
 
         uint256 firstNonClaimableRedeemIndex = userDelayedRedeemsLength;
 
+        //------------------------------------------------------------------------------------------
+        // 1. Find the first delayed redemption that cannot be claimed.
+        //------------------------------------------------------------------------------------------
         for (uint256 i = 0; i < userDelayedRedeemsLength; i++) {
             DelayedRedeem memory delayedRedeem = _userRedeems[user]
                 .delayedRedeems[delayedRedeemsCompleted + i];
@@ -717,13 +720,18 @@ contract DelayRedeemRouter is
             // Check if the delayed redemption can be claimed, and break the loop as soon as a delayed
             // redemption is found that cannot be claimed.
             if (
-                block.timestamp <
-                delayedRedeem.timestampCreated + redeemDelayDuration
+                block.timestamp < delayedRedeem.createdAt + redeemDelayDuration
             ) {
                 firstNonClaimableRedeemIndex = i;
                 break;
             }
         }
+
+        //------------------------------------------------------------------------------------------
+        // 2. Create an array containing all claimable delayed redemptions for the user.
+        //    This array will only include redemptions where the required delay has passed,
+        //    making them claimable.
+        //------------------------------------------------------------------------------------------
         uint256 numberOfClaimableRedeems = firstNonClaimableRedeemIndex;
         DelayedRedeem[] memory claimableDelayedRedeems = new DelayedRedeem[](
             numberOfClaimableRedeems
@@ -746,7 +754,7 @@ contract DelayRedeemRouter is
      */
     function getAvailableCap(address token) external view returns (uint256) {
         if (btclist[token]) {
-            return (_getQuota(token) - tokenDebts[token].totalAmount);
+            return (_getQuota(token) - tokenDebts[token].totalDebts);
         }
         return (0);
     }
@@ -868,7 +876,7 @@ contract DelayRedeemRouter is
             bytes memory data;
             for (uint256 i = 0; i < debtAmounts.length; i++) {
                 address token = debtAmounts[i].token;
-                require(!pausedTokenlist[token], "SYS003");
+                require(!pausedTokens[token], "SYS003");
                 uint256 amountUniBTC = debtAmounts[i].amount;
                 uint256 amountToSend = _amounts(token, amountUniBTC);
                 tokenDebts[token].claimedAmount += amountUniBTC;
@@ -974,7 +982,7 @@ contract DelayRedeemRouter is
      */
     function _rebase(address token) internal {
         uint256 quota = _getQuota(token);
-        baseQuotas[token] = quota;
+        quotaBases[token] = quota;
         lastRebaseTimestamps[token] = block.timestamp;
     }
 
@@ -1004,11 +1012,10 @@ contract DelayRedeemRouter is
      * @param token The specific BTC token.
      */
     function _getQuota(address token) internal view returns (uint256) {
-        uint256 quota = baseQuotas[token] +
+        uint256 quota = quotaBases[token] +
             (block.timestamp - lastRebaseTimestamps[token]) *
-            numTokensPerSecond[token];
-        uint256 maxFreeQuota = tokenDebts[token].totalAmount +
-            maxFreeQuotas[token];
+            quotaRates[token];
+        uint256 maxFreeQuota = tokenDebts[token].totalDebts + maxQuotas[token];
         if (quota <= maxFreeQuota) {
             return (quota);
         }
@@ -1045,10 +1052,7 @@ contract DelayRedeemRouter is
 
             // Check if each delayedRedeem is claimable, and exit the loop immediately
             // once a non-claimable delayedRedeem is encountered.
-            if (
-                block.timestamp <
-                delayedRedeem.timestampCreated + delayTimestamp
-            ) {
+            if (block.timestamp < delayedRedeem.createdAt + delayTimestamp) {
                 break;
             }
 
@@ -1229,12 +1233,12 @@ contract DelayRedeemRouter is
     /**
      * @notice Event emitted when tokens are added to the paused token list.
      */
-    event PausedTokenlistAdded(address[] tokens);
+    event TokensPaused(address[] tokens);
 
     /**
      * @notice Event emitted when tokens are removed from the paused token list.
      */
-    event PausedTokenlistRemoved(address[] tokens);
+    event TokensUnpaused(address[] tokens);
 
     /**
      * @notice Event emitted when the redeem fee rate is set.
