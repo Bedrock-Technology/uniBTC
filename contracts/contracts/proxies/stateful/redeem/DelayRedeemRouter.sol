@@ -462,7 +462,9 @@ contract DelayRedeemRouter is
         uint256 maxQuotaPerSecond = MAX_DAILY_REDEEM_CAP / SECONDS_IN_A_DAY;
         for (uint256 i = 0; i < _tokens.length; i++) {
             require(_quotas[i] <= maxQuotaPerSecond, "USR013");
-            // this time need using old quota per second to rebase quota and timestamp
+
+            // For this instance, the old quota per second must be applied to rebase the quota
+            // and update the timestamp.
             _rebase(_tokens[i]);
             emit RedeemQuotaPerSecondSet(
                 _tokens[i],
@@ -512,17 +514,24 @@ contract DelayRedeemRouter is
         address token,
         uint256 amount
     ) external nonReentrant whenNotPaused onlyWhitelisted {
+        //================================================================================================
+        // 1. Validate the legality of the token and amount, then update the redemption baseline by
+        //    adjusting the base quota and timestamp.
+        //================================================================================================
         require(btclist[token] && !pausedTokenlist[token], "SYS003");
         uint256 quota = _getQuota(token);
         require(quota >= amount + tokenDebts[token].totalAmount, "USR010");
 
-        // this time need to rebase quota and timestamp
+        // This time, the quota and timestamp need to be rebased.
         _rebase(token);
 
-        //lock unibtc in the contract
+        //================================================================================================
+        // 2. Create a delayed redemption request for the user.
+        //================================================================================================
+        // Lock the unibtc tokens within the contract.
         IERC20(uniBTC).safeTransferFrom(msg.sender, address(this), amount);
         if (amount != 0) {
-            // user bill need to pay the redeem fee
+            // The user is required to pay the redemption fee.
             uint224 userRedeemAmount = uint224(
                 (amount * (REDEEM_FEE_RATE_RANGE - redeemFeeRate)) /
                     REDEEM_FEE_RATE_RANGE
@@ -704,7 +713,9 @@ contract DelayRedeemRouter is
         for (uint256 i = 0; i < userDelayedRedeemsLength; i++) {
             DelayedRedeem memory delayedRedeem = _userRedeems[user]
                 .delayedRedeems[delayedRedeemsCompleted + i];
-            // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem can not be claimed
+
+            // Check if the delayed redemption can be claimed, and break the loop as soon as a delayed
+            // redemption is found that cannot be claimed.
             if (
                 block.timestamp <
                 delayedRedeem.timestampCreated + redeemDelayDuration
@@ -832,6 +843,10 @@ contract DelayRedeemRouter is
             .delayedRedeemsCompleted;
         uint256 numToClaim = 0;
         DebtTokenAmount[] memory debtAmounts;
+
+        //================================================================================================
+        // 1. Get the length of debt that need to be repaid and the amount of each type of debt.
+        //================================================================================================
         (numToClaim, debtAmounts) = _getDebtTokenAmount(
             recipient,
             delayedRedeemsCompletedBefore,
@@ -839,13 +854,16 @@ contract DelayRedeemRouter is
             maxNumberOfDelayedRedeemsToClaim
         );
 
+        //================================================================================================
+        // 2. Debt exists and can be repaid through the redemption of various BTC tokens.
+        //================================================================================================
         if (numToClaim > 0) {
-            // mark the i delayedRedeems as claimed
+            // Mark the ith delayed redemptions as claimed.
             _userRedeems[recipient].delayedRedeemsCompleted =
                 delayedRedeemsCompletedBefore +
                 numToClaim;
 
-            // transfer the delayedRedeems to the recipient
+            // Transfer the delayed redemptions to the recipient.
             uint256 burnAmount = 0;
             bytes memory data;
             for (uint256 i = 0; i < debtAmounts.length; i++) {
@@ -856,7 +874,7 @@ contract DelayRedeemRouter is
                 tokenDebts[token].claimedAmount += amountUniBTC;
                 burnAmount += amountUniBTC;
                 if (token == NATIVE_BTC) {
-                    // transfer native token to the recipient
+                    // Transfer the native token to the recipient.
                     IVault(vault).execute(address(this), "", amountToSend);
                     (bool success, ) = payable(recipient).call{
                         value: amountToSend
@@ -870,13 +888,14 @@ contract DelayRedeemRouter is
                         recipient,
                         amountToSend
                     );
-                    // transfer erc20 token to the recipient
+
+                    // Transfer the specified ERC-20 token to the recipient’s address.
                     IVault(vault).execute(token, data, 0);
                 }
                 emit DelayedRedeemsClaimed(recipient, token, amountToSend);
             }
 
-            //burn claimed amount unibtc
+            // Burn the amount of unBTC corresponding to the claimed redemption.
             if (IERC20(uniBTC).allowance(address(this), vault) < burnAmount) {
                 IERC20(uniBTC).safeApprove(vault, burnAmount);
             }
@@ -908,6 +927,10 @@ contract DelayRedeemRouter is
             .delayedRedeemsCompleted;
         uint256 numToClaim = 0;
         DebtTokenAmount[] memory debtAmounts;
+
+        //================================================================================================
+        // 1. Get the length of debt that need to be repaid and the amount of each type of debt.
+        //================================================================================================
         (numToClaim, debtAmounts) = _getDebtTokenAmount(
             recipient,
             delayedRedeemsCompletedBefore,
@@ -915,8 +938,11 @@ contract DelayRedeemRouter is
             maxNumberOfDelayedRedeemsToClaim
         );
 
+        //================================================================================================
+        // 2. Debt is present and can be repaid through principal redemption.
+        //================================================================================================
         if (numToClaim > 0) {
-            // mark the i delayedRedeems as claimed
+            // Mark the ith delayed redeem as successfully claimed.
             _userRedeems[recipient].delayedRedeemsCompleted =
                 delayedRedeemsCompletedBefore +
                 numToClaim;
@@ -1003,19 +1029,22 @@ contract DelayRedeemRouter is
         uint256 delayTimestamp,
         uint256 maxNumberOfDelayedRedeemsToClaim
     ) internal view returns (uint256, DebtTokenAmount[] memory) {
-        uint256 redeemsLength = _userRedeems[recipient]
-            .delayedRedeems
-            .length;
+        uint256 redeemsLength = _userRedeems[recipient].delayedRedeems.length;
         uint256 numToClaim = 0;
+
+        //================================================================================================
+        // 1. Check how many debts can be redeemed.
+        //================================================================================================
         while (
             numToClaim < maxNumberOfDelayedRedeemsToClaim &&
             (delayedRedeemsCompletedBefore + numToClaim) < redeemsLength
         ) {
-            // copy delayedRedeem from storage to memory
+            // Copy the delayedRedeem from storage to memory.
             DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
                 .delayedRedeems[delayedRedeemsCompletedBefore + numToClaim];
 
-            // check if delayedRedeem can be claimed. break the loop as soon as a delayedRedeem cannot be claimed
+            // Check if each delayedRedeem is claimable, and exit the loop immediately
+            // once a non-claimable delayedRedeem is encountered.
             if (
                 block.timestamp <
                 delayedRedeem.timestampCreated + delayTimestamp
@@ -1023,12 +1052,15 @@ contract DelayRedeemRouter is
                 break;
             }
 
-            // increment i to account for the delayedRedeem being claimed
+            // Increment i to reflect the processing of the current delayedRedeem being claimed.
             unchecked {
                 ++numToClaim;
             }
         }
 
+        //================================================================================================
+        // 2. Count the types of debt and the amount of each debt type.
+        //================================================================================================
         if (numToClaim > 0) {
             DebtTokenAmount[] memory debtAmounts = new DebtTokenAmount[](
                 numToClaim
@@ -1055,12 +1087,12 @@ contract DelayRedeemRouter is
                 }
             }
 
-            // the token type count is equal to the number of the delayedRedeems length
+            // The number of unique token types matches the total number of delayed redemption requests.
             if (tokenCount == debtAmounts.length) {
                 return (numToClaim, debtAmounts);
             }
 
-            // some of the delayedRedeems have the same token type
+            // Some delayed redemption requests involve the same token type.
             DebtTokenAmount[] memory finalAmounts = new DebtTokenAmount[](
                 tokenCount
             );
