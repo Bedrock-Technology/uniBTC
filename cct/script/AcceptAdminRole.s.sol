@@ -11,17 +11,9 @@ contract AcceptAdminRole is Script {
         // Get the chain name based on the current chain ID
         string memory chainName = HelperUtils.getChainName(block.chainid);
 
-        // Construct the path to the deployed token JSON file
-        string memory root = vm.projectRoot();
-        string memory deployedTokenPath = string.concat(root, "/script/output/deployedToken_", chainName, ".json");
-
-        // Extract the deployed token address from the JSON file
-        address tokenAddress =
-            HelperUtils.getAddressFromJson(vm, deployedTokenPath, string.concat(".deployedToken_", chainName));
-
         // Fetch the network configuration to get the TokenAdminRegistry address
         HelperConfig helperConfig = new HelperConfig();
-        (,,, address tokenAdminRegistry,,) = helperConfig.activeNetworkConfig();
+        (,,, address tokenAdminRegistry,, address tokenAddress) = helperConfig.activeNetworkConfig();
 
         // Ensure the token address and TokenAdminRegistry address are valid
         require(tokenAddress != address(0), "Invalid token address");

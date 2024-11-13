@@ -47,6 +47,7 @@ contract ApplyChainUpdates is Script {
 
         // Instantiate the local TokenPool contract
         TokenPool poolContract = TokenPool(poolAddress);
+        console.log("pool's owner:%s", poolContract.owner());
 
         // Prepare chain update data for configuring cross-chain transfers
         TokenPool.ChainUpdate[] memory chainUpdates = new TokenPool.ChainUpdate[](1);

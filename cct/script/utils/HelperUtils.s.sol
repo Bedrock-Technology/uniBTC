@@ -8,25 +8,25 @@ import {HelperConfig} from "../HelperConfig.s.sol";
 library HelperUtils {
     using stdJson for string;
 
-    function getChainName(uint256 chainId) internal pure returns (string memory) {
-        if (chainId == 43113) {
+    function getChainName(uint256 chainIdorSelector) internal pure returns (string memory) {
+        if (chainIdorSelector == 43113 || chainIdorSelector == 14767482510784806043) {
             return "avalancheFuji";
-        } else if (chainId == 11155111) {
+        } else if (chainIdorSelector == 11155111 || chainIdorSelector == 16015286601757825753) {
             return "ethereumSepolia";
-        } else if (chainId == 421614) {
+        } else if (chainIdorSelector == 421614 || chainIdorSelector == 3478487238524512106) {
             return "arbitrumSepolia";
-        } else if (chainId == 84532) {
+        } else if (chainIdorSelector == 84532 || chainIdorSelector == 10344971235874465080) {
             return "baseSepolia";
             //Mainnet
-        } else if (chainId == 1) {
+        } else if (chainIdorSelector == 1 || chainIdorSelector == 5009297550715157269) {
             return "ethereum";
-        } else if (chainId == 42161) {
+        } else if (chainIdorSelector == 42161 || chainIdorSelector == 4949039107694359620) {
             return "arbitrum";
-        } else if (chainId == 56) {
+        } else if (chainIdorSelector == 56 || chainIdorSelector == 11344663589394136015) {
             return "bnbchain";
-        } else if (chainId == 10) {
+        } else if (chainIdorSelector == 10 || chainIdorSelector == 3734403246176062136) {
             return "optimism";
-        } else if (chainId == 34443) {
+        } else if (chainIdorSelector == 34443 || chainIdorSelector == 7264351850409363825) {
             return "mode";
         } else {
             revert("Unsupported chain ID");
