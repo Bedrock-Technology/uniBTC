@@ -74,13 +74,13 @@ def test_claimPrincipalFromRedeemRouter(deps):
     fbtc_max_free = 8 * 10**8
     native_max_free = 5 * 10**8
 
-    tx = transparent_delay_redeem_router.setRedeemQuotaPerSecond(
+    tx = transparent_delay_redeem_router.setQuotaRates(
         [fbtc_contract, wbtc_contract],
         [fbtc_speed, wbtc_speed],
         {"from": owner},
     )
 
-    tx = transparent_delay_redeem_router.setMaxFreeQuotasForTokens(
+    tx = transparent_delay_redeem_router.setMaxQuotaForTokens(
         [fbtc_contract, wbtc_contract],
         [fbtc_max_free, wbtc_max_free],
         {"from": owner},
@@ -104,7 +104,9 @@ def test_claimPrincipalFromRedeemRouter(deps):
     )
     assert tx.events["BtclistRemoved"]["tokens"][0] == wbtc_contract
     assert tx.events["BtclistRemoved"]["tokens"][1] == fbtc_contract
-    tx = transparent_delay_redeem_router.addTokensToBtclist([wbtc_contract], {"from": owner})
+    tx = transparent_delay_redeem_router.addTokensToBtclist(
+        [wbtc_contract], {"from": owner}
+    )
 
     # only vault can burn uniBTC
     transparent_uniBTC.grantRole(
@@ -129,7 +131,9 @@ def test_claimPrincipalFromRedeemRouter(deps):
         transparent_uniBTC.allowance(user, delay_redeem_router_proxy) == wbtc_claim_uni
     )
 
-    tx = transparent_delay_redeem_router.addAccountsToWhitelist([user, owner], {"from": owner})
+    tx = transparent_delay_redeem_router.addToWhitelist(
+        [user, owner], {"from": owner}
+    )
     assert tx.events["WhitelistAdded"]["accounts"][0] == user
     assert tx.events["WhitelistAdded"]["accounts"][1] == owner
 
@@ -197,11 +201,13 @@ def test_claimPrincipalFromRedeemRouter(deps):
     )
     print("unibtc amount", transparent_uniBTC.balanceOf(delay_redeem_router_proxy))
     currentUniAmount = transparent_uniBTC.balanceOf(user)
-    tx = transparent_delay_redeem_router.addAccountsToBlacklist([user], {"from": owner})
+    tx = transparent_delay_redeem_router.addToBlacklist([user], {"from": owner})
     assert tx.events["BlacklistAdded"]["accounts"][0] == user
     with brownie.reverts("USR009"):
         transparent_delay_redeem_router.claimPrincipals({"from": user})
-    tx = transparent_delay_redeem_router.removeAccountsFromBlacklist([user], {"from": owner})
+    tx = transparent_delay_redeem_router.removeFromBlacklist(
+        [user], {"from": owner}
+    )
     assert tx.events["BlacklistRemoved"]["accounts"][0] == user
     tx = transparent_delay_redeem_router.claimPrincipals({"from": user})
     assert "DelayedRedeemsPrincipalClaimed" in tx.events
