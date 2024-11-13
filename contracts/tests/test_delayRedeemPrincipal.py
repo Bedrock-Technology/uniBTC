@@ -214,13 +214,13 @@ def test_claimPrincipalFromRedeemRouter(deps):
     assert "DelayedRedeemsPrincipalCompleted" in tx.events
     assert tx.events["DelayedRedeemsPrincipalClaimed"][0]["recipient"] == user
     assert (
-        tx.events["DelayedRedeemsPrincipalClaimed"][0]["amountClaimed"]
+        tx.events["DelayedRedeemsPrincipalClaimed"][0]["claimedAmount"]
         == user_real_wbtc_claim_uni
     )
     assert tx.events["DelayedRedeemsPrincipalClaimed"][0]["token"] == wbtc_contract
     assert tx.events["DelayedRedeemsPrincipalCompleted"]["recipient"] == user
     assert (
-        tx.events["DelayedRedeemsPrincipalCompleted"]["amountPrincipal"]
+        tx.events["DelayedRedeemsPrincipalCompleted"]["principalAmount"]
         == user_real_wbtc_claim_uni
     )
     assert tx.events["DelayedRedeemsPrincipalCompleted"]["delayedRedeemsCompleted"] == 1
