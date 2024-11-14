@@ -306,7 +306,7 @@ contract DelayRedeemRouter is
      * @dev Adds tokens to the BTC list for redeeming with uniBTC.
      * @param _tokens List of wrapped or native BTC tokens to be added.
      */
-    function addTokensToBtclist(
+    function addToBtclist(
         address[] calldata _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
@@ -319,7 +319,7 @@ contract DelayRedeemRouter is
      * @dev Removes tokens from the BTC list for redeeming with uniBTC.
      * @param _tokens List of wrapped or native BTC tokens to be removed.
      */
-    function removeTokensFromBtclist(
+    function removeFromBtclist(
         address[] calldata _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
@@ -442,6 +442,7 @@ contract DelayRedeemRouter is
         uint256 _amount,
         address _recipient
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_recipient != address(0x0), "SYS001");
         require(_amount <= managementFee, "USR003");
         managementFee -= _amount;
         IERC20(uniBTC).safeTransfer(_recipient, _amount);
