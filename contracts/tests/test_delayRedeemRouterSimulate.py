@@ -135,13 +135,13 @@ def test_claimFromRedeemRouter(deps):
     assert tx.events["MaxQuotaSet"][2]["previousQuota"] == 0
     assert tx.events["MaxQuotaSet"][2]["newQuota"] == native_max_free
 
-    transparent_delay_redeem_router.addTokensToBtclist(
+    transparent_delay_redeem_router.addToBtclist(
         [fbtc_contract, wbtc_contract, native_token], {"from": owner}
     )
-    transparent_delay_redeem_router.removeTokensFromBtclist(
+    transparent_delay_redeem_router.addToBtclist(
         [fbtc_contract, wbtc_contract, native_token], {"from": owner}
     )
-    transparent_delay_redeem_router.addTokensToBtclist(
+    transparent_delay_redeem_router.addToBtclist(
         [fbtc_contract, wbtc_contract, native_token], {"from": owner}
     )
 

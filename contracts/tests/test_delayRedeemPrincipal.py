@@ -94,17 +94,17 @@ def test_claimPrincipalFromRedeemRouter(deps):
     # simulate redeem case
     # call redeem router createDelayedRedeem directly
     wbtc_claim_uni = 10 * 10**8
-    tx = transparent_delay_redeem_router.addTokensToBtclist(
+    tx = transparent_delay_redeem_router.addToBtclist(
         [wbtc_contract, fbtc_contract], {"from": owner}
     )
     assert tx.events["BtclistAdded"]["tokens"][0] == wbtc_contract
     assert tx.events["BtclistAdded"]["tokens"][1] == fbtc_contract
-    tx = transparent_delay_redeem_router.removeTokensFromBtclist(
+    tx = transparent_delay_redeem_router.removeFromBtclist(
         [wbtc_contract, fbtc_contract], {"from": owner}
     )
     assert tx.events["BtclistRemoved"]["tokens"][0] == wbtc_contract
     assert tx.events["BtclistRemoved"]["tokens"][1] == fbtc_contract
-    tx = transparent_delay_redeem_router.addTokensToBtclist(
+    tx = transparent_delay_redeem_router.addToBtclist(
         [wbtc_contract], {"from": owner}
     )
 

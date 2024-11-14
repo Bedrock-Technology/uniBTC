@@ -306,7 +306,7 @@ contract DelayRedeemRouter is
      * @dev Adds tokens to the BTC list for redeeming with uniBTC.
      * @param _tokens List of wrapped or native BTC tokens to be added.
      */
-    function addTokensToBtclist(
+    function addToBtclist(
         address[] calldata _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
@@ -319,7 +319,7 @@ contract DelayRedeemRouter is
      * @dev Removes tokens from the BTC list for redeeming with uniBTC.
      * @param _tokens List of wrapped or native BTC tokens to be removed.
      */
-    function removeTokensFromBtclist(
+    function removeFromBtclist(
         address[] calldata _tokens
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
@@ -442,6 +442,7 @@ contract DelayRedeemRouter is
         uint256 _amount,
         address _recipient
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_recipient != address(0x0), "SYS001");
         require(_amount <= managementFee, "USR003");
         managementFee -= _amount;
         IERC20(uniBTC).safeTransfer(_recipient, _amount);
@@ -523,9 +524,10 @@ contract DelayRedeemRouter is
         //================================================================================================
         // 2. Create a delayed redemption request for the user.
         //================================================================================================
-        // Lock the unibtc tokens within the contract.
-        IERC20(uniBTC).safeTransferFrom(msg.sender, address(this), amount);
         if (amount != 0) {
+            // Lock the unibtc tokens within the contract.
+            IERC20(uniBTC).safeTransferFrom(msg.sender, address(this), amount);
+
             // The user is required to pay the redemption fee.
             uint224 userRedeemAmount = uint224(
                 (amount * (REDEEM_FEE_RATE_RANGE - redeemFeeRate)) /
@@ -658,8 +660,7 @@ contract DelayRedeemRouter is
         address user,
         uint256 index
     ) external view returns (bool) {
-        return ((redeemPrincipalDelay > redeemDelay &&
-            index >= _userRedeems[user].delayedRedeemsCompleted) &&
+        return ((index >= _userRedeems[user].delayedRedeemsCompleted) &&
             (block.timestamp >=
                 _userRedeems[user].delayedRedeems[index].createdAt +
                     redeemPrincipalDelay));
@@ -894,7 +895,8 @@ contract DelayRedeemRouter is
             }
 
             // Burn the amount of unBTC corresponding to the claimed redemption.
-            if (IERC20(uniBTC).allowance(address(this), vault) < burnAmount) {
+            if (IERC20(uniBTC).allowance(address(this), vault) != burnAmount) {
+                IERC20(uniBTC).safeApprove(vault, 0);
                 IERC20(uniBTC).safeApprove(vault, burnAmount);
             }
             data = abi.encodeWithSelector(
