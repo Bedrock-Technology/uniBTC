@@ -895,6 +895,7 @@ contract DelayRedeemRouter is
 
             // Burn the amount of unBTC corresponding to the claimed redemption.
             if (IERC20(uniBTC).allowance(address(this), vault) != burnAmount) {
+                IERC20(uniBTC).safeApprove(vault, 0);
                 IERC20(uniBTC).safeApprove(vault, burnAmount);
             }
             data = abi.encodeWithSelector(
