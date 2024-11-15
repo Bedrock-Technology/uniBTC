@@ -193,7 +193,7 @@ contract DelayRedeemRouter is
     uint256 public managementFee;
 
     /**
-     * @notice If the user is allowed to redeem native BTC, the native BTC will be applied for from bedrock vault first and then paid to the user.
+     * @notice If users are allowed to redeem native BTC, native BTCs will be transfered here first and then be claimed by users.
      */
     receive() external payable {}
 
