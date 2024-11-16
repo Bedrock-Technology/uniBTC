@@ -1,0 +1,268 @@
+{
+    "btc": [
+        {
+            "type": "balance",
+            "addr": "1LaC3Xt8RZWYH1pjcvXxrWxLvXe7iR3ybe"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1patpjgd37q68kmt4zd5u3ajp7t95r785t5e0wkh4e20kwnducv5rqpvzat0"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1pjyxkkt2ufregr92cu0ccuje8efez68wzf347hlf5ym02ah8nqlhslg8lwz"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1ph5jl0sm97wcdp5k3ctpcrl7sy3hmt7e6gs2tr35qq8pnfpqn2ejqqhh6ur"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1p0tsy45wav45req0ltwlca56m2wss9dd26g3wpdjujwmhtk0q79dq7d8fhp"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1p7dafndyllnsqtthxhp76gzjwujzeelzc2qt8haua7ds8cmqgvhkqtr00ya"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1pmjcg79u2quppamjtekfns5pqmdlpd0gqlwvksq9tzrua0f3vq7hsdmfcs9"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1p4su5lzpaxz7rc9z6tv8u4pfstpxaw7hagdrlrq8p2z3uvd8p8thsddye9w"
+        },
+        {
+            "type": "balance",
+            "addr": "3FRaevESEjvvrE9q5GdmuAvjsGUy8sCfS4"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1qwmw0j0nwe2r8rl8cgecf9pqhgqkpzs0zcfcraz"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1phhfsdcts2lqkc44ver6v24460x5kx5dpg364elxd8jzfjpg5q4yqt8saty"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1paew2r3hqqnwhatttwx3qe3f837vvhwx7jhv228py9u3t7s22ltmqenjdym"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1qma2epmz00c7kutshs0h7m8rra8ceekht87amu7"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1p93qry6vdxutmtnqk0n48hs9au54xha6ywr9a8fryy2a3ctqcn0hqt5s0cv"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1qdrhewkdyy44xf80n79wmls3pyg07lrg3syhmze"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1phql7l5rrfqn9egmppjtlvyw0evav853q5uzlzcq8rdp5sp0dwjzq9x57pn"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1pc8t32hxvlnnv0lyuqhfqy9mfmaxtl66e495rqw4rmp7y4q60kkcs2wt2pq"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1pxfwnyqng7c622te5m5ayjsz6lrsxjl542wyw99h2p5e60zmeknqq49g0fm"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1p6mu8mrtnfz0frdfghfxr05tr8dq6j0q65rpzhhgg7998zelfp74qxxejh9"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1qkj4yxrlsear0hujkf3pq5zc4r8mnz3ep8udftj"
+        },
+        {
+            "type": "balance",
+            "addr": "3KKdHVw5TFrPLqM9q8znpjxCyYpzZhErFH"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1qj9w5ee2kf4akvtzrj59p77yc6x02nqqg9m0tcd"
+        },
+        {
+            "type": "balance",
+            "addr": "38fLZKJQuNMAEmFXTbbpkTo6fD5su2fD9P"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1p8jpunkzxpued6d4k4n8the7trn3m53vjphxwwaxls58kg3gyracqwetwzl"
+        },
+        {
+            "type": "balance",
+            "addr": "3Pg6HJJPhm3X7eWrdHbPFQeHU723a9GSJ7"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1qwgnhe6vn5zzu7csukavhfatzdasvmkavktqe4udzx96dk602ghsqaz8vt6"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1qf2lqvumkq2l2d3qej7u6w9u84djfnmy7kfcqdulfpcm7zqxl330smc0mkj"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1qyzsetzfrwzxs7zzqtsmyaz39mumhrh58mu04kyjcy8pynn9zhk5q2dc2r3"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1p8275ypqm7z4pyzhrvs6ashfgz5fuchtet8lqpl3xaecgyy07rrgq3jmvrx"
+        },
+        {
+            "type": "balance",
+            "addr": "bc1pyfmtputwx7uvug972jp5r658da90m4dl4sgx506znnw3ezushuzqwz5u8a"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1pzlhnwcyytvmzl5kmp4usxwt9jhw7u2c2w4u5gej5ef4y0uznv5ps84c4vv"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1pyc5v468mmltf503uhhdumxmadq3s0ykj5q5cyhj8a54k8sq5ze2su4vdy4"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1pu4hcya6n2qrpr773qdxjrsz0wk8epyl0eyc98g97qdp2n0f0z7cqtq6hnk"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1pyax28jhft0lzzwz9fj5cm5mehxpffa6efmddexch04tup7d23arqpcqm2x"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1purqv24xky3l7yf2gf48lsd3et7yc2gw38fj3laflf4g0fdm8xelq4u95fh"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1pvkr32l23vr0e9uv0ylkwn8fkt8whkl2h620yeh08x25fd5msw7usdmdv4f"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1pwhy84kvvxzfyrlwkyyzapf2ztkwpfj7yv0y6al7pg9kwht7undhsj3ww9p"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1pjwjx9ygltd4ehp8rlwxlep803e0w9gtz8hxx6ekjpvetay3yytsqhfm7d4"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1psjmpuxzryfxh863xlhk8hxvfdrywj0v6uqfxd0w5xxaa9sx0hjhqkx8qff"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1pwtr406pv8l6ean6hu6rzhwknd86u2hwszum9zqtvn8cls8h59keqjua0m3"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1puacezgtudwq587zp9ffkgugxrw7a405yrf586s8nvg53x3hsg6zs67eafn"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1p94j8r24zm409k8wgqylh0z9p66mwuwgk5nkz9525mug7kda40hcqc0qdmc"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1p45penescv68n8aeh4z2gpktls7cvgttgstx96myws4rxx9xhgjxqzf6srh"
+        },
+        {
+            "type": "staking_output",
+            "addr": "bc1p59yh7hz8v7rcrktd095xtt9kcjfgdalv54vxwmdpms057pesgntqqkfg67"
+        }
+    ],
+    "evm": {
+        "arbitrum": {
+            "chain_id": 42161,
+            "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
+            "tokens": [
+                "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"
+            ]
+        },
+        "bitlayer": {
+            "chain_id": 200901,
+            "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
+            "tokens": [
+                "0x0000000000000000000000000000000000000000",
+                "0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F"
+            ]
+        },
+        "bob": {
+            "chain_id": 60808,
+            "vault": "0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf",
+            "tokens": [
+                "0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3",
+                "0xC96dE26018A54D51c097160568752c4E3BD6C364"
+            ]
+        },
+        "bsc": {
+            "chain_id": 56,
+            "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
+            "tokens": [
+                "0xC96dE26018A54D51c097160568752c4E3BD6C364",
+                "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c"
+            ]
+        },
+        "bsquared": {
+            "chain_id": 223,
+            "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
+            "tokens": [
+                "0x0000000000000000000000000000000000000000",
+                "0x4200000000000000000000000000000000000006"
+            ]
+        },
+        "ethereum": {
+            "chain_id": 1,
+            "vault": "0x047D41F2544B7F63A8e991aF2068a363d210d6Da",
+            "tokens": [
+                "0xC96dE26018A54D51c097160568752c4E3BD6C364",
+                "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+                "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf"
+            ]
+        },
+        "mantle": {
+            "chain_id": 5000,
+            "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
+            "tokens": [
+                "0xC96dE26018A54D51c097160568752c4E3BD6C364"
+            ]
+        },
+        "merlin": {
+            "chain_id": 4200,
+            "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
+            "tokens": [
+                "0x0000000000000000000000000000000000000000",
+                "0xB880fd278198bd590252621d4CD071b1842E9Bcd",
+                "0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA"
+            ]
+        },
+        "mode": {
+            "chain_id": 34443,
+            "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
+            "tokens": [
+                "0x59889b7021243dB5B1e065385F918316cD90D46c",
+                "0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF"
+            ]
+        },
+        "optimism": {
+            "chain_id": 10,
+            "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
+            "tokens": [
+                "0x68f180fcCe6836688e9084f035309E29Bf0A2095"
+            ]
+        },
+        "zeta": {
+            "chain_id": 7000,
+            "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
+            "tokens": [
+                "0x13A0c5930C028511Dc02665E7285134B6d11A5f4"
+            ]
+        }
+    }
+}
