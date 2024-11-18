@@ -12,8 +12,7 @@ contract SwapProxyTest is Test {
     address public router;
     address public fromToken;
     address public toToken;
-    address private constant bedrockVault =
-        address(0x047D41F2544B7F63A8e991aF2068a363d210d6Da);
+    address private constant bedrockVault = address(0x047D41F2544B7F63A8e991aF2068a363d210d6Da);
     address public owner = address(0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3);
 
     function setUp() public {
@@ -32,14 +31,11 @@ contract SwapProxyTest is Test {
         vm.startPrank(owner);
         swapProxy = new SwapProxy(bedrockVault, fromToken, toToken);
         vm.stopPrank();
-        console.log(
-            "deploy SwapProxy contract address is:",
-            address(swapProxy)
-        );
-        console.log("swapProxy exhange type is:", swapProxy.getExchangeType());
+        console.log("deploy SwapProxy contract address is:", address(swapProxy));
+        console.log("swapProxy swap type is:", swapProxy.getSwapType());
 
         assert(swapProxy.owner() == owner);
-        assert(swapProxy.bedrockVault() == bedrockVault);
+        assert(swapProxy.vault() == bedrockVault);
         assert(swapProxy.fromToken() == fromToken);
         assert(swapProxy.toToken() == toToken);
         bytes32 ERROR_PROTOCOL = keccak256("ERROR_PROTOCOL");
@@ -50,10 +46,7 @@ contract SwapProxyTest is Test {
 
         vm.startPrank(owner);
         swapProxy.addRouter(router, swapProxy.UNISWAP_V3_PROTOCOL());
-        console.log(
-            "addRouter success,router is:",
-            swapProxy.getRouter(swapProxy.UNISWAP_V3_PROTOCOL())
-        );
+        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.UNISWAP_V3_PROTOCOL()));
         vm.stopPrank();
 
         vm.startPrank(owner);
@@ -86,18 +79,12 @@ contract SwapProxyTest is Test {
         vm.startPrank(owner);
         swapProxy = new SwapProxy(bedrockVault, fromToken, toToken);
         vm.stopPrank();
-        console.log(
-            "deploy SwapProxy contract address is:",
-            address(swapProxy)
-        );
-        console.log("swapProxy exhange type is:", swapProxy.getExchangeType());
+        console.log("deploy SwapProxy contract address is:", address(swapProxy));
+        console.log("swapProxy swap type is:", swapProxy.getSwapType());
 
         vm.startPrank(owner);
         swapProxy.addRouter(router, swapProxy.UNISWAP_V2_PROTOCOL());
-        console.log(
-            "addRouter success,router is:",
-            swapProxy.getRouter(swapProxy.UNISWAP_V2_PROTOCOL())
-        );
+        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.UNISWAP_V2_PROTOCOL()));
         vm.stopPrank();
 
         vm.startPrank(owner);
@@ -126,18 +113,12 @@ contract SwapProxyTest is Test {
         vm.startPrank(owner);
         swapProxy = new SwapProxy(bedrockVault, fromToken, toToken);
         vm.stopPrank();
-        console.log(
-            "deploy SwapProxy contract address is:",
-            address(swapProxy)
-        );
-        console.log("swapProxy exhange type is:", swapProxy.getExchangeType());
+        console.log("deploy SwapProxy contract address is:", address(swapProxy));
+        console.log("swapProxy swap type is:", swapProxy.getSwapType());
 
         vm.startPrank(owner);
         swapProxy.addRouter(router, swapProxy.CURVE_PROTOCOL());
-        console.log(
-            "addRouter success,router is:",
-            swapProxy.getRouter(swapProxy.CURVE_PROTOCOL())
-        );
+        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.CURVE_PROTOCOL()));
         vm.stopPrank();
 
         vm.startPrank(owner);
@@ -169,18 +150,12 @@ contract SwapProxyTest is Test {
         vm.startPrank(owner);
         swapProxy = new SwapProxy(bedrockVault, fromToken, toToken);
         vm.stopPrank();
-        console.log(
-            "deploy SwapProxy contract address is:",
-            address(swapProxy)
-        );
-        console.log("swapProxy exhange type is:", swapProxy.getExchangeType());
+        console.log("deploy SwapProxy contract address is:", address(swapProxy));
+        console.log("swapProxy swap type is:", swapProxy.getSwapType());
 
         vm.startPrank(owner);
         swapProxy.addRouter(router, swapProxy.DODO_PROTOCOL());
-        console.log(
-            "addRouter success,router is:",
-            swapProxy.getRouter(swapProxy.DODO_PROTOCOL())
-        );
+        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.DODO_PROTOCOL()));
         vm.stopPrank();
 
         vm.startPrank(owner);
@@ -209,18 +184,12 @@ contract SwapProxyTest is Test {
         vm.startPrank(owner);
         swapProxy = new SwapProxy(bedrockVault, fromToken, toToken);
         vm.stopPrank();
-        console.log(
-            "deploy SwapProxy contract address is:",
-            address(swapProxy)
-        );
-        console.log("swapProxy exhange type is:", swapProxy.getExchangeType());
+        console.log("deploy SwapProxy contract address is:", address(swapProxy));
+        console.log("swapProxy swap type is:", swapProxy.getSwapType());
 
         vm.startPrank(owner);
         swapProxy.addRouter(router, swapProxy.BALANCER_PROTOCOL());
-        console.log(
-            "addRouter success,router is:",
-            swapProxy.getRouter(swapProxy.BALANCER_PROTOCOL())
-        );
+        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.BALANCER_PROTOCOL()));
         vm.stopPrank();
 
         vm.startPrank(owner);
