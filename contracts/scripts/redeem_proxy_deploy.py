@@ -3,7 +3,7 @@ from brownie import *
 from pathlib import Path
 
 # Execution Command Format:
-# `brownie run scripts/redeem_proxy_deploy.py main "deployer" "ethereum" --network=eth-mainnet`
+# `brownie run scripts/redeem_proxy_deploy.py main "mainnet-deployer" "ethereum" --network=mainnet`
 
 
 def main(deployer_account="deployer", network_cfg="ethereum"):
@@ -11,10 +11,10 @@ def main(deployer_account="deployer", network_cfg="ethereum"):
         "ethereum": {
             "uniBTC_proxy": "0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568",  # https://etherscan.io/address/0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
             "vault_proxy": "0x047D41F2544B7F63A8e991aF2068a363d210d6Da",  # https://etherscan.io/address/0x047D41F2544B7F63A8e991aF2068a363d210d6Da
-            "redeem_owner": "0x1fc76b7C6F092e0566Ce9Bbb9c6803Ba5e45Ba32",  # https://etherscan.io/address/0x1fc76b7C6F092e0566Ce9Bbb9c6803Ba5e45Ba32
-            "redeem_time_duration": 691200,  # 8 days time duration
+            "redeem_owner": "0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB",  # https://etherscan.io/address/0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB
+            "redeem_time_duration": 691201,  # 8 days time duration
             "whitelist_enabled": True,
-            "contract_deployer": "",  # deployer account
+            "contract_deployer": "0x029E4FbDAa31DE075dD74B2238222A08233978f6",  # deployer account
         },
     }
 
