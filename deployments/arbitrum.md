@@ -22,3 +22,7 @@
 ## WBTC
 
 - [0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f](https://arbiscan.io/address/0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f)
+
+## CCT Token Pool
+
+- [0x79863856C920Ae564b4cdFB113C3d6B4E87A8c69](https://arbiscan.io/address/0x79863856C920Ae564b4cdFB113C3d6B4E87A8c69)
