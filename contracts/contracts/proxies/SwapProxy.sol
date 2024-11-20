@@ -145,7 +145,6 @@ contract SwapProxy is Ownable {
      * @dev Adds a specific router address for a supported protocol.
      *      This function allows the owner to register a router for a given protocol.
      *      Only the following protocols are supported: Uniswap V2, Uniswap V3, Curve, DODO, and Balancer.
-     *
      * @param router The address of the router to be added.
      * @param protocol The protocol associated with the router (e.g., Uniswap V2, Uniswap V3, Curve, DODO, Balancer).
      */
@@ -159,7 +158,6 @@ contract SwapProxy is Ownable {
      * @dev Adds a new pool to the contract and associates it with a specific protocol.
      *      The pool is registered and marked as valid, allowing it to be used for future operations.
      *      Only the contract owner can call this function.
-     *
      * @param pool The address of the pool to be added.
      * @param protocol The protocol associated with the pool (e.g., Uniswap V2, Uniswap V3, Curve, DODO, Balancer).
      */
@@ -175,7 +173,6 @@ contract SwapProxy is Ownable {
     /**
      * @dev Sets the validity status of a pool, allowing the contract owner to enable or disable the pool.
      *      The function can only be called by the owner of the contract.
-     *
      * @param pool The address of the pool whose validity status needs to be updated.
      * @param protocol The protocol associated with the pool (e.g., Uniswap V2, Uniswap V3, Curve, DODO, Balancer).
      * @param status The validity status to set for the pool.
@@ -191,7 +188,6 @@ contract SwapProxy is Ownable {
      * @dev Retrieves the pool depth information for all valid pools.
      *      The depth includes the amount of `fromToken` and `toToken` for each pool.
      *      Only pools that are marked as valid will be included in the result.
-     *
      * @return An array of `PoolDepthInfo` containing the protocol, pool address,
      *         and token balances (fromToken and toToken) for each valid pool.
      */
@@ -229,8 +225,8 @@ contract SwapProxy is Ownable {
 
     /**
      * @dev Returns a human-readable description of the token exchange type.
-     * This describes the conversion from the `fromToken` to the `toToken`,
-     * showing their respective symbols (e.g., "ETH -> USDT").
+     *      This describes the conversion from the `fromToken` to the `toToken`,
+     *      showing their respective symbols (e.g., "ETH -> USDT").
      * @return A string representing the exchange type (e.g., "ETH -> USDT").
      */
     function getSwapType() external view returns (string memory) {
@@ -384,12 +380,7 @@ contract SwapProxy is Ownable {
         pool[0] = fromToken;
         pool[1] = toToken;
         bytes memory data = abi.encodeWithSelector(
-            IUniswapV2Router02.swapExactTokensForTokens.selector,
-            amountIn,
-            amountOutMin,
-            pool,
-            vault,
-            block.timestamp
+            IUniswapV2Router02.swapExactTokensForTokens.selector, amountIn, amountOutMin, pool, vault, block.timestamp
         );
 
         //--------------------------------------------------------------------------------
@@ -405,8 +396,8 @@ contract SwapProxy is Ownable {
 
     /**
      * @dev Executes a token swap from `fromToken` to `toToken` using the Curve.fi protocol.
-     * Reference: https://etherscan.io/address/0x99a58482BD75cbab83b27EC03CA68fF489b5788f
-     * Curve method: exchange
+     *      Reference: https://etherscan.io/address/0x99a58482BD75cbab83b27EC03CA68fF489b5788f
+     *      Curve method: exchange
      * @param amountIn The amount of input tokens to send for the swap.
      * @param amountOutMin The minimum amount of `toToken` that must be received for the transaction to proceed.
      * @param pool The address of the Curve pool to use for swapping.
@@ -464,8 +455,8 @@ contract SwapProxy is Ownable {
 
     /**
      * @dev Executes a token swap from `fromToken` to `toToken` using the DODO V2 Proxy02.
-     * Reference: https://etherscan.io/address/0xa356867fDCEa8e71AEaF87805808803806231FdC
-     * DODO method: dodoSwapV2TokenToToken
+     *      Reference: https://etherscan.io/address/0xa356867fDCEa8e71AEaF87805808803806231FdC
+     *      DODO method: dodoSwapV2TokenToToken
      * @param amountIn The amount of input tokens to provide for the swap.
      * @param amountOutMin The minimum amount of output tokens required for the transaction to succeed.
      * @param pool The address of the DODO pool to use for the swap.
@@ -523,8 +514,8 @@ contract SwapProxy is Ownable {
 
     /**
      * @dev Executes a token swap from `fromToken` to `toToken` using the Balancer V2 Vault.
-     * Reference: https://etherscan.io/address/0xBA12222222228d8Ba445958a75a0704d566BF2C8
-     * Balancer method: swap
+     *      Reference: https://etherscan.io/address/0xBA12222222228d8Ba445958a75a0704d566BF2C8
+     *      Balancer method: swap
      * @param amountIn The amount of input tokens to provide for the swap.
      * @param amountOutMin The minimum amount of output tokens required for the transaction to succeed.
      * @param pool The address of the Balancer pool to use for the swap.
@@ -584,7 +575,7 @@ contract SwapProxy is Ownable {
 
     /**
      * @dev Approves the specified `amountIn` of tokens for the `spender` contract.
-     * This ensures the `spender` is permitted to spend the specified amount on behalf of the caller.
+     *      This ensures the `spender` is permitted to spend the specified amount on behalf of the caller.
      * @param amountIn The amount of input tokens to allow the `spender` to spend.
      * @param spender The address of the contract that will be approved to spend tokens.
      */
@@ -592,19 +583,17 @@ contract SwapProxy is Ownable {
         require(IERC20(fromToken).balanceOf(vault) >= amountIn, "USR010");
 
         // Approve 'amountIn' for the spender contract.
-        if (IERC20(fromToken).allowance(vault, spender) != amountIn) {
-            bytes memory data = abi.encodeWithSelector(IERC20.approve.selector, spender, 0);
-            IVault(vault).execute(fromToken, data, 0);
-            data = abi.encodeWithSelector(IERC20.approve.selector, spender, amountIn);
-            IVault(vault).execute(fromToken, data, 0);
-        }
+        bytes memory data = abi.encodeWithSelector(IERC20.approve.selector, spender, 0);
+        IVault(vault).execute(fromToken, data, 0);
+        data = abi.encodeWithSelector(IERC20.approve.selector, spender, amountIn);
+        IVault(vault).execute(fromToken, data, 0);
     }
 
     /**
      * @dev Verifies that the allowance of the `spender` contract for the `fromToken`
-     * within the `vault` is set to zero.
-     * This is often used as a prerequisite before resetting the allowance to avoid
-     * potential race conditions in ERC20 approvals.
+     *      within the `vault` is set to zero.
+     *      This is often used as a prerequisite before resetting the allowance to avoid
+     *      potential race conditions in ERC20 approvals.
      * @param spender The address of the contract whose allowance is being checked.
      */
     function _checkAllowance(address spender) internal view {
@@ -613,8 +602,8 @@ contract SwapProxy is Ownable {
 
     /**
      * @dev Ensures that the provided `protocol` is supported.
-     * The function checks against predefined constants for supported protocols:
-     * Uniswap V3, Uniswap V2, Curve, DODO, and Balancer.
+     *      The function checks against predefined constants for supported protocols:
+     *      Uniswap V3, Uniswap V2, Curve, DODO, and Balancer.
      * @param protocol The protocol identifier to validate.
      */
     function _checkProtocol(bytes32 protocol) internal pure {
