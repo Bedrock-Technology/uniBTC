@@ -41,3 +41,9 @@
 ## CCT Token Pool
 
 - [0xDE71a07e0619EEaDd7e6A3aeCf4E57E5d5e86f12](https://etherscan.io/address/0xDE71a07e0619EEaDd7e6A3aeCf4E57E5d5e86f12)
+
+## CCIPPeer
+- 0x55A67cf07B8a9A09fB6d565279287Cfe4aB60edC
+
+## Redeem
+- 0xAA732c9c110A84d090a72da230eAe1E779f89246
