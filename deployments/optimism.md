@@ -1,18 +1,28 @@
 # Optimism
+
 ## Core
+
 - ProxyAdmin: [0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19](https://optimistic.etherscan.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19)
 - uniBTC: [0x93919784C523f39CACaa98Ee0a9d96c3F32b593e](https://optimistic.etherscan.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e)
 - Vault: [0xF9775085d726E782E83585033B58606f7731AB18](https://optimistic.etherscan.io/address/0xF9775085d726E782E83585033B58606f7731AB18)
 
 ## Multisig
+
 - 0x1Ae02CD8a4566A4f2432857D7A943765D1e3E757
 
 ## Chainlink
+
 - uniBTCRate: [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://optimistic.etherscan.io/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4)
 - uniBTCRawBTCExchangeRateChainlinkAdapter: [0xb3f925B430C60bA467F7729975D5151c8DE26698](https://optimistic.etherscan.io/address/0xb3f925B430C60bA467F7729975D5151c8DE26698)
 
 ## TransferProxy
+
 - 0xbc48e8bb4e270E0C59cC1bc8885571b7BC33d03d
 
 ## WBTC
+
 - [0x68f180fcCe6836688e9084f035309E29Bf0A2095](https://optimistic.etherscan.io/address/0x68f180fcCe6836688e9084f035309E29Bf0A2095)
+
+## CCT Token Pool
+
+- [0xF7e8fE6B8548c388b818d27AC2e2A72207D2E117](https://optimistic.etherscan.io/address/0xF7e8fE6B8548c388b818d27AC2e2A72207D2E117)
