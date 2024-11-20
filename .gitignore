@@ -16,4 +16,9 @@ ccip/out
 ccip/broadcast
 ccip/.idea
 ccip/node_modules
+cct/cache
+cct/out
+cct/broadcast
+cct/.idea
+cct/node_modules
 artifacts
