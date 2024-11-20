@@ -193,7 +193,7 @@ contract DelayRedeemRouter is
     uint256 public managementFee;
 
     /**
-     * @notice If users are allowed to redeem native BTC, native BTCs will be transfered here first and then be claimed by users.
+     * @notice If users are allowed to redeem native BTC, native BTCs will be transferred here first and then be claimed by users.
      */
     receive() external payable {}
 
@@ -895,10 +895,9 @@ contract DelayRedeemRouter is
             }
 
             // Burn the amount of unBTC corresponding to the claimed redemption.
-            if (IERC20(uniBTC).allowance(address(this), vault) != burnAmount) {
-                IERC20(uniBTC).safeApprove(vault, 0);
-                IERC20(uniBTC).safeApprove(vault, burnAmount);
-            }
+            IERC20(uniBTC).safeApprove(vault, 0);
+            IERC20(uniBTC).safeApprove(vault, burnAmount);
+
             data = abi.encodeWithSelector(
                 IMintableContract.burnFrom.selector,
                 address(this),
