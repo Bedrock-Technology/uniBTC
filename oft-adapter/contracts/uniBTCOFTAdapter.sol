@@ -45,7 +45,7 @@ contract uniBTCOFTAdapter is OFTCore {
      * @dev In non-default OFTAdapter contracts with something like mint and burn privileges, it would NOT need approval.
      */
     function approvalRequired() external pure virtual returns (bool) {
-        return false;
+        return true;
     }
 
     /**
