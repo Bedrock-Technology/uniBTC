@@ -66,7 +66,7 @@ mint()
 forge script script/SetUniBTC.s.sol --sig 'mint()' --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
 ```
 
-### SendToken  on ETH SEPOLIA
+### SendToken on ETH SEPOLIA
 
 sendToken(address \_recipient, uint256 \_amount, uint256 \_chainid)
 
