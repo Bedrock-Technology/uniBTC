@@ -36,4 +36,5 @@ contract SetOFTAdapter is Script {
         console.log("peer %s, oftAdapterAddress:", peerChainName, peerOftAdapterAddress);
         console.log("peer eid:", peerNetworkConfig.eid);
     }
+    //https://docs.layerzero.network/v2/developers/evm/protocol-gas-settings/default-config#custom-configuration
 }
