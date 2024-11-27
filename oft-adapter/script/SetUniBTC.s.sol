@@ -11,7 +11,7 @@ contract SetOFTAdapter is Script {
 
     function setMinter() external {
         // Get the current chain name based on the chain ID
-        string memory chainName = HelperUtils.getChainName(block.chainid);
+        string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;
         // Construct paths to the configuration and local pool JSON files
         string memory localPoolPath =
             string.concat(vm.projectRoot(), "/script/output/deployedOFTAdapter_", chainName, ".json");
@@ -32,7 +32,7 @@ contract SetOFTAdapter is Script {
 
     function mint() external {
         // Get the current chain name based on the chain ID
-        string memory chainName = HelperUtils.getChainName(block.chainid);
+        string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;
         HelperUtils.NetworkConfig memory networkConfig = HelperUtils.getNetworkConfig(block.chainid);
         address owner = vm.envAddress("OWNER_ADDRESS");
         vm.startBroadcast(owner);

@@ -21,8 +21,8 @@ contract SetOFTAdapter is Script {
 
     function sendToken(address _recipient, uint256 _amount, uint256 _chainid) external {
         // Get the current chain name based on the chain ID
-        string memory chainName = HelperUtils.getChainName(block.chainid);
-        string memory peerChainName = HelperUtils.getChainName(_chainid);
+        string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;
+        string memory peerChainName = HelperUtils.getNetworkConfig(_chainid).chainName;
         string memory localPoolPath =
             string.concat(vm.projectRoot(), "/script/output/deployedOFTAdapter_", chainName, ".json");
         // Extract addresses from the JSON files

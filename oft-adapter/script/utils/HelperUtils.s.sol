@@ -7,57 +7,39 @@ import {Vm} from "forge-std/Vm.sol";
 library HelperUtils {
     using stdJson for string;
 
-    function getChainName(uint256 chainIdorEid) internal pure returns (string memory) {
-        if (chainIdorEid == 17000 || chainIdorEid == 40217) {
-            return "ethereumHolesky";
-        } else if (chainIdorEid == 11155111 || chainIdorEid == 40161) {
-            return "ethereumSepolia";
-            //Mainnet
-            // } else if (chainIdorEid == 1 || chainIdorEid == 30101) {
-            //     return "ethereum";
-            // } else if (chainIdorEid == 42161 || chainIdorEid == 30110) {
-            //     return "arbitrum";
-            // } else if (chainIdorEid == 56 || chainIdorEid == 30102) {
-            //     return "bnbchain";
-            // } else if (chainIdorEid == 10 || chainIdorEid == 30111) {
-            //     return "optimism";
-            // } else if (chainIdorEid == 34443 || chainIdorEid == 30260) {
-            //     return "mode";
-        } else {
-            revert("Unsupported chain ID");
-        }
+    struct ExecutorConfig {
+        uint32 maxMessageSize;
+        address executorAddress;
+    }
+
+    struct UlnConfig {
+        uint64 confirmations;
+        uint8 requiredDVNCount;
+        uint8 optionalDVNCount;
+        uint8 optionalDVNThreshold;
+        address[] requiredDVNs;
+        address[] optionalDVNs;
     }
 
     struct NetworkConfig {
+        string chainName;
+        uint256 chainId;
         uint32 eid;
         address endPoint;
         address uniBTC;
+        address sendUln302;
+        address receiveUIn302;
     }
 
-    function getEthereumHoleskyConfig() public pure returns (NetworkConfig memory) {
-        NetworkConfig memory ethereumHolesky = NetworkConfig({
-            eid: 40217,
-            endPoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
-            uniBTC: 0xE1061F0D0A2AaF273Dc9E2077E8545417B838a8c
-        });
-
-        return ethereumHolesky;
+    function getAllEids() public pure returns (uint32[2] memory) {
+        uint32[2] memory allEids = [uint32(40161), 40217];
+        return allEids;
     }
 
-    function getEthereumSepoliaConfig() public pure returns (NetworkConfig memory) {
-        NetworkConfig memory ethereumSepolia = NetworkConfig({
-            eid: 40161,
-            endPoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
-            uniBTC: 0x50fA1411201e2Ac0361FB893E903b80F141b8190
-        });
-
-        return ethereumSepolia;
-    }
-
-    function getNetworkConfig(uint256 chainId) internal pure returns (NetworkConfig memory) {
-        if (chainId == 17000) {
+    function getNetworkConfig(uint256 chainIdorEid) internal pure returns (NetworkConfig memory) {
+        if (chainIdorEid == 17000 || chainIdorEid == 40217) {
             return getEthereumHoleskyConfig();
-        } else if (chainId == 11155111) {
+        } else if (chainIdorEid == 11155111 || chainIdorEid == 40161) {
             return getEthereumSepoliaConfig();
             // } else if (chainId == 421614) {
             //     return helperConfig.getArbitrumSepolia();
@@ -76,6 +58,34 @@ library HelperUtils {
         } else {
             revert("Unsupported chain ID");
         }
+    }
+
+    function getEthereumHoleskyConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory ethereumHolesky = NetworkConfig({
+            chainName: "ethereumHolesky",
+            chainId: 17000,
+            eid: 40217,
+            endPoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
+            uniBTC: 0xE1061F0D0A2AaF273Dc9E2077E8545417B838a8c,
+            sendUln302: 0x21F33EcF7F65D61f77e554B4B4380829908cD076,
+            receiveUIn302: 0xbAe52D605770aD2f0D17533ce56D146c7C964A0d
+        });
+
+        return ethereumHolesky;
+    }
+
+    function getEthereumSepoliaConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory ethereumSepolia = NetworkConfig({
+            chainName: "ethereumSepolia",
+            chainId: 11155111,
+            eid: 40161,
+            endPoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
+            uniBTC: 0x50fA1411201e2Ac0361FB893E903b80F141b8190,
+            sendUln302: 0xcc1ae8Cf5D3904Cef3360A9532B477529b177cCE,
+            receiveUIn302: 0xdAf00F5eE2158dD58E0d3857851c432E34A3A851
+        });
+
+        return ethereumSepolia;
     }
 
     function getAddressFromJson(Vm vm, string memory path, string memory key) internal view returns (address) {
