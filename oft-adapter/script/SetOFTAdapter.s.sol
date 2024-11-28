@@ -40,31 +40,43 @@ contract SetOFTAdapter is Script {
     }
     //https://docs.layerzero.network/v2/developers/evm/protocol-gas-settings/default-config#custom-configuration
 
-    function setSendConfig(uint256 _chainid, uint64 _confirmations, address[] memory _requiredDVNs) external {
+    function setConfig(
+        uint256 _dir, //0 for SEND, 1 for RECEIVE
+        uint256 _chainid,
+        uint64 _confirmations,
+        address[] memory _requiredDVNs,
+        address[] memory _optionalDVNs,
+        uint8 _optionalThreshold
+    ) external {
+        _requiredDVNs = _sort(_requiredDVNs);
+        _optionalDVNs = _sort(_optionalDVNs);
         string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;
         string memory localPoolPath =
             string.concat(vm.projectRoot(), "/script/output/deployedOFTAdapter_", chainName, ".json");
         // Extract addresses from the JSON files
         address oftAdapterAddress =
             HelperUtils.getAddressFromJson(vm, localPoolPath, string.concat(".deployedOFTAdapter_", chainName));
-        console.log(
-            "setSendConfig %s, endPointAddress:", chainName, HelperUtils.getNetworkConfig(block.chainid).endPoint
-        );
-        console.log("peer:", HelperUtils.getNetworkConfig(_chainid).chainName);
-        console.log(_confirmations);
+        console.log("current %s, peer:", chainName, HelperUtils.getNetworkConfig(_chainid).chainName);
+        console.log("confirmations:", _confirmations);
+        console.log("requiredDVNs:", _requiredDVNs.length);
         for (uint256 index = 0; index < _requiredDVNs.length; index++) {
-            console.log(_requiredDVNs[index]);
+            console.log("  requiredDVN:", _requiredDVNs[index]);
         }
+        console.log("optionalDVNs:", _optionalDVNs.length);
+        console.log("optionalThreshold:", _optionalThreshold);
+        for (uint256 index = 0; index < _optionalDVNs.length; index++) {
+            console.log("  optionDVN:", _optionalDVNs[index]);
+        }
+
         ILayerZeroEndpointV2 endPoint = ILayerZeroEndpointV2(HelperUtils.getNetworkConfig(block.chainid).endPoint);
 
-        address[] memory optionalDVNs = new address[](0);
         HelperUtils.UlnConfig memory ulnConfig = HelperUtils.UlnConfig({
             confirmations: _confirmations,
             requiredDVNCount: uint8(_requiredDVNs.length),
-            optionalDVNCount: 0,
-            optionalDVNThreshold: 0,
+            optionalDVNCount: uint8(_optionalDVNs.length),
+            optionalDVNThreshold: _optionalThreshold,
             requiredDVNs: _requiredDVNs,
-            optionalDVNs: optionalDVNs
+            optionalDVNs: _optionalDVNs
         });
         SetConfigParam memory param = SetConfigParam({
             eid: HelperUtils.getNetworkConfig(_chainid).eid,
@@ -75,14 +87,24 @@ contract SetOFTAdapter is Script {
         params[0] = param;
         address owner = vm.envAddress("OWNER_ADDRESS");
         vm.startBroadcast(owner);
-        endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).sendUln302, params);
+        if (_dir == 0) {
+            console.log(
+                "setSendConfig %s, endPointAddress:", chainName, HelperUtils.getNetworkConfig(block.chainid).endPoint
+            );
+            endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).sendUln302, params);
+        } else if (_dir == 1) {
+            console.log(
+                "setReceiveConfig %s, endPointAddress:", chainName, HelperUtils.getNetworkConfig(block.chainid).endPoint
+            );
+            endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).receiveUIn302, params);
+        } else {
+            revert("_dir not supports");
+        }
         vm.stopBroadcast();
     }
 
-    function decode() external view {
-        bytes memory liter =
-            hex"0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000f00000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000010000000000000000000000008eebf8b423b73bfca51a1db4b7354aa0bfca91930000000000000000000000000000000000000000000000000000000000000000";
-        HelperUtils.UlnConfig memory ulnConfig = abi.decode(liter, (HelperUtils.UlnConfig));
+    function decode(bytes memory _liter) external view {
+        HelperUtils.UlnConfig memory ulnConfig = abi.decode(_liter, (HelperUtils.UlnConfig));
         console.log("confirmations:", ulnConfig.confirmations);
         console.log("requiredDVNCount:", ulnConfig.requiredDVNCount);
         console.log("optionalDVNCount:", ulnConfig.optionalDVNCount);
@@ -93,5 +115,19 @@ contract SetOFTAdapter is Script {
         for (uint256 index = 0; index < ulnConfig.optionalDVNs.length; index++) {
             console.log("optionalDVN:", ulnConfig.optionalDVNs[index]);
         }
+    }
+
+    function _sort(address[] memory a) public pure returns (address[] memory) {
+        // note that uint can not take negative value
+        for (uint256 i = 1; i < a.length; i++) {
+            address temp = a[i];
+            uint256 j = i;
+            while ((j >= 1) && (temp < a[j - 1])) {
+                a[j] = a[j - 1];
+                j--;
+            }
+            a[j] = temp;
+        }
+        return (a);
     }
 }
