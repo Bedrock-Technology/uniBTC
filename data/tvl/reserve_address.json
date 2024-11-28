@@ -20,6 +20,7 @@
     "bc1p45penescv68n8aeh4z2gpktls7cvgttgstx96myws4rxx9xhgjxqzf6srh",
     "bc1p59yh7hz8v7rcrktd095xtt9kcjfgdalv54vxwmdpms057pesgntqqkfg67",
     "bc1pjwjx9ygltd4ehp8rlwxlep803e0w9gtz8hxx6ekjpvetay3yytsqhfm7d4",
+    "bc1p2gt5805a5nh0eueetuyuvtaj8kjhsuyrjyzmgc54ekqceu6xr9aqe6c8jl",
     "bc1pyc5v468mmltf503uhhdumxmadq3s0ykj5q5cyhj8a54k8sq5ze2su4vdy4",
     "bc1pyax28jhft0lzzwz9fj5cm5mehxpffa6efmddexch04tup7d23arqpcqm2x",
     "bc1purqv24xky3l7yf2gf48lsd3et7yc2gw38fj3laflf4g0fdm8xelq4u95fh"
@@ -28,14 +29,19 @@
     "arbitrum": {
       "chain_id": 42161,
       "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
-      "tokens": ["0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f"]
+      "tokens": [
+        "0xC96dE26018A54D51c097160568752c4E3BD6C364",
+        "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
+        "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
+        "0x32dF1963f4be9C9ecC0474eA9Ea028F3A019dAAf"
+      ]
     },
     "bitlayer": {
       "chain_id": 200901,
       "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
       "tokens": [
-        "0x0000000000000000000000000000000000000000",
-        "0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F"
+        "0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F",
+        "0x0000000000000000000000000000000000000000"
       ]
     },
     "bob": {
