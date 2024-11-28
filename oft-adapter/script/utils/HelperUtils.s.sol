@@ -31,8 +31,8 @@ library HelperUtils {
         address receiveUIn302;
     }
 
-    function getAllEids() public pure returns (uint32[2] memory) {
-        uint32[2] memory allEids = [uint32(40161), 40217];
+    function getAllEids() public pure returns (uint32[4] memory) {
+        uint32[4] memory allEids = [uint32(40161), 40217, 30101, 30102];
         return allEids;
     }
 
@@ -45,12 +45,12 @@ library HelperUtils {
             //     return helperConfig.getArbitrumSepolia();
             // } else if (chainId == 84532) {
             //     return helperConfig.getBaseSepoliaConfig();
-            // } else if (chainId == 1) {
-            //     return helperConfig.getEthConfig();
+        } else if (chainIdorEid == 1 || chainIdorEid == 30101) {
+            return getEthereumMainnetConfig();
             // } else if (chainId == 42161) {
             //     return helperConfig.getArbConfig();
-            // } else if (chainId == 56) {
-            //     return helperConfig.getBscConfig();
+        } else if (chainIdorEid == 56 || chainIdorEid == 30102) {
+            return getBscMainnetConfig();
             // } else if (chainId == 10) {
             //     return helperConfig.getOptConfig();
             // } else if (chainId == 34443) {
@@ -58,6 +58,34 @@ library HelperUtils {
         } else {
             revert("Unsupported chain ID");
         }
+    }
+
+    function getEthereumMainnetConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory ethereumMainnet = NetworkConfig({
+            chainName: "ethereumMainnet",
+            chainId: 1,
+            eid: 30101,
+            endPoint: 0x1a44076050125825900e736c501f859c50fE728c,
+            uniBTC: 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568,
+            sendUln302: 0xbB2Ea70C9E858123480642Cf96acbcCE1372dCe1,
+            receiveUIn302: 0xc02Ab410f0734EFa3F14628780e6e695156024C2
+        });
+
+        return ethereumMainnet;
+    }
+
+    function getBscMainnetConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory BscMainnet = NetworkConfig({
+            chainName: "bscMainnet",
+            chainId: 56,
+            eid: 30102,
+            endPoint: 0x1a44076050125825900e736c501f859c50fE728c,
+            uniBTC: 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a,
+            sendUln302: 0x9F8C645f2D0b2159767Bd6E0839DE4BE49e823DE,
+            receiveUIn302: 0xB217266c3A98C8B2709Ee26836C98cf12f6cCEC1
+        });
+
+        return BscMainnet;
     }
 
     function getEthereumHoleskyConfig() public pure returns (NetworkConfig memory) {

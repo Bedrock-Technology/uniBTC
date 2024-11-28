@@ -34,14 +34,13 @@ contract SetOFTAdapter is Script {
         uniBTCOFTAdapter oftAdapter = uniBTCOFTAdapter(oftAdapterAddress);
         oftAdapter.setPeer(peerNetworkConfig.eid, bytes32(uint256(uint160(peerOftAdapterAddress))));
         vm.stopBroadcast();
-        console.log("setPeer %s, oftAdapterAddress:", chainName, oftAdapterAddress);
+        console.log("current: %s, peer:", chainName, peerChainName);
         console.log("peer %s, oftAdapterAddress:", peerChainName, peerOftAdapterAddress);
         console.log("peer eid:", peerNetworkConfig.eid);
     }
     //https://docs.layerzero.network/v2/developers/evm/protocol-gas-settings/default-config#custom-configuration
 
     function setConfig(
-        uint256 _dir, //0 for SEND, 1 for RECEIVE
         uint256 _chainid,
         uint64 _confirmations,
         address[] memory _requiredDVNs,
@@ -87,19 +86,8 @@ contract SetOFTAdapter is Script {
         params[0] = param;
         address owner = vm.envAddress("OWNER_ADDRESS");
         vm.startBroadcast(owner);
-        if (_dir == 0) {
-            console.log(
-                "setSendConfig %s, endPointAddress:", chainName, HelperUtils.getNetworkConfig(block.chainid).endPoint
-            );
-            endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).sendUln302, params);
-        } else if (_dir == 1) {
-            console.log(
-                "setReceiveConfig %s, endPointAddress:", chainName, HelperUtils.getNetworkConfig(block.chainid).endPoint
-            );
-            endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).receiveUIn302, params);
-        } else {
-            revert("_dir not supports");
-        }
+        endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).sendUln302, params);
+        endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).receiveUIn302, params);
         vm.stopBroadcast();
     }
 

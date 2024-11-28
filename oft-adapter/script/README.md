@@ -1,5 +1,13 @@
 # DEPLOY GUIDE
 
+## Mainnet
+
+### Deploy OFTAdapter on ETH Mainnet
+
+```bash
+forge script script/DeployOFTAdapter.s.sol --rpc-url $RPC_ETH --account $DEPLOYER --broadcast --verify --verifier-url $RPC_ETH_SCAN --etherscan-api-key $KEY_ETH_SCAN --delay 30
+```
+
 ## Testnet
 
 ### Deploy uniBTC on ETH SEPOLIA
@@ -34,16 +42,16 @@ setPeer(uint256 \_chainid)
 forge script script/SetOFTAdapter.s.sol --sig 'setPeer(uint256)' 17000 --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
 ```
 
-### Set OFTAdapter Send Config on ETH SEPOLIA(OPTION)
+### Set OFTAdapter Send and RECEIVE Config on ETH SEPOLIA(OPTION)
 
 > [!CAUTION] > \_idr 0 for SEND, 1 for RECEIVE
 > empty \_requiredDVNs will use the default
 
-setConfig(uint256 \_dir,uint256 \_chainid, uint64 \_confirmations, address[] memory \_requiredDVNs, address[] memory \_optionalDVNs, uint8 \_optionalThreshold)
+setConfig(uint256 \_chainid, uint64 \_confirmations, address[] memory \_requiredDVNs, address[] memory \_optionalDVNs, uint8 \_optionalThreshold)
 
 ```bash
-forge script script/SetOFTAdapter.s.sol --sig 'setConfig(uint256,uint256,uint64,address[],address[],uint8)' 0 17000 4 "[0x8eebf8b423B73bFCa51a1Db4B7354AA0bFCA9193,0x530fbe405189204ef459fa4b767167e4d41e3a37,0x15f5a70fc078279d7d4a7dd94811189364810111]" "[0x25f492a35ec1e60ebcf8a3dd52a815c2d167f4c3,0x4f675c48fad936cb4c3ca07d7cbf421ceeae0c75]" 1 --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
-forge script script/SetOFTAdapter.s.sol --sig 'setConfig(uint256,uint256,uint64,address[],address[],uint8)' 0 17000 4 "[]" "[]" 0 --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
+forge script script/SetOFTAdapter.s.sol --sig 'setConfig(uint256,uint64,address[],address[],uint8)' 17000 4 "[0x8eebf8b423B73bFCa51a1Db4B7354AA0bFCA9193,0x530fbe405189204ef459fa4b767167e4d41e3a37,0x15f5a70fc078279d7d4a7dd94811189364810111]" "[0x25f492a35ec1e60ebcf8a3dd52a815c2d167f4c3,0x4f675c48fad936cb4c3ca07d7cbf421ceeae0c75]" 1 --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
+forge script script/SetOFTAdapter.s.sol --sig 'setConfig(uint256,uint64,address[],address[],uint8)' 17000 4 "[]" "[]" 0 --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
 ```
 
 ### Set OFTAdapter Peer on ETH HOLESKY
