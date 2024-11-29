@@ -1,0 +1,45 @@
+# Brownie configuration file
+# https://eth-brownie.readthedocs.io/en/stable/config.html
+# required external contracts
+dependencies:
+  - OpenZeppelin/openzeppelin-contracts@4.8.3
+  - OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3
+
+pytest:
+    # these settings replace the defaults when running pytest
+    default_contract_owner: true
+    revert_traceback: true
+
+compiler:
+  #evm_version: "shanghai"
+    solc:
+        version: 0.8.17
+        optimizer:
+          enabled: true
+          runs: 200
+        remappings:
+          - "@openzeppelin/contracts=./lib/OpenZeppelin/openzeppelin-contracts@4.8.3/contracts"
+          - "@openzeppelin/contracts-upgradeable=./lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/contracts"
+
+# automatically fetch contract sources from Etherscan
+autofetch_sources: True
+networks:
+#  default: mainnet-fork
+  mainnet-fork:
+    cmd_settings:
+      #    evm_version: "shanghai"
+  merlin-mainnet-fork:
+    cmd_settings:
+      default_balance: "1000000000000 ether"
+      unlock:
+        - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # ProxyAdmin owner address
+        - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault default admin address
+        - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault default admin address
+  mainnet-public-fork:
+    cmd_settings:
+      default_balance: "1000000000000 ether"
+      unlock:
+        - 0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB  # Vault pauser address
+        - 0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3  # ProxyAdmin owner
+
+
