@@ -10,6 +10,20 @@ import {ILayerZeroEndpointV2} from "@layerzerolabs/lz-evm-protocol-v2/contracts/
 contract GetOFTAdapter is Script {
     function run() external {}
 
+    function getWhitelist(address[] memory _addresses) external view {
+        string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;
+        string memory localPoolPath =
+            string.concat(vm.projectRoot(), "/script/output/deployedOFTAdapter_", chainName, ".json");
+        address oftAdapterAddress =
+            HelperUtils.getAddressFromJson(vm, localPoolPath, string.concat(".deployedOFTAdapter_", chainName));
+        console.log("current:", chainName);
+        uniBTCOFTAdapter adapter = uniBTCOFTAdapter(oftAdapterAddress);
+        console.log("whitelistEnable:", adapter.whitelistEnabled());
+        for (uint256 index = 0; index < _addresses.length; index++) {
+            console.log("address: %s, ", _addresses[index], adapter.whitelist(_addresses[index]));
+        }
+    }
+
     function getConfig() external view {
         // Get the current chain name based on the chain ID
         string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;

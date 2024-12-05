@@ -29,6 +29,7 @@ library HelperUtils {
         address uniBTC;
         address sendUln302;
         address receiveUIn302;
+        bool whitelist;
     }
 
     function getAllEids() public pure returns (uint32[4] memory) {
@@ -68,7 +69,8 @@ library HelperUtils {
             endPoint: 0x1a44076050125825900e736c501f859c50fE728c,
             uniBTC: 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568,
             sendUln302: 0xbB2Ea70C9E858123480642Cf96acbcCE1372dCe1,
-            receiveUIn302: 0xc02Ab410f0734EFa3F14628780e6e695156024C2
+            receiveUIn302: 0xc02Ab410f0734EFa3F14628780e6e695156024C2,
+            whitelist: true
         });
 
         return ethereumMainnet;
@@ -82,7 +84,8 @@ library HelperUtils {
             endPoint: 0x1a44076050125825900e736c501f859c50fE728c,
             uniBTC: 0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a,
             sendUln302: 0x9F8C645f2D0b2159767Bd6E0839DE4BE49e823DE,
-            receiveUIn302: 0xB217266c3A98C8B2709Ee26836C98cf12f6cCEC1
+            receiveUIn302: 0xB217266c3A98C8B2709Ee26836C98cf12f6cCEC1,
+            whitelist: true
         });
 
         return BscMainnet;
@@ -96,7 +99,8 @@ library HelperUtils {
             endPoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
             uniBTC: 0xE1061F0D0A2AaF273Dc9E2077E8545417B838a8c,
             sendUln302: 0x21F33EcF7F65D61f77e554B4B4380829908cD076,
-            receiveUIn302: 0xbAe52D605770aD2f0D17533ce56D146c7C964A0d
+            receiveUIn302: 0xbAe52D605770aD2f0D17533ce56D146c7C964A0d,
+            whitelist: true
         });
 
         return ethereumHolesky;
@@ -110,7 +114,8 @@ library HelperUtils {
             endPoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
             uniBTC: 0x50fA1411201e2Ac0361FB893E903b80F141b8190,
             sendUln302: 0xcc1ae8Cf5D3904Cef3360A9532B477529b177cCE,
-            receiveUIn302: 0xdAf00F5eE2158dD58E0d3857851c432E34A3A851
+            receiveUIn302: 0xdAf00F5eE2158dD58E0d3857851c432E34A3A851,
+            whitelist: false
         });
 
         return ethereumSepolia;

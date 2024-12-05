@@ -94,7 +94,7 @@ getConfig()
 forge script script/GetOFTAdapterConfig.s.sol --sig 'getConfig()' --rpc-url $RPC_ETH_HOLESKY
 ```
 
-### Set uniBTC mint on ETH SEPOLIA
+### Mint uniBTC on ETH SEPOLIA
 
 mint()
 
@@ -108,4 +108,20 @@ sendToken(address \_recipient, uint256 \_amount, uint256 \_chainid)
 
 ```bash
 forge script script/SendToken.s.sol --sig 'sendToken(address,uint256,uint256)' $OWNER_ADDRESS 100000000 17000 --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
+```
+
+### Add account to whitelist on ETH HOLESKY
+
+addWhitelist(address[] memory \_accounts)
+
+```bash
+forge script script/SetOFTAdapter.s.sol --sig 'addWhitelist(address[])' "[$OWNER_ADDRESS]" --rpc-url $RPC_ETH_HOLESKY --account $OWNER --broadcast
+```
+
+### Get whitelist on ETH HOLESKY
+
+getWhitelist(address[] memory \_addresses)
+
+```bash
+forge script script/GetOFTAdapterConfig.s.sol --sig 'getWhitelist(address[])' "[$OWNER_ADDRESS]" --rpc-url $RPC_ETH_HOLESKY
 ```

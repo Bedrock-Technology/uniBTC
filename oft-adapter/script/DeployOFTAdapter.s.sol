@@ -13,7 +13,8 @@ contract DeployUniBTC is Script {
         string memory chainName = networkConfig.chainName;
 
         vm.startBroadcast(vm.envAddress("DEPLOYER_ADDRESS"));
-        uniBTCOFTAdapter oftAdapter = new uniBTCOFTAdapter(networkConfig.uniBTC, networkConfig.endPoint, owner);
+        uniBTCOFTAdapter oftAdapter =
+            new uniBTCOFTAdapter(networkConfig.uniBTC, networkConfig.endPoint, owner, networkConfig.whitelist);
         vm.stopBroadcast();
 
         console.log("uniBTC OftAdapter address:", address(oftAdapter));

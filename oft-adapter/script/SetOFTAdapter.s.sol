@@ -91,6 +91,26 @@ contract SetOFTAdapter is Script {
         vm.stopBroadcast();
     }
 
+    function addWhitelist(address[] memory _accounts) external {
+        string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;
+        // Construct paths to the configuration and local pool JSON files
+        string memory localPoolPath =
+            string.concat(vm.projectRoot(), "/script/output/deployedOFTAdapter_", chainName, ".json");
+        // Extract addresses from the JSON files
+        address oftAdapterAddress =
+            HelperUtils.getAddressFromJson(vm, localPoolPath, string.concat(".deployedOFTAdapter_", chainName));
+        address owner = vm.envAddress("OWNER_ADDRESS");
+        vm.startBroadcast(owner);
+        uniBTCOFTAdapter oftAdapter = uniBTCOFTAdapter(oftAdapterAddress);
+        oftAdapter.addToWhitelist(_accounts);
+        vm.stopBroadcast();
+        console.log("current: %s", chainName);
+        console.log("add accounts to whitelist:");
+        for (uint256 index = 0; index < _accounts.length; index++) {
+            console.log("account: %s", _accounts[index]);
+        }
+    }
+
     function decode(bytes memory _liter) external view {
         HelperUtils.UlnConfig memory ulnConfig = abi.decode(_liter, (HelperUtils.UlnConfig));
         console.log("confirmations:", ulnConfig.confirmations);
