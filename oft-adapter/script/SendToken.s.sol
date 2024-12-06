@@ -50,6 +50,22 @@ contract SetOFTAdapter is Script {
         if (allowance < _amount) {
             uniBTC(networkConfig.uniBTC).approve(oftAdapterAddress, _amount);
         }
+        console.log("SendParam:");
+        console.log("  dstEid:", sendParam.dstEid);
+        console.log("  to:");
+        console.logBytes32(sendParam.to);
+        console.log("  amountLD:", sendParam.amountLD);
+        console.log("  minAmountLS:", sendParam.minAmountLD);
+        console.log("  extraOptions:");
+        console.logBytes(sendParam.extraOptions);
+        console.log("  composeMsg:");
+        console.logBytes(sendParam.composeMsg);
+        console.log("  oftCmd:");
+        console.logBytes(sendParam.oftCmd);
+        console.log("Fee:");
+        console.log("  nativeFee:", fee.nativeFee);
+        console.log("  lzTokenFee:", fee.lzTokenFee);
+        console.log("refundAddress:", owner);
         adapter.send{value: fee.nativeFee}(sendParam, fee, payable(owner));
         vm.stopBroadcast();
         console.log("send %s, to:", chainName, peerChainName);

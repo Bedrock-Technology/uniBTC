@@ -6,6 +6,7 @@ import {Script, console} from "forge-std/Script.sol";
 import {HelperUtils} from "./utils/HelperUtils.s.sol";
 import {uniBTCOFTAdapter} from "../contracts/uniBTCOFTAdapter.sol";
 import {ILayerZeroEndpointV2} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/ILayerZeroEndpointV2.sol";
+import {uniBTC} from "../contracts/mocks/uniBTC.sol";
 
 contract GetOFTAdapter is Script {
     function run() external {}
@@ -16,7 +17,11 @@ contract GetOFTAdapter is Script {
             string.concat(vm.projectRoot(), "/script/output/deployedOFTAdapter_", chainName, ".json");
         address oftAdapterAddress =
             HelperUtils.getAddressFromJson(vm, localPoolPath, string.concat(".deployedOFTAdapter_", chainName));
+        HelperUtils.NetworkConfig memory networkConfig = HelperUtils.getNetworkConfig(block.chainid);
+        uniBTC btc = uniBTC(networkConfig.uniBTC);
+        bool hasRole = btc.hasRole(btc.MINTER_ROLE(), oftAdapterAddress);
         console.log("current:", chainName);
+        console.log("minter role:", hasRole);
         uniBTCOFTAdapter adapter = uniBTCOFTAdapter(oftAdapterAddress);
         console.log("whitelistEnable:", adapter.whitelistEnabled());
         for (uint256 index = 0; index < _addresses.length; index++) {
