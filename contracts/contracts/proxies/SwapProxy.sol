@@ -2,6 +2,7 @@
 pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "../../interfaces/IVault.sol";
 import "../../interfaces/IUniswapV3.sol";
@@ -35,6 +36,15 @@ contract SwapProxy is Ownable {
 
     /// @notice Identifier for the Balancer protocol, used for protocol routing.
     bytes32 public constant BALANCER_PROTOCOL = keccak256("BALANCER_PROTOCOL");
+
+    /// @notice Token decimals for 18 decimal places.
+    uint8 public constant TOKEN_18_DECIMAL = 18;
+
+    /// @notice Token decimals for 8 decimal places.
+    uint8 public constant TOKEN_8_DECIMAL = 8;
+
+    /// @notice Converts a token amount between two decimal precisions.
+    uint256 public constant TOKEN_DECIMAL_8_BETWEEN_18_EXCHANGE_PRECISION = 1e10;
 
     /// @notice Address of the Bedrock Vault contract, which manages token storage.
     address public immutable vault;
@@ -100,6 +110,10 @@ contract SwapProxy is Ownable {
         require(_vault != address(0), "SYS001");
         require(_fromToken != address(0), "SYS001");
         require(_toToken != address(0), "SYS001");
+        uint8 fromTokenDecs = ERC20(_fromToken).decimals();
+        require(fromTokenDecs == TOKEN_18_DECIMAL || fromTokenDecs == TOKEN_8_DECIMAL, "SYS003");
+        uint8 toTokenDecs = ERC20(_toToken).decimals();
+        require(toTokenDecs == TOKEN_18_DECIMAL || toTokenDecs == TOKEN_8_DECIMAL, "SYS003");
         vault = _vault;
         fromToken = _fromToken;
         toToken = _toToken;
@@ -270,17 +284,18 @@ contract SwapProxy is Ownable {
     function _swap(uint256 amountIn, uint256 slippage, address pool, bool forward) internal {
         require(_poolInfos[pool].isValid, "USR021");
         require(amountIn > 0, "USR014");
+        uint256 amountToTokenIn = _amounts(amountIn);
+        require(amountToTokenIn > 0, "USR014");
         uint256 amountOutMin;
 
         //--------------------------------------------------------------------------------
         // 1. Calculate the minimum amount of `toToken` that must be received for the swap.
         //--------------------------------------------------------------------------------
         if (!forward) {
-            amountOutMin = (amountIn * (SLIPPAGE_RANGE + slippage)) / SLIPPAGE_RANGE;
+            amountOutMin = (amountToTokenIn * (SLIPPAGE_RANGE + slippage)) / SLIPPAGE_RANGE;
         } else {
-            amountOutMin = (amountIn * (SLIPPAGE_RANGE - slippage)) / SLIPPAGE_RANGE;
+            amountOutMin = (amountToTokenIn * (SLIPPAGE_RANGE - slippage)) / SLIPPAGE_RANGE;
         }
-
         uint256 vaultToTokenBalanceBefore = IERC20(toToken).balanceOf(vault);
 
         //--------------------------------------------------------------------------------
@@ -612,6 +627,23 @@ contract SwapProxy is Ownable {
                 || protocol == DODO_PROTOCOL || protocol == BALANCER_PROTOCOL,
             "USR021"
         );
+    }
+
+    /**
+     * @dev Converts a token amount between two decimal precisions.
+     * @param amountIn The amount of input tokens to provide for the swap.
+     * @return The converted amount of tokens based on the token precision.
+     */
+    function _amounts(uint256 amountIn) internal view returns (uint256) {
+        uint8 fromTokenDecs = ERC20(fromToken).decimals();
+        uint8 toTokenDecs = ERC20(toToken).decimals();
+        if (fromTokenDecs == toTokenDecs) {
+            return (amountIn);
+        }
+        if (toTokenDecs == TOKEN_8_DECIMAL) {
+            return (amountIn / TOKEN_DECIMAL_8_BETWEEN_18_EXCHANGE_PRECISION);
+        }
+        return (amountIn * TOKEN_DECIMAL_8_BETWEEN_18_EXCHANGE_PRECISION);
     }
 
     /**

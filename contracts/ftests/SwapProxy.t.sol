@@ -13,7 +13,9 @@ contract SwapProxyTest is Test {
     address public fromToken;
     address public toToken;
     address private constant bedrockVault = address(0x047D41F2544B7F63A8e991aF2068a363d210d6Da);
+    //address private constant bedrockVault = address(0x84E5C854A7fF9F49c888d69DECa578D406C26800);//bsc
     address public owner = address(0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3);
+    //address public owner = address(0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB);//bsc
 
     function setUp() public {
         vault = Vault(payable(bedrockVault));
@@ -137,6 +139,44 @@ contract SwapProxyTest is Test {
         swapProxy.swapToken(swapValue, poolOne, slippage, true);
         vm.stopPrank();
     }
+    /*
+    function test_swapDODOV2ProxyV2BSC() public {
+        fromToken = address(0xC96dE26018A54D51c097160568752c4E3BD6C364);
+        toToken = address(0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c);
+        //fromToken = address(0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c);
+        //toToken = address(0xC96dE26018A54D51c097160568752c4E3BD6C364);
+        router = address(0x8F8Dd7DB1bDA5eD3da8C9daf3bfa471c12d58486);
+        address poolOne = address(0xD39DFbfBA9E7eccd813918FfbDa10B783EA3b3C6);
+
+        deal(fromToken, bedrockVault, 2 * 10 ** 8);
+        deal(toToken, bedrockVault, 0);
+        vm.startPrank(owner);
+        swapProxy = new SwapProxy(bedrockVault, fromToken, toToken);
+        vm.stopPrank();
+        console.log("deploy SwapProxy contract address is:", address(swapProxy));
+        console.log("swapProxy swap type is:", swapProxy.getSwapType());
+
+        vm.startPrank(owner);
+        swapProxy.addRouter(router, swapProxy.DODO_PROTOCOL());
+        console.log("addRouter success,router is:", swapProxy.getRouter(swapProxy.DODO_PROTOCOL()));
+        vm.stopPrank();
+
+        vm.startPrank(owner);
+        swapProxy.addPool(poolOne, swapProxy.DODO_PROTOCOL());
+        vault.grantRole(vault.OPERATOR_ROLE(), address(swapProxy));
+        address[] memory allowTarget = new address[](1);
+        allowTarget[0] = router;
+        vault.allowTarget(allowTarget);
+        vm.stopPrank();
+
+        uint256 swapValue = 1 * 10 ** 8;
+        uint256 slippage = 90;
+
+        vm.startPrank(owner);
+        swapProxy.swapToken(swapValue, poolOne, slippage, true);
+        vm.stopPrank();
+    }
+    */
 
     function test_swapDODOV2ProxyV2() public {
         //fromToken = address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599);
