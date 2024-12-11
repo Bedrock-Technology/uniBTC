@@ -25,11 +25,12 @@
 
 ## L1 Blockchains
 
-| Contract   | Berachain Testnet                                                                                                            |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| ProxyAdmin | [0xC0c9E78BfC3996E8b68D872b29340816495D7e89](https://bartio.beratrail.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89) |
-| uniBTC     | [0x16221CaD160b441db008eF6DA2d3d89a32A05859](https://bartio.beratrail.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859) |
-| Vault      | [0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823](https://bartio.beratrail.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823) |
-| mockedWBTC | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://bartio.beratrail.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0) |
-| WBTC       | [0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae](https://bartio.beratrail.io/address/0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae) |
+| Contract   | Berachain bArtio Testnet                                                                                                     | Berachain cArtio Testnet                                                                                                            |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| ProxyAdmin | [0xC0c9E78BfC3996E8b68D872b29340816495D7e89](https://bartio.beratrail.io/address/0xC0c9E78BfC3996E8b68D872b29340816495D7e89) | [0x37b6D33E8004A61a2FA5C68f4c5e33B78040B038](https://80000.testnet.routescan.io/address/0x37b6D33E8004A61a2FA5C68f4c5e33B78040B038) |
+| uniBTC     | [0x16221CaD160b441db008eF6DA2d3d89a32A05859](https://bartio.beratrail.io/address/0x16221CaD160b441db008eF6DA2d3d89a32A05859) | [0x16c041FB492ea3D5C70EDae9987653E4bc00B608](https://80000.testnet.routescan.io/token/0x16c041FB492ea3D5C70EDae9987653E4bc00B608)   |
+| Vault      | [0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823](https://bartio.beratrail.io/address/0x97e16DB82E089D0C9c37bc07F23FcE98cfF04823) | [0xa12682B68d42fA16ae4eD04C1ae142c80efdd33B](https://80000.testnet.routescan.io/address/0xa12682B68d42fA16ae4eD04C1ae142c80efdd33B) |
+| mockedWBTC | [0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0](https://bartio.beratrail.io/address/0xcBf3e6Ad1eeD0f3F81fCc2Ae76A0dB16C4e747B0) | [0x78841E699Aa2020F9D9BecC369Ca289211DaeF2b](https://80000.testnet.routescan.io/token/0x78841E699Aa2020F9D9BecC369Ca289211DaeF2b)   |
+| WBTC       | [0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae](https://bartio.beratrail.io/address/0x286F1C3f0323dB9c91D1E8f45c8DF2d065AB5fae) | [0xFa5bf670A92AfF186E5176aA55690E0277010040](https://80000.testnet.routescan.io/token/0xFa5bf670A92AfF186E5176aA55690E0277010040)   |
+| Sigma      |                                                                                                                              | [0xFb4115ffcD175690fF51ee28bE693C976D3Cd766](https://80000.testnet.routescan.io/address/0xFb4115ffcD175690fF51ee28bE693C976D3Cd766) |
 
