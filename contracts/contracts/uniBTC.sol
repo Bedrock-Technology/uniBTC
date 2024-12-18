@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
 
     address public freezeToRecipient;
     mapping(address => bool) public frozenUsers;
@@ -68,6 +69,18 @@ contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Ac
             require(recipient == freezeToRecipient, "USR016");
         }
         super._transfer(sender, recipient, amount);
+    }
+
+    function freezeUsers(address[] memory users) public onlyRole(FREEZER_ROLE) {
+        for(uint256 i = 0; i < users.length; ++i) {
+            frozenUsers[users[i]] = true;
+        }
+    }
+
+    function unfreezeUsers(address[] memory users) public onlyRole(FREEZER_ROLE) {
+        for(uint256 i = 0; i < users.length; ++i) {
+            frozenUsers[users[i]] = false;
+        }
     }
 
     /**
