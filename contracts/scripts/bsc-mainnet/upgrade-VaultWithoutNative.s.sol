@@ -1,8 +1,12 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import {Script, console} from "forge-std/Script.sol";
-import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
-import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import {Script, console} from "../../lib/forge-std/src/Script.sol";
+import {
+    TransparentUpgradeableProxy,
+    ITransparentUpgradeableProxy
+} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import {VaultWithoutNative} from "../../contracts/VaultWithoutNative.sol";
 
 //simulate

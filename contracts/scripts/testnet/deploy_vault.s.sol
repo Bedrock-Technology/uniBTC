@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import {Script, console} from "forge-std/Script.sol";
+import {Script, console} from "../../lib/forge-std/src/Script.sol";
 import "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import {VaultWithoutNative} from "../../contracts/VaultWithoutNative.sol";
@@ -33,7 +34,7 @@ contract DeployVault is Script {
         VaultWithoutNative impVault = new VaultWithoutNative();
         TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
             address(impVault),
-            0x68f180fcCe6836688e9084f035309E29Bf0A2095,//random
+            0x68f180fcCe6836688e9084f035309E29Bf0A2095, //random
             abi.encodeCall(impVault.initialize, (owner, 0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F))
         );
         vm.stopBroadcast();
@@ -59,6 +60,6 @@ contract DeployVault is Script {
             assert(hasRole == true);
         }
         assert(vault.outOfService() == false);
-
     }
 }
+
