@@ -32,8 +32,8 @@ library HelperUtils {
         bool whitelist;
     }
 
-    function getAllEids() public pure returns (uint32[4] memory) {
-        uint32[4] memory allEids = [uint32(40161), 40217, 30101, 30102];
+    function getAllEids() public pure returns (uint32[6] memory) {
+        uint32[6] memory allEids = [uint32(40161), 40217, 40346, 40231, 30101, 30102];
         return allEids;
     }
 
@@ -42,8 +42,10 @@ library HelperUtils {
             return getEthereumHoleskyConfig();
         } else if (chainIdorEid == 11155111 || chainIdorEid == 40161) {
             return getEthereumSepoliaConfig();
-            // } else if (chainId == 421614) {
-            //     return helperConfig.getArbitrumSepolia();
+        } else if (chainIdorEid == 80000 || chainIdorEid == 40346) {
+            return getBeraCartioConfig();
+        } else if (chainIdorEid == 421614 || chainIdorEid == 40231) {
+            return getArbitrumSepoliaConfig();
             // } else if (chainId == 84532) {
             //     return helperConfig.getBaseSepoliaConfig();
         } else if (chainIdorEid == 1 || chainIdorEid == 30101) {
@@ -112,13 +114,43 @@ library HelperUtils {
             chainId: 11155111,
             eid: 40161,
             endPoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
-            uniBTC: 0x50fA1411201e2Ac0361FB893E903b80F141b8190,
+            uniBTC: 0xE0240d05Ae9eF703E2b71F3f4Eb326ea1888DEa3,
             sendUln302: 0xcc1ae8Cf5D3904Cef3360A9532B477529b177cCE,
             receiveUIn302: 0xdAf00F5eE2158dD58E0d3857851c432E34A3A851,
             whitelist: false
         });
 
         return ethereumSepolia;
+    }
+
+    function getBeraCartioConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory beraCartio = NetworkConfig({
+            chainName: "beraCartio",
+            chainId: 80000,
+            eid: 40346,
+            endPoint: 0x6C7Ab2202C98C4227C5c46f1417D81144DA716Ff,
+            uniBTC: 0xC3827A4BC8224ee2D116637023b124CED6db6e90,
+            sendUln302: 0xd682ECF100f6F4284138AA925348633B0611Ae21,
+            receiveUIn302: 0xcF1B0F4106B0324F96fEfcC31bA9498caa80701C,
+            whitelist: false
+        });
+
+        return beraCartio;
+    }
+
+    function getArbitrumSepoliaConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory arbitrumSepolia = NetworkConfig({
+            chainName: "arbitrumSepolia",
+            chainId: 421614,
+            eid: 40231,
+            endPoint: 0x6EDCE65403992e310A62460808c4b910D972f10f,
+            uniBTC: 0xC3827A4BC8224ee2D116637023b124CED6db6e90,
+            sendUln302: 0x4f7cd4DA19ABB31b0eC98b9066B9e857B1bf9C0E,
+            receiveUIn302: 0x75Db67CDab2824970131D5aa9CECfC9F69c69636,
+            whitelist: false
+        });
+
+        return arbitrumSepolia;
     }
 
     function getAddressFromJson(Vm vm, string memory path, string memory key) internal view returns (address) {
