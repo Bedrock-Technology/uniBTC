@@ -50,6 +50,7 @@
     "bc1pjpunppxd246722rnhquelfqpwctp0ukv8y5n5wa45jtkc78dm5ssrddndr",
     "bc1pjwjx9ygltd4ehp8rlwxlep803e0w9gtz8hxx6ekjpvetay3yytsqhfm7d4",
     "bc1pjyxkkt2ufregr92cu0ccuje8efez68wzf347hlf5ym02ah8nqlhslg8lwz",
+    "bc1plcw96tc37lzc55kzqtrch2f8asr52l7z4czfmxn3s0z7ss3x84ss9yahqh",
     "bc1pmjcg79u2quppamjtekfns5pqmdlpd0gqlwvksq9tzrua0f3vq7hsdmfcs9",
     "bc1ppwapwvnmxw4d6qtzjqqm3ungg0p5t9ay602juvp3zw8lh3ln0q6qh35ljg",
     "bc1pq6sq4rm09cqd432yhwtt99yht6lqhlgn846xug860y38y2hl7arswcuryt",
@@ -77,6 +78,7 @@
     "bc1pwqzyehmpczhn804x0zz63c5h9t55ew09r8v4lmhdy0cpla8q90rqtvmsp6",
     "bc1px7xyhwyhc6twn4zwgxupv3nejykmdq5g4atvh5wqla26fjssnq0quqe0n3",
     "bc1px954quunjyhg5f8wt2wtqupuaj8m77lp2mknz33ed3rkq7pvz88sz0466x",
+    "bc1pxj5wqepjfycsj6pg0j6y4yjcmvm8g77uj3ucppdkmrtgmx3cgkds4dfe4y",
     "bc1pyax28jhft0lzzwz9fj5cm5mehxpffa6efmddexch04tup7d23arqpcqm2x",
     "bc1pyc5v468mmltf503uhhdumxmadq3s0ykj5q5cyhj8a54k8sq5ze2su4vdy4",
     "bc1pyrcztvv3rt3qc873y7l0dpalqnxt3r5nl4kvvsn6u6fy33mqczas5mhsxq",
@@ -231,12 +233,16 @@
     "optimism": {
       "chain_id": 10,
       "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
-      "tokens": ["0x68f180fcCe6836688e9084f035309E29Bf0A2095"]
+      "tokens": [
+        "0x68f180fcCe6836688e9084f035309E29Bf0A2095"
+      ]
     },
     "zeta": {
       "chain_id": 7000,
       "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
-      "tokens": ["0x13A0c5930C028511Dc02665E7285134B6d11A5f4"]
+      "tokens": [
+        "0x13A0c5930C028511Dc02665E7285134B6d11A5f4"
+      ]
     }
   }
 }
