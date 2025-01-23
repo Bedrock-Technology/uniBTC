@@ -32,8 +32,8 @@ library HelperUtils {
         bool whitelist;
     }
 
-    function getAllEids() public pure returns (uint32[6] memory) {
-        uint32[6] memory allEids = [uint32(40161), 40217, 40346, 40231, 30101, 30102];
+    function getAllEids() public pure returns (uint32[7] memory) {
+        uint32[7] memory allEids = [uint32(40161), 40217, 40346, 40231, 30101, 30102, 30362];
         return allEids;
     }
 
@@ -58,6 +58,8 @@ library HelperUtils {
             //     return helperConfig.getOptConfig();
             // } else if (chainId == 34443) {
             //     return helperConfig.getModeConfig();
+        } else if (chainIdorEid == 80094 || chainIdorEid == 30362) {
+            return getBeraMainnetConfig();
         } else {
             revert("Unsupported chain ID");
         }
@@ -91,6 +93,21 @@ library HelperUtils {
         });
 
         return BscMainnet;
+    }
+
+    function getBeraMainnetConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory BeraMainnet = NetworkConfig({
+            chainName: "beraMainnet",
+            chainId: 80094,
+            eid: 30362,
+            endPoint: 0x6F475642a6e85809B1c36Fa62763669b1b48DD5B,
+            uniBTC: 0xC3827A4BC8224ee2D116637023b124CED6db6e90,
+            sendUln302: 0xC39161c743D0307EB9BCc9FEF03eeb9Dc4802de7,
+            receiveUIn302: 0xe1844c5D63a9543023008D332Bd3d2e6f1FE1043,
+            whitelist: true
+        });
+
+        return BeraMainnet;
     }
 
     function getEthereumHoleskyConfig() public pure returns (NetworkConfig memory) {
