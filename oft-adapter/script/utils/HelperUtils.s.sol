@@ -74,7 +74,7 @@ library HelperUtils {
             uniBTC: 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568,
             sendUln302: 0xbB2Ea70C9E858123480642Cf96acbcCE1372dCe1,
             receiveUIn302: 0xc02Ab410f0734EFa3F14628780e6e695156024C2,
-            whitelist: true
+            whitelist: false
         });
 
         return ethereumMainnet;
