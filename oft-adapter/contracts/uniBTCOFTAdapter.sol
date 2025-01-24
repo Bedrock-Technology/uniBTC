@@ -138,7 +138,6 @@ contract uniBTCOFTAdapter is OFTCore {
         internal
         virtual
         override
-        onlyInWhiteList(_to)
         returns (uint256 amountReceivedLD)
     {
         // @dev Mints the tokens and transfers to the recipient.
