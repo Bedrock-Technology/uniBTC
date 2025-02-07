@@ -15,7 +15,6 @@
     "bc1p4m2ftyuws5qdwl839gp7p6u77x0gadurmre4qd9vvw8f59unuxtq4rldlm",
     "bc1p4su5lzpaxz7rc9z6tv8u4pfstpxaw7hagdrlrq8p2z3uvd8p8thsddye9w",
     "bc1p579cq0lwlglweafhymt3gckzes8c735zfmw5d4d7lph0fmxkv3vsypp5ln",
-    "bc1p59yh7hz8v7rcrktd095xtt9kcjfgdalv54vxwmdpms057pesgntqqkfg67",
     "bc1p5r3h9cxstu587v9za0rg8adfaffwunntmxfdqgu0wm0x0gf3zm3srg7lja",
     "bc1p5sdf0yq007hph2pfdtn0ql4drs689walszuggzttxl5ymdr9sfhq3aad0u",
     "bc1p6qnzwtjxen7zccmez48npuse4fqlja9786jrwh2vyagevynl7casehcv7x",
@@ -32,6 +31,7 @@
     "bc1p94j8r24zm409k8wgqylh0z9p66mwuwgk5nkz9525mug7kda40hcqc0qdmc",
     "bc1p9jj49s3t9m2wkmurgcgsk7erqha5ktmzq3ye0rd6xql77q6nd47sm7xa7w",
     "bc1paew2r3hqqnwhatttwx3qe3f837vvhwx7jhv228py9u3t7s22ltmqenjdym",
+    "bc1pahtj74gdjf73k8azkf3st4g9dvnxzk0vf6ckk4pdztq4fzuljgfsvwypey",
     "bc1patpjgd37q68kmt4zd5u3ajp7t95r785t5e0wkh4e20kwnducv5rqpvzat0",
     "bc1pcheyhmes2ggasm4ec7hlvsm4y46u36tt2p87euwq0jc82kd72zjqxc5u9s",
     "bc1pchvtyrch7azqk9mt8a0a4ev5x57y80gc2lv5etes9kr0rnrpt0nqqk37g8",
@@ -84,6 +84,7 @@
     "bc1pyrcztvv3rt3qc873y7l0dpalqnxt3r5nl4kvvsn6u6fy33mqczas5mhsxq",
     "bc1pyul60xes4yu0q8l5k7kxjuvd637k80casz5r7nnvxz8nuh0lculq7rhsns",
     "bc1pzduef6zwh39zu9w5s4wg29haytgta84dw9s7fdmrknlcjyn4hwfqwwhmsg",
+    "bc1pzentxmwgqhfgzerjmfawu9ksxmwjxnwyh5nnphg5u5de4e8fq86qu6ezqa",
     "bc1pzfxlqzvh9p20rdl36hwc2gvuqzfye9p69v864t33vlfl804drrmqvknqkf",
     "bc1pzgstxjykkz8le2hk2z9ppr2pa0224cc96dzfz50v4frn6gtw8ncs6pzgzl",
     "bc1pzrm8y96xqacl5eazlef25pekrjzwclavnjym2e8jnjn4ffc5whnqkegh7u",
@@ -159,6 +160,13 @@
         "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
         "0xC96dE26018A54D51c097160568752c4E3BD6C364",
         "0x32dF1963f4be9C9ecC0474eA9Ea028F3A019dAAf"
+      ]
+    },
+    "bera": {
+      "chain_id": 80094,
+      "vault": "0xE0240d05Ae9eF703E2b71F3f4Eb326ea1888DEa3",
+      "tokens": [
+        "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c"
       ]
     },
     "bitlayer": {
