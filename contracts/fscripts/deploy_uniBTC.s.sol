@@ -20,5 +20,7 @@ contract Depoly is Script {
         vm.stopBroadcast();
 
         console.log("uniBTC Proxy address:", address(uniBTCProxy));
+        console.log("uniBTC Proxy Admin address:", proxyAdmin);
+        console.log("uniBTC owner:", owner);
     }
 }
