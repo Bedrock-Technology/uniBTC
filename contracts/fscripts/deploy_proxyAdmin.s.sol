@@ -16,5 +16,6 @@ contract Depoly is Script {
         vm.stopBroadcast();
 
         console.log("ProxyAdmin address:", address(adminInstance));
+        console.log("ProxyAdmin owner:", owner);
     }
 }
