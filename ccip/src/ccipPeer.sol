@@ -19,6 +19,23 @@ interface IMintableContract is IERC20 {
     function burnFrom(address account, uint256 amount) external;
 }
 
+struct EIP712Domain {
+    string name;
+    string version;
+    uint256 chainId;
+    address verifyingContract;
+    bytes32 salt;
+}
+
+// Example message struct
+struct SendToken {
+    address sender;
+    uint256 destinationChainSelector;
+    address recipient;
+    uint256 amount;
+    uint256 nonce;
+}
+
 /// @title - messenger contract for sending/receving string data across chains.
 contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessControlUpgradeable {
     using SafeERC20 for IERC20;
@@ -83,6 +100,8 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     // amount beyond SMALL_TRANSFER_MAX should use sendToken with signature.
     uint256 public constant SMALL_TRANSFER_MAX = 1 * ONE_BTC;
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    //update
+    bytes32 public constant SALT = "uniBTC-ccip";
 
     // Mapping to keep track of allowlisted destination chains and receiver.
     mapping(uint64 => address) public allowlistedDestinationChains;
@@ -102,6 +121,9 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
     address public uniBTC;
     address public sysSigner;
     uint256 public minTransferAmt;
+    //update
+    // EIP712 domain separator hash
+    bytes32 public DOMAIN_SEPARATOR;
 
     /// @dev Modifier that checks the receiver address is not 0.
     /// @param _receiver The receiver address.
@@ -131,7 +153,7 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
      *
      * ======================================================================================
      */
-    function initialize(address _defaultAdmin, address _uniBTC, address _sysSigner) external initializer {
+    function initialize(address _defaultAdmin, address _uniBTC, address _sysSigner) external reinitializer(2) {
         require(_defaultAdmin != address(0), "SYS001");
         require(_uniBTC != address(0), "SYS001");
         require(_sysSigner != address(0), "SYS001");
@@ -141,7 +163,16 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         uniBTC = _uniBTC;
         sysSigner = _sysSigner;
         // uniBTC has 8 digital decimal, 2_000_000 = 0.02000000
-        minTransferAmt = 2_000_000;
+        minTransferAmt = 1;
+        DOMAIN_SEPARATOR = _hashDomain(
+            EIP712Domain({
+                name: "ccipPeer",
+                version: "1",
+                chainId: block.chainid,
+                verifyingContract: address(this),
+                salt: SALT
+            })
+        );
     }
 
     /// @notice Fallback function to allow the contract to receive Ether.
@@ -453,13 +484,52 @@ contract CCIPPeer is CCIPReceiver, Initializable, PausableUpgradeable, AccessCon
         uint256 _amount,
         uint256 _nonce
     ) private view returns (bytes32) {
-        return sha256(
-            abi.encode(_sender, address(this), block.chainid, _destinationChainSelector, _recipient, _amount, _nonce)
-        );
+        SendToken memory message = SendToken({
+            sender: _sender,
+            destinationChainSelector: _destinationChainSelector,
+            recipient: _recipient,
+            amount: _amount,
+            nonce: _nonce
+        });
+        return keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, _hashMessage(message)));
     }
 
     function _verifySendTokenSign(bytes32 _digest, bytes memory _signature) private view returns (bool) {
         address signer = ECDSA.recover(_digest, _signature);
         return signer == sysSigner;
+    }
+
+    // Hashes an EIP712 message struct
+    function _hashMessage(SendToken memory message) private pure returns (bytes32) {
+        return keccak256(
+            abi.encode(
+                keccak256(
+                    bytes(
+                        "SendToken(address sender,uint256 destinationChainSelector,address recipient,uint256 amount,uint256 nonce)"
+                    )
+                ),
+                message.sender,
+                message.destinationChainSelector,
+                message.recipient,
+                message.amount,
+                message.nonce
+            )
+        );
+    }
+
+    //Hashes the EIP712 domain separator struct
+    function _hashDomain(EIP712Domain memory domain) private pure returns (bytes32) {
+        return keccak256(
+            abi.encode(
+                keccak256(
+                    "EIP712Domain(string name,string version,uint256 chainId,address verifyingContract,bytes32 salt)"
+                ),
+                keccak256(bytes(domain.name)),
+                keccak256(bytes(domain.version)),
+                domain.chainId,
+                domain.verifyingContract,
+                domain.salt
+            )
+        );
     }
 }
