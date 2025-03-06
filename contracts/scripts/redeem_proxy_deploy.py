@@ -16,6 +16,14 @@ def main(deployer_account="deployer", network_cfg="ethereum"):
             "whitelist_enabled": True,
             "contract_deployer": "0x029E4FbDAa31DE075dD74B2238222A08233978f6",  # deployer account
         },
+        "bitlayer": {
+            "uniBTC_proxy": "0x93919784C523f39CACaa98Ee0a9d96c3F32b593e",  # https://www.btrscan.com/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e?tab=Transactions
+            "vault_proxy": "0xF9775085d726E782E83585033B58606f7731AB18",  # https://www.btrscan.com/address/0xF9775085d726E782E83585033B58606f7731AB18?tab=Transactions
+            "redeem_owner": "0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB",  # https://www.btrscan.com/address/0x9251fd3d79522bb2243a58fff1db43e25a495aab?tab=Transactions
+            "redeem_time_duration": 691201,  # 8 days time duration
+            "whitelist_enabled": True,
+            "contract_deployer": "0x0a3f2582ff649fcaf67d03483a8ed1a82745ea19",  # https://www.btrscan.com/address/0x0a3f2582ff649fcaf67d03483a8ed1a82745ea19?tab=Transactions
+        },
     }
 
     deps = project.load(
