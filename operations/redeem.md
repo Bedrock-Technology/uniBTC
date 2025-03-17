@@ -104,14 +104,14 @@ function addToWhitelist(address[] calldata _accounts)
 
 This step involves configuring the Vault to allow specific contracts for redemption operations. Follow these guidelines:
 
-### Allow uniBTC Contract
-- Ensure the Vault allows the uniBTC contract for redemption operations.
-- This is essential for enabling uniBTC token burned by vault.
-
-### Allow Native Token Redemption
-- If native token redemption is required, configure the Vault to allow the Redeem Contract.
+### Case 1: Allow Native Token Redemption
+- Call the Vault contract method `allowTarget` with parameters `[uniBTC, Redeem]`.
 - This enables direct redemption of native BTC tokens.
 
-### Allow ERC20 Token Contracts
-- For other ERC20 tokens, configure the Vault to allow specific ERC20 Token Contracts.
+### Case 2: Allow ERC20 Token Redemption
+- Call the Vault contract method `allowTarget` with parameters `[uniBTC, ERC20]`.
 - This ensures that only approved ERC20 tokens can be redeemed.
+
+### Case 3: Allow Native and ERC20 Token Redemption
+- Call the Vault contract method `allowTarget` with parameters `[uniBTC, Redeem, ERC20]`.
+- This configuration allows both native BTC and ERC20 token redemptions.
