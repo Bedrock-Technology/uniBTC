@@ -53,6 +53,3 @@
 ## LayerZero OFT
 
 - 0x50fA1411201e2Ac0361FB893E903b80F141b8190
-
-## TransferProxy
-- [0xe1e6ce0cda67213112bb75b9ca0ee98365c24fc3](https://etherscan.io/address/0xe1e6ce0cda67213112bb75b9ca0ee98365c24fc3)
