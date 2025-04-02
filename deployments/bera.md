@@ -10,6 +10,9 @@
 
 - [0xdF1925B7A0f56a3ED7f74bE2a813Ae8bbA756e59](https://beratrail.io/address/0xdF1925B7A0f56a3ED7f74bE2a813Ae8bbA756e59)
 
+## CCT Token Pool
+- [0x04c5046A1f4E3fFf094c26dFCAA75eF293932f18](https://berascan.com/address/0x04c5046A1f4E3fFf094c26dFCAA75eF293932f18)
+
 ## WBTC
 
 - [0x0555E30da8f98308EdB960aa94C0Db47230d2B9c](https://beratrail.io/token/0x0555E30da8f98308EdB960aa94C0Db47230d2B9c)
