@@ -53,3 +53,9 @@
 ## LayerZero OFT
 
 - 0x50fA1411201e2Ac0361FB893E903b80F141b8190
+
+## Price Feed(ethereum)
+
+- 0xE542919E4b281f10b437F947c8Ba224DdfaBc716
+
+
