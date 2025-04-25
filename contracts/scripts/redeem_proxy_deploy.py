@@ -24,6 +24,14 @@ def main(deployer_account="deployer", network_cfg="ethereum"):
             "whitelist_enabled": True,
             "contract_deployer": "0x0a3f2582ff649fcaf67d03483a8ed1a82745ea19",  # https://www.btrscan.com/address/0x0a3f2582ff649fcaf67d03483a8ed1a82745ea19?tab=Transactions
         },
+        "zeta": {
+            "uniBTC_proxy": "0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a",  # https://zetachain.blockscout.com/address/0x6B2a01A5f79dEb4c2f3c0eDa7b01DF456FbD726a
+            "vault_proxy": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",  # https://zetachain.blockscout.com/address/0x84E5C854A7fF9F49c888d69DECa578D406C26800
+            "redeem_owner": "0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB",  # https://zetachain.blockscout.com/address/0xb3f925B430C60bA467F7729975D5151c8DE26698?tab=Transactions
+            "redeem_time_duration": 691201,  # 8 days time duration
+            "whitelist_enabled": True,
+            "contract_deployer": "0xb3f925B430C60bA467F7729975D5151c8DE26698",  # https://zetachain.blockscout.com/address/0xb3f925B430C60bA467F7729975D5151c8DE26698
+        },
     }
 
     deps = project.load(

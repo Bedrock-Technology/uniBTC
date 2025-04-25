@@ -7,3 +7,6 @@
 
 ## BTC.BTC Deployments
 - [0x13A0c5930C028511Dc02665E7285134B6d11A5f4](https://zetachain.blockscout.com/address/0x13A0c5930C028511Dc02665E7285134B6d11A5f4)
+
+## Redeem
+- [0xe001Ce855F9e964e5243F0Ff11f2353dC371e810](https://zetachain.blockscout.com/address/0xe001Ce855F9e964e5243F0Ff11f2353dC371e810)
