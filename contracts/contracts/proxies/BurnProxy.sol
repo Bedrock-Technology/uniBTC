@@ -7,7 +7,7 @@ import {IVault} from "../../interfaces/IVault.sol";
 import {IMintableContract} from "../../interfaces/IMintableContract.sol";
 
 contract BurnProxy is Ownable {
-    address public immutable vault;
+    IVault public immutable vault;
     address public immutable token;
 
     using Address for address;
@@ -17,7 +17,7 @@ contract BurnProxy is Ownable {
      */
     constructor(address _vault, address _token) Ownable() {
         require(_token.isContract(), "not a contract address");
-        vault = _vault;
+        vault = IVault(_vault);
         token = _token;
     }
 
@@ -27,6 +27,6 @@ contract BurnProxy is Ownable {
     function burn(uint256 _amount) external onlyOwner {
         require(_amount > 0, "bad params");
         bytes memory data = abi.encodeWithSelector(IMintableContract.burn.selector, _amount);
-        IVault(vault).execute(token, data, 0);
+        vault.execute(token, data, 0);
     }
 }
