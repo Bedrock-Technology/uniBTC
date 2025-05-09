@@ -18,3 +18,6 @@
 
 ## TransferProxy
 - [0xe001Ce855F9e964e5243F0Ff11f2353dC371e810](https://explorer.gobob.xyz/address/0xe001Ce855F9e964e5243F0Ff11f2353dC371e810)
+
+## CCT Token Pool
+- [0xF549af21578Cfe2385FFD3488B3039fd9e52f006](https://explorer.gobob.xyz/address/0xF549af21578Cfe2385FFD3488B3039fd9e52f006?tab=read_write_contract)
