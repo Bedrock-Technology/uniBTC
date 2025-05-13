@@ -32,6 +32,14 @@ def main(deployer_account="deployer", network_cfg="ethereum"):
             "whitelist_enabled": True,
             "contract_deployer": "0xb3f925B430C60bA467F7729975D5151c8DE26698",  # https://zetachain.blockscout.com/address/0xb3f925B430C60bA467F7729975D5151c8DE26698
         },
+        "merlin": {
+            "uniBTC_proxy": "0x93919784C523f39CACaa98Ee0a9d96c3F32b593e",  # https://scan.merlinchain.io/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
+            "vault_proxy": "0xF9775085d726E782E83585033B58606f7731AB18",  # https://scan.merlinchain.io/address/0xF9775085d726E782E83585033B58606f7731AB18
+            "redeem_owner": "0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB",  # https://scan.merlinchain.io/address/0x9251fd3D79522bB2243a58FFf1dB43E25A495aaB
+            "redeem_time_duration": 691201,  # 8 days time duration
+            "whitelist_enabled": True,
+            "contract_deployer": "0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19",  # https://scan.merlinchain.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
+        },
     }
 
     deps = project.load(
@@ -45,9 +53,12 @@ def main(deployer_account="deployer", network_cfg="ethereum"):
     assert config_contact[network_cfg]["redeem_time_duration"] > 0  # 691200
     assert config_contact[network_cfg]["contract_deployer"] != ""
 
+    #gas_price = '20000000'
     deployer = accounts.load(deployer_account)
     # deploy DelayRedeemRouter contract
     delay_redeem_router_contract = DelayRedeemRouter.deploy({"from": deployer})
+    # deploy DelayRedeemRouter contract, merlin
+    #delay_redeem_router_contract = DelayRedeemRouter.deploy({"from": deployer, 'gas_price': gas_price})
     print("delay_redeem_router contract", delay_redeem_router_contract)
 
     data = DelayRedeemRouter[-1].initialize.encode_input(
@@ -63,6 +74,15 @@ def main(deployer_account="deployer", network_cfg="ethereum"):
         data,
         {"from": deployer},
     )
+    # deploy DelayRedeemRouter proxy contract, merlin
+    '''
+    delay_redeem_router_proxy = TransparentUpgradeableProxy.deploy(
+        delay_redeem_router_contract,
+        config_contact[network_cfg]["contract_deployer"],
+        data,
+        {"from": deployer, 'gas_price': gas_price},
+    )
+    '''
     print("delay_redeem_router proxy", delay_redeem_router_proxy)
 
     transparent_delay_redeem_router = Contract.from_abi(

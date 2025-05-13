@@ -14,3 +14,6 @@
 
 ## WBTC
 - [0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA](https://scan.merlinchain.io/address/0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA) (UNSUPPORTED NOW)
+
+## Redeem
+- [0xe001Ce855F9e964e5243F0Ff11f2353dC371e810](https://scan.merlinchain.io/address/0xe001Ce855F9e964e5243F0Ff11f2353dC371e810)
