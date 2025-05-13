@@ -18,8 +18,8 @@ compiler:
           enabled: true
           runs: 200
         remappings:
-          - "@openzeppelin/contracts=./lib/OpenZeppelin/openzeppelin-contracts@4.8.3/contracts"
-          - "@openzeppelin/contracts-upgradeable=./lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/contracts"
+          - "@openzeppelin/contracts=/Users/eben/rockx-project/rockx-contract/hanson/uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts@4.8.3/contracts"
+          - "@openzeppelin/contracts-upgradeable=/Users/eben/rockx-project/rockx-contract/hanson/uniBTC/contracts/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/contracts"
 
 # automatically fetch contract sources from Etherscan
 autofetch_sources: True
