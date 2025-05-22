@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -96,5 +97,16 @@ contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Ac
      */
     function setFreezeToRecipient(address recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
         freezeToRecipient = recipient;
+    }
+
+    /**
+     * @dev withdraw token from contract
+     */
+    function withdraw(address _token, address _to, uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (_token == address(0)) {
+            payable(_to).transfer(_amount);
+        } else {
+            IERC20(_token).transfer(_to, _amount);
+        }
     }
 }
