@@ -43,11 +43,11 @@ contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Ac
         _mint(to, amount);
     }
 
-    function burn(uint256 amount) override public onlyRole(MINTER_ROLE) {
+    function burn(uint256 amount) override public {
         _burn(_msgSender(), amount);
     }
 
-    function burnFrom(address account, uint256 amount) override public onlyRole(MINTER_ROLE) {
+    function burnFrom(address account, uint256 amount) override public {
         _spendAllowance(account, _msgSender(), amount);
         _burn(account, amount);
     }
