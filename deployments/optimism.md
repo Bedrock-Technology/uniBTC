@@ -26,3 +26,4 @@
 ## CCT Token Pool
 
 - [0xF7e8fE6B8548c388b818d27AC2e2A72207D2E117](https://optimistic.etherscan.io/address/0xF7e8fE6B8548c388b818d27AC2e2A72207D2E117)
+- [0x99D94f528CeA3eE1791ab7B476A1FACb4297CA17](https://optimistic.etherscan.io/address/0x99D94f528CeA3eE1791ab7B476A1FACb4297CA17)
