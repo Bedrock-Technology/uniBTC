@@ -15,3 +15,4 @@
 
 ## CCT Token Pool
 - [0x04c5046A1f4E3fFf094c26dFCAA75eF293932f18](https://www.btrscan.com/address/0x04c5046A1f4E3fFf094c26dFCAA75eF293932f18?tab=Contract)
+- [0x4b75FE6e4a53A510AbC39c7328B0b06E74a3F624](https://www.btrscan.com/address/0x4b75FE6e4a53A510AbC39c7328B0b06E74a3F624)

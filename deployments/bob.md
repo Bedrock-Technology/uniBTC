@@ -21,3 +21,4 @@
 
 ## CCT Token Pool
 - [0xF549af21578Cfe2385FFD3488B3039fd9e52f006](https://explorer.gobob.xyz/address/0xF549af21578Cfe2385FFD3488B3039fd9e52f006?tab=read_write_contract)
+- [0x42c9190A899c76740E45F7777313851d69b33126](https://explorer.gobob.xyz/address/0x42c9190A899c76740E45F7777313851d69b33126)

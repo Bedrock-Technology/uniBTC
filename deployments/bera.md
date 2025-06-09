@@ -12,6 +12,7 @@
 
 ## CCT Token Pool
 - [0x04c5046A1f4E3fFf094c26dFCAA75eF293932f18](https://berascan.com/address/0x04c5046A1f4E3fFf094c26dFCAA75eF293932f18)
+- [0x097Ae334B90F98637899cfcaa7980B13aa497e5E](https://berascan.com/address/0x097Ae334B90F98637899cfcaa7980B13aa497e5E)
 
 ## WBTC
 
