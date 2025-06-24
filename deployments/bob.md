@@ -1,24 +1,34 @@
 # BOB
 
 ## Core
+
 - ProxyAdmin: [0x56c3024eB229Ca0570479644c78Af9D53472B3e4](https://explorer.gobob.xyz/address/0x56c3024eB229Ca0570479644c78Af9D53472B3e4)
 - uniBTC: [0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894](https://explorer.gobob.xyz/address/0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894)
 - Vault: [0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf](https://explorer.gobob.xyz/address/0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf)
 
 ## FBTC
+
 - FBTCProxy: 0xF9775085d726E782E83585033B58606f7731AB18
 - F0: 0xc96de26018a54d51c097160568752c4e3bd6c364
 - F1: 0xee03e367bcb59a9b4c1c0ea495a2e9cac36372c8
 
 ## Multisig
+
 - 0xa5adCfc8b9B0fe1CbA36659f317eEa431561bdc7
 
 ## WBTC
+
 - [0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3](https://explorer.gobob.xyz/address/0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3)
 
 ## TransferProxy
+
 - [0xe001Ce855F9e964e5243F0Ff11f2353dC371e810](https://explorer.gobob.xyz/address/0xe001Ce855F9e964e5243F0Ff11f2353dC371e810)
 
+## CCIPPeer
+
+- [0xcb28DAB5e89F6Bf2fEB2de200564bafF77d59957](https://explorer.gobob.xyz/address/0xcb28DAB5e89F6Bf2fEB2de200564bafF77d59957)
+
 ## CCT Token Pool
+
 - [0xF549af21578Cfe2385FFD3488B3039fd9e52f006](https://explorer.gobob.xyz/address/0xF549af21578Cfe2385FFD3488B3039fd9e52f006?tab=read_write_contract)
 - [0x42c9190A899c76740E45F7777313851d69b33126](https://explorer.gobob.xyz/address/0x42c9190A899c76740E45F7777313851d69b33126)
