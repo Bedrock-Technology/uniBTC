@@ -24,15 +24,15 @@ contract DeployCCIPPeer is Script {
     address public proxyAdmin;
     address public uniBTCAddress;
     // TODO modify when contract was deployed.
-    address public ccipPeerAddress = 0x55A67cf07B8a9A09fB6d565279287Cfe4aB60edC;
+    address public ccipPeerAddress = 0xcb28DAB5e89F6Bf2fEB2de200564bafF77d59957;
     address public sysSigner = 0x9ffB3beFBfBe535E68b2d1DDd79aa0e1ef8dC863;
 
     function setUp() public {
         deploy = 0x8cb37518330014E027396E3ED59A231FBe3B011A;
         owner = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
-        proxyAdmin = 0x029E4FbDAa31DE075dD74B2238222A08233978f6;
-        uniBTCAddress = 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568;
-        router = 0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D;
+        proxyAdmin = 0x56c3024eB229Ca0570479644c78Af9D53472B3e4;
+        uniBTCAddress = 0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894;
+        router = 0x827716e74F769AB7b6bb374A29235d9c2156932C;
     }
 
     // default function to run, must exist.
@@ -41,11 +41,12 @@ contract DeployCCIPPeer is Script {
         //deploy ccipPeer
         CCIPPeer ccipPeerImplementation = new CCIPPeer(router);
 
-        new TransparentUpgradeableProxy(
+        TransparentUpgradeableProxy ccipPeer = new TransparentUpgradeableProxy(
             address(ccipPeerImplementation),
             proxyAdmin,
             abi.encodeCall(ccipPeerImplementation.initialize, (owner, uniBTCAddress, sysSigner))
         );
+        console.log("ccipPeerAddress", address(ccipPeer));
         vm.stopBroadcast();
     }
 
@@ -85,23 +86,11 @@ contract DeployCCIPPeer is Script {
         vm.stopBroadcast();
     }
 
-    function initSonicPeer() public {
+    function initEthPeer() public {
         //TODO modify
-        address peerCcip = 0xAb3630cEf046e2dFAFd327eB8b7B96D627dEFa83;
-        address peeruniBTC = 0xC3827A4BC8224ee2D116637023b124CED6db6e90;
-        uint64 peerchainSelect = 1673871237479749969;
-        vm.startBroadcast(owner);
-        CCIPPeer(payable(ccipPeerAddress)).allowlistSourceChain(peerchainSelect, peerCcip);
-        CCIPPeer(payable(ccipPeerAddress)).allowlistDestinationChain(peerchainSelect, peerCcip);
-        CCIPPeer(payable(ccipPeerAddress)).allowlistTargetTokens(peerchainSelect, peeruniBTC);
-        vm.stopBroadcast();
-    }
-
-    function initBobPeer() public {
-        //TODO modify
-        address peerCcip = 0xcb28DAB5e89F6Bf2fEB2de200564bafF77d59957;
-        address peeruniBTC = 0x236f8c0a61dA474dB21B693fB2ea7AAB0c803894;
-        uint64 peerchainSelect = 3849287863852499584;
+        address peerCcip = 0x55A67cf07B8a9A09fB6d565279287Cfe4aB60edC;
+        address peeruniBTC = 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568;
+        uint64 peerchainSelect = 5009297550715157269;
         vm.startBroadcast(owner);
         CCIPPeer(payable(ccipPeerAddress)).allowlistSourceChain(peerchainSelect, peerCcip);
         CCIPPeer(payable(ccipPeerAddress)).allowlistDestinationChain(peerchainSelect, peerCcip);
