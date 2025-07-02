@@ -929,7 +929,7 @@ contract DelayRedeemRouter is
                 if (token == NATIVE_BTC) {
                     // Check vault balance and fast lane logic
                     uint256 vaultBalance = address(vault).balance;
-                    _updateFastLane(recipient, token, vaultBalance, amountToSend);
+                    _useFastLane(recipient, token, vaultBalance, amountToSend);
                     // Transfer the native token to the recipient.
                     IVault(vault).execute(address(this), "", amountToSend);
                     (bool success, ) = payable(recipient).call{
@@ -941,7 +941,7 @@ contract DelayRedeemRouter is
                 } else {
                     // Check vault balance and fast lane logic
                     uint256 vaultBalance = IERC20(token).balanceOf(vault);
-                    _updateFastLane(recipient, token, vaultBalance, amountToSend);
+                    _useFastLane(recipient, token, vaultBalance, amountToSend);
                     data = abi.encodeWithSelector(
                         IERC20.transfer.selector,
                         recipient,
@@ -1167,7 +1167,7 @@ contract DelayRedeemRouter is
      * @param vaultBalance The balance of the vault for the specified token.
      * @param amountToSend The amount to be sent to the recipient.
      */
-    function _updateFastLane(address recipient, address token, uint256 vaultBalance, uint256 amountToSend) internal {
+    function _useFastLane(address recipient, address token, uint256 vaultBalance, uint256 amountToSend) internal {
         if (vaultBalance < retainAmounts[token] + amountToSend) {
             require(fastLanes[recipient], "USR015");
             require(vaultBalance >= retainAmounts[token], "USR027");
