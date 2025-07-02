@@ -192,6 +192,19 @@ contract DelayRedeemRouter is
      */
     uint256 public managementFee;
 
+    /// update 2025-7-2, add green channel feature
+    /**
+     * @notice Mapping to store the fast lane status of accounts.
+     * If enabled, users can redeem with uniBTC using retain amount.
+     */
+    mapping(address => bool) public fastLanes;
+
+    /**
+     * @notice The maximum amount of tokens that can be redeemed in the fast lane.
+     * This is used to limit the amount of tokens that can be redeemed in a single transaction.
+     */
+    mapping(address => uint256) public retainAmounts;
+
     /**
      * @notice If users are allowed to redeem native BTC, native BTCs will be transferred here first and then be claimed by users.
      */
@@ -493,6 +506,38 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev Sets the retain amount for fast lane redemption.
+     * @param _tokens List of BTC tokens.
+     * @param _balances List of retain amounts for each token.
+     */
+    function setRetainAmounts(
+        address[] calldata _tokens,
+        uint256[] calldata _balances
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_tokens.length == _balances.length, "SYS006");
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            retainAmounts[_tokens[i]] = _balances[i];
+        }
+        emit RetainAmountsSet(_tokens,_balances);
+    }
+
+    /**
+     * @dev Sets the fast lane status for multiple accounts.
+     * @param _accounts List of accounts to set fast lane status.
+     * @param _fastLaneStatus Corresponding fast lane status for each account.
+     */
+    function setFastLane(
+        address[] calldata _accounts,
+        bool[] calldata _fastLaneStatus
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_accounts.length == _fastLaneStatus.length, "SYS006");
+        for (uint256 i = 0; i < _accounts.length; i++) {
+            fastLanes[_accounts[i]] = _fastLaneStatus[i];
+        }
+        emit FastLaneSet(_accounts, _fastLaneStatus);
+    }
+
+    /**
      * ======================================================================================
      *
      * EXTERNAL FUNCTIONS
@@ -781,6 +826,15 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev Checks if a specific BTC token is paused.
+     * @param token The BTC token address to check.
+     * @return True if the token is paused, false otherwise.
+     */
+    function isPausedToken(address token) external view returns (bool) {
+        return pausedTokens[token];
+    }
+
+    /**
      * ======================================================================================
      *
      * INTERNAL FUNCTIONS
@@ -873,6 +927,9 @@ contract DelayRedeemRouter is
                 tokenDebts[token].totalCleared += uniBTCAmount;
                 burnAmount += uniBTCAmount;
                 if (token == NATIVE_BTC) {
+                    // Check vault balance and fast lane logic
+                    uint256 vaultBalance = address(vault).balance;
+                    _useFastLane(recipient, token, vaultBalance, amountToSend);
                     // Transfer the native token to the recipient.
                     IVault(vault).execute(address(this), "", amountToSend);
                     (bool success, ) = payable(recipient).call{
@@ -882,6 +939,9 @@ contract DelayRedeemRouter is
                         revert("USR010");
                     }
                 } else {
+                    // Check vault balance and fast lane logic
+                    uint256 vaultBalance = IERC20(token).balanceOf(vault);
+                    _useFastLane(recipient, token, vaultBalance, amountToSend);
                     data = abi.encodeWithSelector(
                         IERC20.transfer.selector,
                         recipient,
@@ -1101,6 +1161,23 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @notice Internal function to update the fast lane status for a recipient.
+     * @param recipient The address of the recipient.
+     * @param token The specific BTC token address.
+     * @param vaultBalance The balance of the vault for the specified token.
+     * @param amountToSend The amount to be sent to the recipient.
+     */
+    function _useFastLane(address recipient, address token, uint256 vaultBalance, uint256 amountToSend) internal {
+        if (vaultBalance < retainAmounts[token] + amountToSend) {
+            require(fastLanes[recipient], "USR015");
+            require(vaultBalance >= retainAmounts[token], "USR027");
+            require(retainAmounts[token] >= amountToSend, "USR015");
+            retainAmounts[token] = retainAmounts[token] - amountToSend;
+            fastLanes[recipient] = false;
+        }
+    }
+
+    /**
      * ======================================================================================
      *
      * EVENTS
@@ -1229,4 +1306,14 @@ contract DelayRedeemRouter is
      * @notice Event emitted when the management fee is withdrawn.
      */
     event ManagementFeeWithdrawn(address recipient, uint256 amount);
+
+    /**
+     * @notice Event emitted when the fast lane is set for accounts.
+     */
+    event FastLaneSet(address[] accounts, bool[] fastLaneStatus);
+
+    /**
+     * @notice Event emitted when the retain amounts for fast lane redemption are set.
+     */
+    event RetainAmountsSet(address[] tokens, uint256[] balances);
 }
