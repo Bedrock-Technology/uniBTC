@@ -21,6 +21,7 @@ contract DelayRedeemRouter is
     using SafeERC20 for IERC20;
 
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     /**
      * @notice The duration of one day in seconds (60 * 60 * 24 = 86,400)
      */
@@ -529,7 +530,7 @@ contract DelayRedeemRouter is
     function setFastLane(
         address[] calldata _accounts,
         bool[] calldata _fastLaneStatus
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(OPERATOR_ROLE) {
         require(_accounts.length == _fastLaneStatus.length, "SYS006");
         for (uint256 i = 0; i < _accounts.length; i++) {
             fastLanes[_accounts[i]] = _fastLaneStatus[i];
