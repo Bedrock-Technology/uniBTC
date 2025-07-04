@@ -1043,6 +1043,7 @@ contract DelayRedeemRouter is
                 emit DelayedRedeemsPrincipalClaimed(
                     recipient,
                     token,
+                    uniBTCAmount,
                     principalAmount
                 );
             }
@@ -1248,6 +1249,7 @@ contract DelayRedeemRouter is
     event DelayedRedeemsPrincipalClaimed(
         address recipient,
         address token,
+        uint256 debtAmount,
         uint256 principalAmount
     );
 
