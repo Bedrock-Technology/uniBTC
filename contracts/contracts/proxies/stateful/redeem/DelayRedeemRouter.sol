@@ -74,6 +74,7 @@ contract DelayRedeemRouter is
         uint224 amount;
         uint32 createdAt;
         address token;
+        uint256 fee; // Redeem fee for the delayed redeem
     }
 
     /**
@@ -94,6 +95,7 @@ contract DelayRedeemRouter is
     struct DebtTokenAmount {
         address token;
         uint256 amount;
+        uint256 fee; // A one-time redeem fee for the token
     }
 
     /**
@@ -205,6 +207,11 @@ contract DelayRedeemRouter is
      * This is used to limit the amount of tokens that can be redeemed in a single transaction.
      */
     mapping(address => uint256) public retainAmounts;
+
+    /**
+     * @notice Tracks the user cancel fee rate for the contract.
+     */
+    uint256 public cancelFeeRate;
 
     /**
      * @notice If users are allowed to redeem native BTC, native BTCs will be transferred here first and then be claimed by users.
@@ -539,6 +546,19 @@ contract DelayRedeemRouter is
     }
 
     /**
+     * @dev Sets the cancel fee rate for the contract.
+     * @param _newFeeRate The new value for the cancel fee rate,
+     * which is used to calculate the cancellation fee.
+     */
+    function setCancelFeeRate(
+        uint256 _newFeeRate
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_newFeeRate <= REDEEM_FEE_RATE_RANGE, "USR011");
+        emit CancelFeeRateSet(cancelFeeRate, _newFeeRate);
+        cancelFeeRate = _newFeeRate;
+    }
+
+    /**
      * ======================================================================================
      *
      * EXTERNAL FUNCTIONS
@@ -580,12 +600,12 @@ contract DelayRedeemRouter is
                     REDEEM_FEE_RATE_RANGE
             );
             uint256 userRedeemFee = amount - userRedeemAmount;
-            managementFee += userRedeemFee;
 
             DelayedRedeem memory delayedRedeem = DelayedRedeem({
                 amount: userRedeemAmount,
                 createdAt: uint32(block.timestamp),
-                token: token
+                token: token,
+                fee: userRedeemFee
             });
             _userRedeems[msg.sender].delayedRedeems.push(delayedRedeem);
 
@@ -849,7 +869,6 @@ contract DelayRedeemRouter is
      */
     function _setRedeemDelay(uint256 newDelay) internal {
         require(newDelay <= MAX_REDEEM_DELAY, "USR012");
-        require(newDelay < redeemPrincipalDelay, "USR019");
         emit RedeemDelaySet(redeemDelay, newDelay);
         redeemDelay = newDelay;
     }
@@ -860,7 +879,6 @@ contract DelayRedeemRouter is
      */
     function _setRedeemPrincipalDelay(uint256 newDelay) internal {
         require(newDelay <= MAX_REDEEM_DELAY, "USR012");
-        require(newDelay > redeemDelay, "USR019");
         emit RedeemPrincipalDelaySet(redeemPrincipalDelay, newDelay);
         redeemPrincipalDelay = newDelay;
     }
@@ -919,11 +937,16 @@ contract DelayRedeemRouter is
 
             // Transfer the delayed redemptions to the recipient.
             uint256 burnAmount = 0;
+            uint256 totalFee = 0;
             bytes memory data;
             for (uint256 i = 0; i < debtAmounts.length; i++) {
                 address token = debtAmounts[i].token;
                 require(!pausedTokens[token], "SYS003");
                 uint256 uniBTCAmount = debtAmounts[i].amount;
+                uint256 tokenFee = debtAmounts[i].fee;
+                // The user is required to pay the redemption fee.
+                managementFee += tokenFee;
+                totalFee += tokenFee;
                 uint256 amountToSend = _amounts(token, uniBTCAmount);
                 tokenDebts[token].totalCleared += uniBTCAmount;
                 burnAmount += uniBTCAmount;
@@ -969,7 +992,8 @@ contract DelayRedeemRouter is
             emit DelayedRedeemsCompleted(
                 recipient,
                 burnAmount,
-                delayedRedeemsCompletedBefore + numToClaim
+                delayedRedeemsCompletedBefore + numToClaim,
+                totalFee
             );
         }
     }
@@ -1008,22 +1032,32 @@ contract DelayRedeemRouter is
                 numToClaim;
 
             uint256 amountToSend = 0;
+            uint256 totalPrincipal = 0;
             for (uint256 i = 0; i < debtAmounts.length; i++) {
                 address token = debtAmounts[i].token;
                 uint256 uniBTCAmount = debtAmounts[i].amount;
+                uint256 tokenFee = debtAmounts[i].fee;
                 tokenDebts[token].totalCleared += uniBTCAmount;
-                amountToSend += uniBTCAmount;
+                uint256 principalAmount = uniBTCAmount + tokenFee;
+                totalPrincipal += principalAmount;
                 emit DelayedRedeemsPrincipalClaimed(
                     recipient,
                     token,
-                    uniBTCAmount
+                    principalAmount
                 );
             }
+            // The user is required to pay the cancel fee.
+            amountToSend = (totalPrincipal * (REDEEM_FEE_RATE_RANGE - cancelFeeRate)) / REDEEM_FEE_RATE_RANGE;
+            uint256 userCancelFee = totalPrincipal - amountToSend;
+            //the cancel fee is added to the management fee
+            managementFee += userCancelFee;
+
             IERC20(uniBTC).safeTransfer(recipient, amountToSend);
             emit DelayedRedeemsPrincipalCompleted(
                 recipient,
                 amountToSend,
-                delayedRedeemsCompletedBefore + numToClaim
+                delayedRedeemsCompletedBefore + numToClaim,
+                userCancelFee
             );
         }
     }
@@ -1130,6 +1164,7 @@ contract DelayRedeemRouter is
                 for (uint256 j = 0; j < tokenCount; j++) {
                     if (debtAmounts[j].token == delayedRedeem.token) {
                         debtAmounts[j].amount += delayedRedeem.amount;
+                        debtAmounts[j].fee += delayedRedeem.fee;
                         found = true;
                         break;
                     }
@@ -1137,7 +1172,8 @@ contract DelayRedeemRouter is
                 if (!found) {
                     debtAmounts[tokenCount] = DebtTokenAmount({
                         token: delayedRedeem.token,
-                        amount: delayedRedeem.amount
+                        amount: delayedRedeem.amount,
+                        fee: delayedRedeem.fee
                     });
                     tokenCount++;
                 }
@@ -1212,7 +1248,7 @@ contract DelayRedeemRouter is
     event DelayedRedeemsPrincipalClaimed(
         address recipient,
         address token,
-        uint256 claimedAmount
+        uint256 principalAmount
     );
 
     /**
@@ -1221,7 +1257,8 @@ contract DelayRedeemRouter is
     event DelayedRedeemsCompleted(
         address recipient,
         uint256 burnedAmount,
-        uint256 delayedRedeemsCompleted
+        uint256 delayedRedeemsCompleted,
+        uint256 totalFee
     );
 
     /**
@@ -1230,7 +1267,8 @@ contract DelayRedeemRouter is
     event DelayedRedeemsPrincipalCompleted(
         address recipient,
         uint256 principalAmount,
-        uint256 delayedRedeemsCompleted
+        uint256 delayedRedeemsCompleted,
+        uint256 totalFee
     );
 
     /**
@@ -1317,4 +1355,9 @@ contract DelayRedeemRouter is
      * @notice Event emitted when the retain amounts for fast lane redemption are set.
      */
     event RetainAmountsSet(address[] tokens, uint256[] balances);
+
+    /**
+     * @notice Event emitted when the cancel fee rate is set.
+     */
+    event CancelFeeRateSet(uint256 previousFeeRate, uint256 newFeeRate);
 }
