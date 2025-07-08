@@ -60,6 +60,8 @@ library HelperUtils {
             //     return helperConfig.getModeConfig();
         } else if (chainIdorEid == 80094 || chainIdorEid == 30362) {
             return getBeraMainnetConfig();
+        } else if (chainIdorEid == 239 || chainIdorEid == 30377) {
+            return getTacMainnetConfig();
         } else {
             revert("Unsupported chain ID");
         }
@@ -108,6 +110,21 @@ library HelperUtils {
         });
 
         return BeraMainnet;
+    }
+
+    function getTacMainnetConfig() public pure returns (NetworkConfig memory) {
+        NetworkConfig memory TacMainnet = NetworkConfig({
+            chainName: "tacMainnet",
+            chainId: 239,
+            eid: 30377,
+            endPoint: 0x6F475642a6e85809B1c36Fa62763669b1b48DD5B,
+            uniBTC: 0xF9775085d726E782E83585033B58606f7731AB18,
+            sendUln302: 0xC39161c743D0307EB9BCc9FEF03eeb9Dc4802de7,
+            receiveUIn302: 0xe1844c5D63a9543023008D332Bd3d2e6f1FE1043,
+            whitelist: true
+        });
+
+        return TacMainnet;
     }
 
     function getEthereumHoleskyConfig() public pure returns (NetworkConfig memory) {

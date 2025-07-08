@@ -6,11 +6,12 @@
 - uniBTC: [0xC3827A4BC8224ee2D116637023b124CED6db6e90](https://beratrail.io/address/0xC3827A4BC8224ee2D116637023b124CED6db6e90)
 - Vault: [0xE0240d05Ae9eF703E2b71F3f4Eb326ea1888DEa3](https://beratrail.io/address/0xE0240d05Ae9eF703E2b71F3f4Eb326ea1888DEa3)
 
-## LayerZero OFT
+## LayerZero OFT(peer eth)
 
 - [0xdF1925B7A0f56a3ED7f74bE2a813Ae8bbA756e59](https://beratrail.io/address/0xdF1925B7A0f56a3ED7f74bE2a813Ae8bbA756e59)
 
 ## CCT Token Pool
+
 - [0x04c5046A1f4E3fFf094c26dFCAA75eF293932f18](https://berascan.com/address/0x04c5046A1f4E3fFf094c26dFCAA75eF293932f18)
 - [0x097Ae334B90F98637899cfcaa7980B13aa497e5E](https://berascan.com/address/0x097Ae334B90F98637899cfcaa7980B13aa497e5E)
 
