@@ -74,7 +74,6 @@ contract DelayRedeemRouter is
         uint224 amount;
         uint32 createdAt;
         address token;
-        uint256 fee; // Redeem fee for the delayed redeem
     }
 
     /**
@@ -212,6 +211,12 @@ contract DelayRedeemRouter is
      * @notice Tracks the user cancel fee rate for the contract.
      */
     uint256 public cancelFeeRate;
+
+    /**
+     * @notice The management fee for the contract.
+     * This is used to cover the costs of managing the contract.
+     */
+    mapping(address => mapping(uint256 => uint256)) public redeemFees;
 
     /**
      * @notice If users are allowed to redeem native BTC, native BTCs will be transferred here first and then be claimed by users.
@@ -604,12 +609,12 @@ contract DelayRedeemRouter is
             DelayedRedeem memory delayedRedeem = DelayedRedeem({
                 amount: userRedeemAmount,
                 createdAt: uint32(block.timestamp),
-                token: token,
-                fee: userRedeemFee
+                token: token
             });
             _userRedeems[msg.sender].delayedRedeems.push(delayedRedeem);
 
             tokenDebts[token].totalDebts += userRedeemAmount;
+            redeemFees[msg.sender][_userRedeems[msg.sender].delayedRedeems.length - 1] = userRedeemFee;
 
             emit DelayedRedeemCreated(
                 msg.sender,
@@ -853,6 +858,62 @@ contract DelayRedeemRouter is
      */
     function isPausedToken(address token) external view returns (bool) {
         return pausedTokens[token];
+    }
+
+    /**
+     * @notice Retrieves the user's delayed redeems that are ready to be claimed.
+     * @param recipient The address of the user whose delayed redeems are being queried.
+     * @param maxNumberOfDelayedRedeemsToClaim The maximum number of delayed redeems to claim in a single call.
+     * @return An array of DebtTokenAmount structs representing the user's delayed redeems.
+     */
+    function getUserRedeem(
+        address recipient,
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) external view returns (DebtTokenAmount[] memory) {
+        uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
+            .delayedRedeemsCompleted;
+        DebtTokenAmount[] memory debtAmounts;
+        uint256 numToClaim = 0;
+
+        //================================================================================================
+        // 1. Get the length of debt that need to be repaid and the amount of each type of debt.
+        //================================================================================================
+        (numToClaim, debtAmounts) = _getDebtTokenAmount(
+            recipient,
+            delayedRedeemsCompletedBefore,
+            redeemDelay,
+            maxNumberOfDelayedRedeemsToClaim
+        );
+
+        return debtAmounts;
+    }
+
+    /**
+     * @notice Retrieves the user's delayed redeems that are ready to be claimed for principal.
+     * @param recipient The address of the user whose delayed redeems are being queried.
+     * @param maxNumberOfDelayedRedeemsToClaim The maximum number of delayed redeems to claim in a single call.
+     * @return An array of DebtTokenAmount structs representing the user's delayed redeems for principal.
+     */
+    function getUserPrincipal(
+        address recipient,
+        uint256 maxNumberOfDelayedRedeemsToClaim
+    ) external view returns (DebtTokenAmount[] memory) {
+        uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient]
+            .delayedRedeemsCompleted;
+        DebtTokenAmount[] memory debtAmounts;
+        uint256 numToClaim = 0;
+
+        //================================================================================================
+        // 1. Get the length of debt that need to be repaid and the amount of each type of debt.
+        //================================================================================================
+        (numToClaim, debtAmounts) = _getDebtTokenAmount(
+            recipient,
+            delayedRedeemsCompletedBefore,
+            redeemPrincipalDelay,
+            maxNumberOfDelayedRedeemsToClaim
+        );
+
+        return debtAmounts;
     }
 
     /**
@@ -1161,11 +1222,14 @@ contract DelayRedeemRouter is
                 DelayedRedeem memory delayedRedeem = _userRedeems[recipient]
                     .delayedRedeems[delayedRedeemsCompletedBefore + i];
                 bool found = false;
-
+                uint256 fee = _getFee(
+                    recipient,
+                    delayedRedeemsCompletedBefore + i
+                );
                 for (uint256 j = 0; j < tokenCount; j++) {
                     if (debtAmounts[j].token == delayedRedeem.token) {
                         debtAmounts[j].amount += delayedRedeem.amount;
-                        debtAmounts[j].fee += delayedRedeem.fee;
+                        debtAmounts[j].fee += fee;
                         found = true;
                         break;
                     }
@@ -1174,7 +1238,7 @@ contract DelayRedeemRouter is
                     debtAmounts[tokenCount] = DebtTokenAmount({
                         token: delayedRedeem.token,
                         amount: delayedRedeem.amount,
-                        fee: delayedRedeem.fee
+                        fee: fee
                     });
                     tokenCount++;
                 }
@@ -1213,6 +1277,16 @@ contract DelayRedeemRouter is
             retainAmounts[token] = retainAmounts[token] - amountToSend;
             fastLanes[recipient] = false;
         }
+    }
+
+    /**
+     * @notice Internal function to retrieve the fee for a specific recipient and index.
+     * @param recipient The address of the recipient.
+     * @param index The index of the delayed redeem in the recipient's array.
+     * @return The fee amount for the specified recipient and index.
+     */
+    function _getFee(address recipient, uint256 index) internal view returns (uint256) {
+        return redeemFees[recipient][index];
     }
 
     /**
