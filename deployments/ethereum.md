@@ -27,7 +27,7 @@
 
 ## TransferProxy
 
-- 0xF0AB759D3A1A4956e8C3C52c71cCb50f20bC342b
+- [0xF0AB759D3A1A4956e8C3C52c71cCb50f20bC342b](https://etherscan.io/address/0xF0AB759D3A1A4956e8C3C52c71cCb50f20bC342b)
 
 ## BurnProxy
 
