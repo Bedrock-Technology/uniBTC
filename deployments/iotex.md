@@ -4,6 +4,4 @@
 - uniBTC: [0x93919784c523f39cacaa98ee0a9d96c3f32b593e](https://iotexscan.io/address/0x93919784c523f39cacaa98ee0a9d96c3f32b593e#code)
 
 ## Meson
-
-[//]: # (https://iotexscan.io/tx/d6e891575b2541d96dc5f4f931cd0b80bb71be48a6d524bcb4b0054385f48f2d)
-- [0xa84442f3853cE0D57f8A89eC0675044e502b8af7](https://iotexscan.io/address/0xa84442f3853cE0D57f8A89eC0675044e502b8af7)
+- 0x70aF4743F85E5E74E3b6dDFa38926c0a762Ad21C

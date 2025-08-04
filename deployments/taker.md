@@ -4,6 +4,4 @@
 - uniBTC: [0x93919784C523f39CACaa98Ee0a9d96c3F32b593e](https://explorer.taker.xyz/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e)
 
 ## Meson
-
-[//]: # (https://explorer.taker.xyz/tx/0x2218bbf5cb21728a717b284bb8cb7474bd504aaba346a0ad04da970715d7c223)
-- [0x224a4Af672148eE399B86765aC98A087912B2516](https://explorer.taker.xyz/address/0x224a4Af672148eE399B86765aC98A087912B2516)
+- 0x70aF4743F85E5E74E3b6dDFa38926c0a762Ad21C
