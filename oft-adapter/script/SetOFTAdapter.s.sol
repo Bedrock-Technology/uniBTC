@@ -7,8 +7,15 @@ import {uniBTCOFTAdapter} from "../contracts/uniBTCOFTAdapter.sol";
 import {HelperUtils} from "./utils/HelperUtils.s.sol";
 import {ILayerZeroEndpointV2} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/ILayerZeroEndpointV2.sol";
 import {SetConfigParam} from "@layerzerolabs/lz-evm-protocol-v2/contracts/interfaces/IMessageLibManager.sol";
+import {
+    IOAppOptionsType3,
+    EnforcedOptionParam
+} from "@layerzerolabs/lz-evm-oapp-v2/contracts/oapp/libs/OAppOptionsType3.sol";
+import {OptionsBuilder} from "@layerzerolabs/lz-evm-oapp-v2/contracts/oapp/libs/OptionsBuilder.sol";
 
 contract SetOFTAdapter is Script {
+    using OptionsBuilder for bytes;
+
     function run() external {}
 
     function setPeer(uint256 _chainid) external {
@@ -88,6 +95,31 @@ contract SetOFTAdapter is Script {
         vm.startBroadcast(owner);
         endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).sendUln302, params);
         endPoint.setConfig(oftAdapterAddress, HelperUtils.getNetworkConfig(block.chainid).receiveUIn302, params);
+        vm.stopBroadcast();
+    }
+
+    function setEnforceOption(uint256 _chainid) external {
+        string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;
+        string memory localPoolPath =
+            string.concat(vm.projectRoot(), "/script/output/deployedOFTAdapter_", chainName, ".json");
+        // Extract addresses from the JSON files
+        address oftAdapterAddress =
+            HelperUtils.getAddressFromJson(vm, localPoolPath, string.concat(".deployedOFTAdapter_", chainName));
+        console.log("current %s, peer:", chainName, HelperUtils.getNetworkConfig(_chainid).chainName);
+        IOAppOptionsType3 oftAdapter = IOAppOptionsType3(oftAdapterAddress);
+        uint32 peerEid = HelperUtils.getNetworkConfig(_chainid).eid;
+        bytes memory option = OptionsBuilder.newOptions().addExecutorLzReceiveOption(200000, 0);
+        console.logBytes(option);
+        EnforcedOptionParam memory param1 = EnforcedOptionParam(peerEid, 1, option);
+        EnforcedOptionParam memory param2 = EnforcedOptionParam(peerEid, 2, option);
+
+        EnforcedOptionParam[] memory EnforcedOptionParams = new EnforcedOptionParam[](2);
+        EnforcedOptionParams[0] = param1;
+        EnforcedOptionParams[1] = param2;
+
+        address owner = vm.envAddress("OWNER_ADDRESS");
+        vm.startBroadcast(owner);
+        oftAdapter.setEnforcedOptions(EnforcedOptionParams);
         vm.stopBroadcast();
     }
 
