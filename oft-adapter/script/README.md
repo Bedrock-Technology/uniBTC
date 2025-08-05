@@ -54,6 +54,20 @@ forge script script/SetOFTAdapter.s.sol --sig 'setConfig(uint256,uint64,address[
 forge script script/SetOFTAdapter.s.sol --sig 'setConfig(uint256,uint64,address[],address[],uint8)' 17000 4 "[]" "[]" 0 --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
 ```
 
+### Set OFTAdapter Enforce Option on ETH SEPOLIA(OPTION)
+
+setEnforceOption(uint256 \_chainid)
+
+```bash
+forge script script/SetOFTAdapter.s.sol --sig 'setEnforceOption(uint256)' 17000 --rpc-url $RPC_ETH_SEPOLIA --account $OWNER --broadcast
+
+ETH:
+cast call/send 0x50fA1411201e2Ac0361FB893E903b80F141b8190 "setEnforcedOptions((uint32,uint16,bytes)[])" "[(30377,1,0x00030100110100000000000000000000000000030d40),(30377,2,0x00030100110100000000000000000000000000030d40)]" --rpc-url $RPC_ETH --account $OWNER
+
+TAC:
+cast call/send 0x17C3B688BaDD6dd11244096A9FBc4ae0ADd551ab "setEnforcedOptions((uint32,uint16,bytes)[])" "[(30101,1,0x00030100110100000000000000000000000000030d40),(30101,2,0x00030100110100000000000000000000000000030d40)]" --rpc-url $RPC_TAC --account $OWNER --legacy
+```
+
 ### Set OFTAdapter Peer on ETH HOLESKY
 
 setPeer(uint256 \_chainid)

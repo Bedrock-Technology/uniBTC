@@ -32,8 +32,8 @@ library HelperUtils {
         bool whitelist;
     }
 
-    function getAllEids() public pure returns (uint32[7] memory) {
-        uint32[7] memory allEids = [uint32(40161), 40217, 40346, 40231, 30101, 30102, 30362];
+    function getAllEids() public pure returns (uint32[8] memory) {
+        uint32[8] memory allEids = [uint32(40161), 40217, 40346, 40231, 30101, 30102, 30362, 30377];
         return allEids;
     }
 

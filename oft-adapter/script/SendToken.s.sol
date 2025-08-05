@@ -48,7 +48,7 @@ contract SetOFTAdapter is Script {
         vm.startBroadcast(owner);
         uint256 allowance = uniBTC(networkConfig.uniBTC).allowance(owner, oftAdapterAddress);
         if (allowance < _amount) {
-            uniBTC(networkConfig.uniBTC).approve(oftAdapterAddress, _amount);
+            uniBTC(networkConfig.uniBTC).approve(oftAdapterAddress, _amount * 10);
         }
         console.log("SendParam:");
         console.log("  dstEid:", sendParam.dstEid);
