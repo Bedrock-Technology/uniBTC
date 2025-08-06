@@ -10,5 +10,5 @@
 ## cbBTC
 - [0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf](https://basescan.org/token/0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf)
 
-## CCT
+## CCT Token Pool
 - [0x02042df6933a2fb8a7bfc92117146e7ccf6b260f](https://basescan.org/address/0x02042df6933a2fb8a7bfc92117146e7ccf6b260f)
