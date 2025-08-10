@@ -12,3 +12,6 @@
 
 ## CCT Token Pool
 - [0x02042df6933a2fb8a7bfc92117146e7ccf6b260f](https://basescan.org/address/0x02042df6933a2fb8a7bfc92117146e7ccf6b260f)
+
+## Redeem
+- [0xBB45B3a09BFfC15747D1a331775Fa408e587f38d](https://basescan.org/address/0xBB45B3a09BFfC15747D1a331775Fa408e587f38d)
