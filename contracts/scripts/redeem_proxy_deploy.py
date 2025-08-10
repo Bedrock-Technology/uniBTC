@@ -40,6 +40,14 @@ def main(deployer_account="deployer", network_cfg="ethereum"):
             "whitelist_enabled": True,
             "contract_deployer": "0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19",  # https://scan.merlinchain.io/address/0x0A3f2582FF649Fcaf67D03483a8ED1A82745Ea19
         },
+        "base": {
+            "uniBTC_proxy": "0x93919784C523f39CACaa98Ee0a9d96c3F32b593e",  # https://basescan.org/address/0x93919784C523f39CACaa98Ee0a9d96c3F32b593e
+            "vault_proxy": "0x9f283B0401d9698e86097fdC44820BcBE5DcfeFb",  # https://basescan.org/address/0x9f283B0401d9698e86097fdC44820BcBE5DcfeFb
+            "redeem_owner": "0x3eea50ba10952E5e0dFAa50EcFCc5AB19aD591Ef",  # https://basescan.org/address/0x3eea50ba10952E5e0dFAa50EcFCc5AB19aD591Ef
+            "redeem_time_duration": 691201,  # 8 days time duration
+            "whitelist_enabled": True,
+            "contract_deployer": "0x886eAf3D2b9dFD0A1Dd24b82d56a2f487E3616bF",  # https://basescan.org/address/0x886eAf3D2b9dFD0A1Dd24b82d56a2f487E3616bF
+        },
     }
 
     deps = project.load(
