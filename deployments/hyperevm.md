@@ -1,0 +1,6 @@
+# HyperEVM
+
+## Core
+
+- ProxyAdmin: [0x9203cE1BcdEd1a20f697E1780Bc47d5B6D718031](https://hyperevmscan.io/address/0x9203ce1bcded1a20f697e1780bc47d5b6d718031)
+- uniBTC: [0xF9775085d726E782E83585033B58606f7731AB18](https://hyperevmscan.io/address/0xF9775085d726E782E83585033B58606f7731AB18)
