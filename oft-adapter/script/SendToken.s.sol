@@ -18,7 +18,7 @@ contract SetOFTAdapter is Script {
     function addressToBytes32(address _addr) internal pure returns (bytes32) {
         return bytes32(uint256(uint160(_addr)));
     }
-
+//forge script script/SendToken.s.sol --sig 'sendToken(address,uint256,uint256)' $RECIPIENT_ADDRESS $AMOUNT_IN_UNIT $DST_CHAIN_ID --rpc-url $RPC_ETH --account $SENDER_ACCOUNT_NAME --sender $SENDER_ACCOUNT_ADDRESS --broadcast
     function sendToken(address _recipient, uint256 _amount, uint256 _chainid) external {
         // Get the current chain name based on the chain ID
         string memory chainName = HelperUtils.getNetworkConfig(block.chainid).chainName;
@@ -44,9 +44,9 @@ contract SetOFTAdapter is Script {
         );
         MessagingFee memory fee = adapter.quoteSend(sendParam, false);
 
-        address owner = vm.envAddress("OWNER_ADDRESS");
-        vm.startBroadcast(owner);
-        uint256 allowance = uniBTC(networkConfig.uniBTC).allowance(owner, oftAdapterAddress);
+        address fromAddress = msg.sender;
+        vm.startBroadcast(fromAddress);
+        uint256 allowance = uniBTC(networkConfig.uniBTC).allowance(fromAddress, oftAdapterAddress);
         if (allowance < _amount) {
             uniBTC(networkConfig.uniBTC).approve(oftAdapterAddress, _amount * 10);
         }
@@ -65,8 +65,8 @@ contract SetOFTAdapter is Script {
         console.log("Fee:");
         console.log("  nativeFee:", fee.nativeFee);
         console.log("  lzTokenFee:", fee.lzTokenFee);
-        console.log("refundAddress:", owner);
-        adapter.send{value: fee.nativeFee}(sendParam, fee, payable(owner));
+        console.log("refundAddress:", fromAddress);
+        adapter.send{value: fee.nativeFee}(sendParam, fee, payable(fromAddress));
         vm.stopBroadcast();
         console.log("send %s, to:", chainName, peerChainName);
         console.log("fee:", fee.nativeFee);
