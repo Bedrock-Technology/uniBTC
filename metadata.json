@@ -1,0 +1,15 @@
+{
+    "name": "uniBTC",
+    "symbol": "uniBTC",
+    "description": "Universal BTC (uniBTC)",
+    "image": "https://raw.githubusercontent.com/Bedrock-Technology/bedrock-static/main/logo/unibtc.svg",
+    "attributes": [],
+    "properties": {
+        "files": [
+            {
+                "uri": "https://raw.githubusercontent.com/Bedrock-Technology/bedrock-static/main/logo/unibtc.svg",
+                "type": "image/svg+xml"
+            }
+        ]
+    }
+}
