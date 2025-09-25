@@ -1,0 +1,3 @@
+- Ethereum bridge contract - 0x4ea91eD5A1f5e2Be18791F210C52d0fe285744d5
+- Starknet bridge contract - 0x006f04d4e0dd89ee364650ae5264e7cfeb8fd567913d3be9a332e50f2b612810
+- Starknet token contract - 0x023a312ece4a275e38c9fc169e3be7b5613a0cb55fe1bece4422b09a88434573
