@@ -10,4 +10,4 @@
 - [0x17C3B688BaDD6dd11244096A9FBc4ae0ADd551ab](https://explorer.tac.build/address/0x17C3B688BaDD6dd11244096A9FBc4ae0ADd551ab)
 
 History:
-- reovked @20250925
+- revoked @20250925
