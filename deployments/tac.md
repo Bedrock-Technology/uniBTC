@@ -7,7 +7,9 @@
 
 ## LayerZero OFT(peer eth)
 
-- [0x17C3B688BaDD6dd11244096A9FBc4ae0ADd551ab](https://explorer.tac.build/address/0x17C3B688BaDD6dd11244096A9FBc4ae0ADd551ab)
+- [0x17C3B688BaDD6dd11244096A9FBc4ae0ADd551ab](https://explorer.tac.build/address/0x17C3B688BaDD6dd11244096A9FBc4ae0ADd551ab)  (revoked @20250925)
 
-History:
-- revoked @20250925
+## CCT Token Pool
+- [0xA7ee087c961A22aa25eDdaB9c0b43b4a39EAd5ea](https://explorer.tac.build/address/0xA7ee087c961A22aa25eDdaB9c0b43b4a39EAd5ea?tab=index)
+
+
