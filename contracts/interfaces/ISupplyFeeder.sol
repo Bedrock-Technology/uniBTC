@@ -7,3 +7,7 @@ interface ISupplyFeeder {
      */
     function totalSupply(address token) external view returns(uint256);
 }
+
+interface IUniBTCSupplyFeeder {
+    function totalTokenSupply() external view returns (uint256);
+}

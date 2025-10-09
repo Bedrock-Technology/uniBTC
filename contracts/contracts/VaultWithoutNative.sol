@@ -64,9 +64,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
             uint256 reserves = uint256(answer);
             uint256 reserveDecimals = AggregatorV3Interface(chainlinkReserveFeeder).decimals();
 
-            (, answer,, updatedAt,) = AggregatorV3Interface(uniBTCSupplyFeeder).latestRoundData();
-            require(updatedAt >= block.timestamp - feederHeartbeat, "SYS013");
-            uint256 supply = uint256(answer);
+            uint256 supply = IUniBTCSupplyFeeder(uniBTCSupplyFeeder).totalTokenSupply();
             uint256 supplyDecimals = 8;
 
             if (supplyDecimals < reserveDecimals) {
