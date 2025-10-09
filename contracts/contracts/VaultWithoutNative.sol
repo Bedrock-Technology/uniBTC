@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@chainlink/contracts/data-feeds/interfaces/AggregatorV3Interface.sol";
 
 import "../interfaces/IMintableContract.sol";
 import "../interfaces/ISupplyFeeder.sol";
@@ -15,6 +16,7 @@ import "../interfaces/ISupplyFeeder.sol";
 contract VaultWithoutNative is Initializable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+
     using SafeERC20 for IERC20;
     using Address for address;
 
@@ -37,6 +39,11 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     mapping(address => bool) public allowedTargetList;
     bool public outOfService;
 
+    address public chainlinkReserveFeeder;
+    address public uniBTCSupplyFeeder;
+    uint256 public feederHeartbeat;
+    uint256 public reserveRateThreshold;
+
     receive() external payable {}
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -49,10 +56,34 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
         _;
     }
 
+    modifier onlyPoRNormal() {
+        // check PoR only when the feeder address and threshold are properly set
+        if (chainlinkReserveFeeder != address(0x0) && uniBTCSupplyFeeder != address(0x0) && reserveRateThreshold > 0) {
+            (, int256 answer,, uint256 updatedAt,) = AggregatorV3Interface(chainlinkReserveFeeder).latestRoundData();
+            require(updatedAt >= block.timestamp - feederHeartbeat, "SYS013");
+            uint256 reserves = uint256(answer);
+            uint256 reserveDecimals = AggregatorV3Interface(chainlinkReserveFeeder).decimals();
+
+            (, answer,, updatedAt,) = AggregatorV3Interface(uniBTCSupplyFeeder).latestRoundData();
+            require(updatedAt >= block.timestamp - feederHeartbeat, "SYS013");
+            uint256 supply = uint256(answer);
+            uint256 supplyDecimals = 8;
+
+            if (supplyDecimals < reserveDecimals) {
+                supply = supply * 10**uint256(reserveDecimals - supplyDecimals);
+            } else if (supplyDecimals > reserveDecimals) {
+                reserves = reserves * 10**uint256(supplyDecimals - reserveDecimals);
+            }
+
+            require(supply * reserveRateThreshold / 1e8 <= reserves, "SYS013");
+        }
+        _;
+    }
+
     /**
      * @dev mint uniBTC with the given type of wrapped BTC
      */
-    function mint(address _token, uint256 _amount) external serviceNormal {
+    function mint(address _token, uint256 _amount) external serviceNormal onlyPoRNormal {
         require(allowedTokenList[_token] && !paused[_token], "SYS002");
         _mint(msg.sender, _token, _amount);
     }
@@ -182,6 +213,25 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     }
 
     /**
+     * @dev set the PoR feeder addresses and heartbeat
+     */
+    function setPoRFeeder(address _chainlinkReserveFeeder, address _uniBTCSupplyFeeder, uint256 _feederHeartbeat) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_chainlinkReserveFeeder != address(0x0) && _uniBTCSupplyFeeder != address(0x0) && _feederHeartbeat > 0, "SYS001");
+        chainlinkReserveFeeder = _chainlinkReserveFeeder;
+        uniBTCSupplyFeeder = _uniBTCSupplyFeeder;
+        feederHeartbeat = _feederHeartbeat;
+        emit PoRFeederSet(_chainlinkReserveFeeder, _uniBTCSupplyFeeder, _feederHeartbeat);
+    }
+
+    /**
+     * @dev set the PoR threshold, 8 decimals
+     */
+    function setReserveRateThreshold(uint256 _reserveRateThreshold) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        reserveRateThreshold = _reserveRateThreshold;
+        emit ReserveRateThresholdSet(_reserveRateThreshold);
+    }
+
+    /**
      * ======================================================================================
      *
      * INTERNAL
@@ -234,4 +284,6 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     event TargetDenied(address[] token);
     event StartService();
     event StopService();
+    event PoRFeederSet(address chainlinkReserveFeeder, address uniBTCSupplyFeeder, uint256 feederHeartbeat);
+    event ReserveRateThresholdSet(uint256 reserveRateThreshold);
 }
