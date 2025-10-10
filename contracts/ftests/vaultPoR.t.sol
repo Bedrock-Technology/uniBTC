@@ -27,7 +27,7 @@ contract vaultTest is Test {
 
         vm.startPrank(_admin);
         _v.setPoRFeeder(address(0xc590D9fb8eE78a0909dFF341ccf717000b7b7fF2), address(0xE542919E4b281f10b437F947c8Ba224DdfaBc716), 86400);
-        _v.setReserveRateThreshold(0.89 * 1e8);
+        _v.setReserveRateThreshold(0.88 * 1e8);
         vm.stopPrank();
 
         IERC20 wbtc = IERC20(address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599));

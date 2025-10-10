@@ -56,7 +56,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
         _;
     }
 
-    modifier onlyPoRNormal() {
+    modifier checkReserve() {
         // check PoR only when the feeder address and threshold are properly set
         if (chainlinkReserveFeeder != address(0x0) && uniBTCSupplyFeeder != address(0x0) && reserveRateThreshold > 0) {
             (, int256 answer,, uint256 updatedAt,) = AggregatorV3Interface(chainlinkReserveFeeder).latestRoundData();
@@ -81,7 +81,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     /**
      * @dev mint uniBTC with the given type of wrapped BTC
      */
-    function mint(address _token, uint256 _amount) external serviceNormal onlyPoRNormal {
+    function mint(address _token, uint256 _amount) external serviceNormal checkReserve {
         require(allowedTokenList[_token] && !paused[_token], "SYS002");
         _mint(msg.sender, _token, _amount);
     }
