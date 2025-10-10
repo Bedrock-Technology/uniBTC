@@ -25,8 +25,14 @@ contract vaultTest is Test {
         address _admin = address(0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3);
         VaultWithoutNative _v = VaultWithoutNative(payable(vault));
 
+        address _operator = address(0xaaaabbbbccccdddd);
+
         vm.startPrank(_admin);
         _v.setPoRFeeder(address(0xc590D9fb8eE78a0909dFF341ccf717000b7b7fF2), address(0xE542919E4b281f10b437F947c8Ba224DdfaBc716), 86400);
+        _v.grantRole(_v.OPERATOR_ROLE(), _operator);
+        vm.stopPrank();
+
+        vm.startPrank(_operator);
         _v.setAdequacyRatio(0.88 * 1e8);
         vm.stopPrank();
 

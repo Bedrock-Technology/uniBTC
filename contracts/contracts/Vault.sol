@@ -233,7 +233,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev set the PoR threshold, 8 decimals
      */
-    function setAdequacyRatio(uint256 _adequacyRatio) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setAdequacyRatio(uint256 _adequacyRatio) external onlyRole(OPERATOR_ROLE) {
         adequacyRatio = _adequacyRatio;
         emit AdequacyRatioSet(_adequacyRatio);
     }
