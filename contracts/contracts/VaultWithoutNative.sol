@@ -42,7 +42,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     address public chainlinkReserveFeeder;
     address public uniBTCSupplyFeeder;
     uint256 public feederHeartbeat;
-    uint256 public reserveRateThreshold;
+    uint256 public adequacyRatio;
 
     receive() external payable {}
 
@@ -58,7 +58,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
 
     modifier checkReserve() {
         // check PoR only when the feeder address and threshold are properly set
-        if (chainlinkReserveFeeder != address(0x0) && uniBTCSupplyFeeder != address(0x0) && reserveRateThreshold > 0) {
+        if (chainlinkReserveFeeder != address(0x0) && uniBTCSupplyFeeder != address(0x0) && adequacyRatio > 0) {
             (, int256 answer,, uint256 updatedAt,) = AggregatorV3Interface(chainlinkReserveFeeder).latestRoundData();
             require(updatedAt >= block.timestamp - feederHeartbeat, "SYS013");
             uint256 reserves = uint256(answer);
@@ -73,7 +73,7 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
                 reserves = reserves * 10**uint256(supplyDecimals - reserveDecimals);
             }
 
-            require(supply * reserveRateThreshold / 1e8 <= reserves, "SYS013");
+            require(supply * adequacyRatio / 1e8 <= reserves, "SYS013");
         }
         _;
     }
@@ -224,9 +224,9 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     /**
      * @dev set the PoR threshold, 8 decimals
      */
-    function setReserveRateThreshold(uint256 _reserveRateThreshold) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        reserveRateThreshold = _reserveRateThreshold;
-        emit ReserveRateThresholdSet(_reserveRateThreshold);
+    function setAdequacyRatio(uint256 _adequacyRatio) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        adequacyRatio = _adequacyRatio;
+        emit AdequacyRatioSet(_adequacyRatio);
     }
 
     /**
@@ -283,5 +283,5 @@ contract VaultWithoutNative is Initializable, AccessControlUpgradeable, Pausable
     event StartService();
     event StopService();
     event PoRFeederSet(address chainlinkReserveFeeder, address uniBTCSupplyFeeder, uint256 feederHeartbeat);
-    event ReserveRateThresholdSet(uint256 reserveRateThreshold);
+    event AdequacyRatioSet(uint256 adequacyRatio);
 }
