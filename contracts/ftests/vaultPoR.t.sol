@@ -33,13 +33,29 @@ contract vaultTest is Test {
         vm.stopPrank();
 
         vm.startPrank(_operator);
-        _v.setAdequacyRatio(0.88 * 1e8);
+        vm.expectRevert(bytes("SYS001"));
+        _v.setAdequacyRatio(0);
+
+        vm.expectRevert(bytes("SYS001"));
+        _v.setAdequacyRatio(1001);
+
+        _v.setAdequacyRatio(1000);
+        _v.setAdequacyRatio(0.88 * 1000);
         vm.stopPrank();
 
         IERC20 wbtc = IERC20(address(0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599));
         address _testUser = address(0xF977814e90dA44bFA03b6295A0616a897441aceC);
         vm.startPrank(_testUser);
         wbtc.approve(vault, type(uint256).max);
+        _v.mint(address(wbtc), 5 * 1e8);
+        vm.stopPrank();
+
+        vm.startPrank(_operator);
+        _v.setAdequacyRatio(0.90 * 1000);
+        vm.stopPrank();
+
+        vm.startPrank(_testUser);
+        vm.expectRevert(bytes("SYS013"));
         _v.mint(address(wbtc), 5 * 1e8);
         vm.stopPrank();
     }

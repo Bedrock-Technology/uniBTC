@@ -57,7 +57,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     modifier checkReserve() {
-        // check PoR only when the feeder address and threshold are properly set
+        // check PoR only when the feeder address and adequacy ratio are properly set
         if (chainlinkReserveFeeder != address(0x0) && uniBTCSupplyFeeder != address(0x0) && adequacyRatio > 0) {
             (, int256 answer,, uint256 updatedAt,) = AggregatorV3Interface(chainlinkReserveFeeder).latestRoundData();
             require(updatedAt >= block.timestamp - feederHeartbeat, "SYS013");
@@ -73,7 +73,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
                 reserves = reserves * 10**uint256(supplyDecimals - reserveDecimals);
             }
 
-            require(supply * adequacyRatio / 1e8 <= reserves, "SYS013");
+            require(supply * adequacyRatio / 1000 <= reserves, "SYS013");
         }
         _;
     }
@@ -231,9 +231,10 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     }
 
     /**
-     * @dev set the PoR threshold, 8 decimals
+     * @dev set the adequacy ratio threshold, 3 decimals (e.g., 0.88 -> 880)
      */
     function setAdequacyRatio(uint256 _adequacyRatio) external onlyRole(OPERATOR_ROLE) {
+        require(_adequacyRatio > 0 && _adequacyRatio <= 1000, "SYS001");
         adequacyRatio = _adequacyRatio;
         emit AdequacyRatioSet(_adequacyRatio);
     }
