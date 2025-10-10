@@ -11,4 +11,5 @@ evm_version = "shanghai"
 remappings = [
   "@openzeppelin/contracts=lib/OpenZeppelin/openzeppelin-contracts@4.8.3/contracts",
   "@openzeppelin/contracts-upgradeable=lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3/contracts",
+  "@chainlink/contracts=lib/chainlink-local/src",
 ]
