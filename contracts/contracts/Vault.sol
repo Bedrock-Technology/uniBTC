@@ -16,6 +16,7 @@ import "../interfaces/ISupplyFeeder.sol";
 contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    bytes32 public constant MANAGER_ROLE = keccak256("MANAGER_ROLE");
 
     using SafeERC20 for IERC20;
     using Address for address;
@@ -222,7 +223,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev set the PoR feeder addresses and heartbeat
      */
-    function setPoRFeeder(address _chainlinkReserveFeeder, address _uniBTCSupplyFeeder, uint256 _feederHeartbeat) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setPoRFeeder(address _chainlinkReserveFeeder, address _uniBTCSupplyFeeder, uint256 _feederHeartbeat) external onlyRole(MANAGER_ROLE) {
         require(_chainlinkReserveFeeder != address(0x0) && _uniBTCSupplyFeeder != address(0x0) && _feederHeartbeat > 0, "SYS001");
         chainlinkReserveFeeder = _chainlinkReserveFeeder;
         uniBTCSupplyFeeder = _uniBTCSupplyFeeder;
@@ -233,7 +234,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev set the adequacy ratio threshold, 3 decimals (e.g., 0.88 -> 880)
      */
-    function setAdequacyRatio(uint256 _adequacyRatio) external onlyRole(OPERATOR_ROLE) {
+    function setAdequacyRatio(uint256 _adequacyRatio) external onlyRole(MANAGER_ROLE) {
         require(_adequacyRatio > 0 && _adequacyRatio <= 1000, "SYS001");
         adequacyRatio = _adequacyRatio;
         emit AdequacyRatioSet(_adequacyRatio);
