@@ -90,7 +90,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
         require(_amount > 0, "USR011");
         require(_recipient != address(0), "USR011");
         require(_txHash != bytes32(0), "USR011");
-        require(recipients[_recipient], "USR012");
+
         require(receivedEvents[_txHash].recipient == address(0), "USR013");
 
         receivedEvents[_txHash] = Event(_recipient, _amount, EventState.Pending);
@@ -120,6 +120,7 @@ contract DirectBTCMinter is Initializable, ReentrancyGuardUpgradeable, AccessCon
         require(_reqHash == _txHash, "USR015");
 
         Event storage e = receivedEvents[_txHash];
+        require(recipients[e.recipient], "USR012");
         require(e.state == EventState.Pending, "USR014");
 
         e.state = EventState.Accepted;
