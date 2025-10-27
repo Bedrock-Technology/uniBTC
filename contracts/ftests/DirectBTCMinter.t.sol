@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
 import {DirectBTCMinter} from "../contracts/proxies/stateful/directBTC/DirectBTCMinter.sol";
-import {directBTC} from "../contracts/proxies/stateful/directBTC/directBTC.sol";
+import {directBTC} from "../contracts/proxies/stateful/directBTC/DirectBTC.sol";
 import {uniBTC} from "../contracts/uniBTC.sol";
 import {Vault} from "../contracts/Vault.sol";
 import {ISupplyFeeder} from "../interfaces/ISupplyFeeder.sol";
