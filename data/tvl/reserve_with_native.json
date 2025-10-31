@@ -3,157 +3,52 @@
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "1LaC3Xt8RZWYH1pjcvXxrWxLvXe7iR3ybe"
+      "addr": "12Xr79sgjXoVD9vJsUF8FT6phq2SaHgf17"
     },
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1patpjgd37q68kmt4zd5u3ajp7t95r785t5e0wkh4e20kwnducv5rqpvzat0"
+      "addr": "14e3hmymWBKYsjMCQJgnadLhHbECKetZFo"
     },
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1pjyxkkt2ufregr92cu0ccuje8efez68wzf347hlf5ym02ah8nqlhslg8lwz"
+      "addr": "14vgxN1zcTUFjkS6opUpMHzkRq5bj7L79D"
     },
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1p2he94svmt07y434ua73fsnpv5hw5lk46fagp3kglxlq8hdlxxcaqft5e4u"
+      "addr": "16LG8SjUg9iRWY1ZwJtEJrUXLMqawk5djx"
     },
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1ph5jl0sm97wcdp5k3ctpcrl7sy3hmt7e6gs2tr35qq8pnfpqn2ejqqhh6ur"
+      "addr": "17HsQGwZ6oLj2Kf1iD1XvG4APTVSCDjSzT"
     },
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1pwqzyehmpczhn804x0zz63c5h9t55ew09r8v4lmhdy0cpla8q90rqtvmsp6"
+      "addr": "1D8c6mKnbb7werdaC1NjQWZHaD2Augbwkr"
     },
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1ppwapwvnmxw4d6qtzjqqm3ungg0p5t9ay602juvp3zw8lh3ln0q6qh35ljg"
+      "addr": "1FezX8fEuSU3LDsjxRKpAeyyrPUjyCs3ac"
     },
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1pahtj74gdjf73k8azkf3st4g9dvnxzk0vf6ckk4pdztq4fzuljgfsvwypey"
+      "addr": "1JtH8psu7ChTQy6LKxPEuji8vcb6VAKLaA"
     },
     {
       "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pzentxmwgqhfgzerjmfawu9ksxmwjxnwyh5nnphg5u5de4e8fq86qu6ezqa"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1plcw96tc37lzc55kzqtrch2f8asr52l7z4czfmxn3s0z7ss3x84ss9yahqh"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pxj5wqepjfycsj6pg0j6y4yjcmvm8g77uj3ucppdkmrtgmx3cgkds4dfe4y"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p0tsy45wav45req0ltwlca56m2wss9dd26g3wpdjujwmhtk0q79dq7d8fhp"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p7dafndyllnsqtthxhp76gzjwujzeelzc2qt8haua7ds8cmqgvhkqtr00ya"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pmjcg79u2quppamjtekfns5pqmdlpd0gqlwvksq9tzrua0f3vq7hsdmfcs9"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p4su5lzpaxz7rc9z6tv8u4pfstpxaw7hagdrlrq8p2z3uvd8p8thsddye9w"
+      "bridge_source": "FBTC",
+      "addr": "38fLZKJQuNMAEmFXTbbpkTo6fD5su2fD9P"
     },
     {
       "type": "balance",
       "bridge_source": "NativeBTC",
       "addr": "3FRaevESEjvvrE9q5GdmuAvjsGUy8sCfS4"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qwmw0j0nwe2r8rl8cgecf9pqhgqkpzs0zcfcraz"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1phhfsdcts2lqkc44ver6v24460x5kx5dpg364elxd8jzfjpg5q4yqt8saty"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p784hthye4yjed726d68dgrm9mdd8x3p4zygteltxsp8gjy6pytmqfdjkju"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1paew2r3hqqnwhatttwx3qe3f837vvhwx7jhv228py9u3t7s22ltmqenjdym"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qma2epmz00c7kutshs0h7m8rra8ceekht87amu7"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ph2wugt6767uhkdypphke3pn7gaq4tax4hzk0mw5ltww6wyme0xvqdx6lkf"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p93qry6vdxutmtnqk0n48hs9au54xha6ywr9a8fryy2a3ctqcn0hqt5s0cv"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qdrhewkdyy44xf80n79wmls3pyg07lrg3syhmze"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pe08jsth0y84d67xrs29868vxy8wz9dtt04fjtxvjp00apffu7uhqpgkrmn"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q8qzecgn47ne250eqjmygvhcahaesxkzz327s92kynl5w82jl737s5gj6j6"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1phql7l5rrfqn9egmppjtlvyw0evav853q5uzlzcq8rdp5sp0dwjzq9x57pn"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1pc8t32hxvlnnv0lyuqhfqy9mfmaxtl66e495rqw4rmp7y4q60kkcs2wt2pq"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1pxfwnyqng7c622te5m5ayjsz6lrsxjl542wyw99h2p5e60zmeknqq49g0fm"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1p6mu8mrtnfz0frdfghfxr05tr8dq6j0q65rpzhhgg7998zelfp74qxxejh9"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1qkj4yxrlsear0hujkf3pq5zc4r8mnz3ep8udftj"
     },
     {
       "type": "balance",
@@ -163,322 +58,42 @@
     {
       "type": "balance",
       "bridge_source": "FBTC",
-      "addr": "bc1qj9w5ee2kf4akvtzrj59p77yc6x02nqqg9m0tcd"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "38fLZKJQuNMAEmFXTbbpkTo6fD5su2fD9P"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1p8jpunkzxpued6d4k4n8the7trn3m53vjphxwwaxls58kg3gyracqwetwzl"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1pdv9nsscd9yq3fgcq78wjyhzq0q5g5rwvfy3m0vtxcyx5wumdn9vs3s5kta"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qhex5lva86fuxcg9r5dustjgjgx2w8a3nmwdwdl"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qc6w2cs3k9zw3turzn983vug4qkdvlfa77nmu60"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q8scg5mshkppaxvlw4n45hqg4u86j5j6qmchz94"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q472qs3jt4hymu6nwj42ajnm43yqpm02vxtg6my"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qm37eylm3qu6sf0579hf0kjlpe9e028xlkvczah"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qdvq3cqlgg4jsy54fszm5aeesafatcyj40682ns"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qn97j2ujxdedqwaq5qztgnmu0nygkfqmlzr37cs"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q298gpkamuxhm624dqr6fgntlamc6lcxtuv7k3g"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qe6ver6ktaggtvd4c76lggfjh97e3waj839nm9d"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qs7fmnud98vmg2ea3wyk4zcz995jy7kd6ssyfhh"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qd2zsgcy4jncqn3avm8gx7s9jcdueak38ev85hk"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qe83l7lgtmhhwkhy8v5rc2aucc2xsx656gxzgkn"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q6hzwdddt2l7memnk4ela9svslwhap7kxy5p9a8"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qmlvnngtyjjfcp4w42d6jdyew9se00ahsgx0760"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qz9h23v2r2r3qa3wh6y2t8t27tathmfwdnkald9"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qwd68gufq08wn39cly9j95vved2jt2e49zjywzn"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qyf7n53kfjt87jze689jq5aemtee3htlm43yhmq"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qsgyuzjz6tyxwela98yhastr5nx2frhz6xc0wad"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qpzsf5tr4fjkkuwmxw2rxzw4cmalgcjw967gxkg"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qgk9ge4xufsuuewvthcjeq984u25zey8jtp204d"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qnqdw6lprlzq4qer8vla0dsxyc7jfq4dax6qahk"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qt2lx6sa58n0763zkzux68hp3gu6ql6tdvrtepz"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q3hul5uyvy42sskz2jukuqk96qletqphc6vywms"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qjvwplee4xj6uj7kup3v4kn3qm4yur08jk0d8wq"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q8jatxrufen7v5n5qx5ted3cnq6mn2whk9ms465"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qptwxw3ld9upjrayl92nzt4mdjkzqmujnfx3knr"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qdf2e6dhuv3qkcg44ts46frvwm5e7x2e86z0eaw"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qjumwmstx76z0udaemljq9fryv44ktcwwrkwfcv"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qwyartxgyw670da9ce3ntwz35g2hvxll4dn9xyd"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qxuyq3s6kxxxslu9uw43tp9ea20r8m0gsmjwh8e"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qmyrxp47fw4d4m5vwk757spw6dey9yllrqa3eyc"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qq4qtktele6r37zv02kravdwg0y4afvmu85j9f5"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q09a7sxkkqfvlfky639zjpuu2c359v6qmc0n0xy"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qnde3a3hlz5sjhmfxe80n9uxgshmmvyuze358cu"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qqjrmd0f47svd6w98dlhrtll8shyc3pzc0uckry"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qykgn4hpp4y978dc5s4rgeyfc93487jc578em0x"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qly0m0ap2vfayqpwx4khf6vtpvanu6jlsyw42xm"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qvz57hamdg4yz23qv8h5vlwun0mqxal0rzx3jpw"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q37tr63znd8uf8wta98dw0534x8zzfzr3x0a7pw"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qaqm8vtrdc58fd8w6nle9llrm3jnttdd9derypv"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qmxy243cpza6s75ge38zr3nr29k6c22ct6u4qcu"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qf2ulwqwmejrqw9zkwh80pj9sxsp7y8jqatk449"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q57dqgtmnwkkqy636psh00v9nhaljuayvglmhup"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qalrzwxasujlvqn47eyr2t44zgs8u2sjft2wcgl"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qggvyx528qu2kpzaj2x4hkluf4s3xnluj7kll6t"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qjdphtw3all46et86pk6nv35fzc295968lt6vu3"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qm7svevsdclznrcwtc704342mmwqzghwaa655ds"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q2l0tg03rymyhyez5laespx4q9zc8wqlz7nzg38"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qfkhkvz5yhamqm2r9mv7glcy5yrq9gdv74lqccp"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qpfgher28wj9kddcrqal92szd5vunqrnsrhsu5c"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qecjm0l2hskyp5u7g00al93nsfkz0qmu3r3wm4y"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qntgexw3zm7c0j962yassdzphadkax38qw0kgup"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qprsncmdzn383zckg92rrsv70l3k32xgz2kpamq"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qvahw8kcqm6uzhqd4pst4rqcvjk6gul82pjgnmz"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1qmnpmclegsm5z4zhgdplyw3lqdryhu27gf0jsd3"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1q357uaa2hlh6jp0snvndx3e7gkr2ds0tsamcdnx"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
       "addr": "3Pg6HJJPhm3X7eWrdHbPFQeHU723a9GSJ7"
     },
     {
       "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1qwgnhe6vn5zzu7csukavhfatzdasvmkavktqe4udzx96dk602ghsqaz8vt6"
+      "bridge_source": "NativeBTC",
+      "addr": "bc1p0tsy45wav45req0ltwlca56m2wss9dd26g3wpdjujwmhtk0q79dq7d8fhp"
+    },
+    {
+      "type": "staking_output",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1p2gt5805a5nh0eueetuyuvtaj8kjhsuyrjyzmgc54ekqceu6xr9aqe6c8jl"
     },
     {
       "type": "balance",
       "bridge_source": "FBTC",
-      "addr": "bc1qf2lqvumkq2l2d3qej7u6w9u84djfnmy7kfcqdulfpcm7zqxl330smc0mkj"
+      "addr": "bc1p4n0gjczt5w6l76y376yvgjyacvdncm9nkm73rqh9k09jk05469jsa6vs6a"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1p4su5lzpaxz7rc9z6tv8u4pfstpxaw7hagdrlrq8p2z3uvd8p8thsddye9w"
     },
     {
       "type": "balance",
       "bridge_source": "FBTC",
-      "addr": "bc1qyzsetzfrwzxs7zzqtsmyaz39mumhrh58mu04kyjcy8pynn9zhk5q2dc2r3"
+      "addr": "bc1p6mu8mrtnfz0frdfghfxr05tr8dq6j0q65rpzhhgg7998zelfp74qxxejh9"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1p784hthye4yjed726d68dgrm9mdd8x3p4zygteltxsp8gjy6pytmqfdjkju"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1p7dafndyllnsqtthxhp76gzjwujzeelzc2qt8haua7ds8cmqgvhkqtr00ya"
     },
     {
       "type": "balance",
@@ -488,12 +103,72 @@
     {
       "type": "balance",
       "bridge_source": "FBTC",
-      "addr": "bc1pec54ffrm9vnpypg2pdxrla49a7w5m5922rf9uc5nqzrckq5actqqwlxhfa"
+      "addr": "bc1p8jpunkzxpued6d4k4n8the7trn3m53vjphxwwaxls58kg3gyracqwetwzl"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1p93qry6vdxutmtnqk0n48hs9au54xha6ywr9a8fryy2a3ctqcn0hqt5s0cv"
+    },
+    {
+      "type": "staking_output",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1p94j8r24zm409k8wgqylh0z9p66mwuwgk5nkz9525mug7kda40hcqc0qdmc"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1paew2r3hqqnwhatttwx3qe3f837vvhwx7jhv228py9u3t7s22ltmqenjdym"
     },
     {
       "type": "balance",
       "bridge_source": "FBTC",
-      "addr": "bc1pyfmtputwx7uvug972jp5r658da90m4dl4sgx506znnw3ezushuzqwz5u8a"
+      "addr": "bc1pc8t32hxvlnnv0lyuqhfqy9mfmaxtl66e495rqw4rmp7y4q60kkcs2wt2pq"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1pdv9nsscd9yq3fgcq78wjyhzq0q5g5rwvfy3m0vtxcyx5wumdn9vs3s5kta"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1pe08jsth0y84d67xrs29868vxy8wz9dtt04fjtxvjp00apffu7uhqpgkrmn"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1pec54ffrm9vnpypg2pdxrla49a7w5m5922rf9uc5nqzrckq5actqqwlxhfa"
+    },
+    {
+      "type": "staking_output",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1peev06x9q0sftsr9nwevlqjjn77v2yc4yjeeskzcnsmac9afhg9hqneazrv"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1ph2wugt6767uhkdypphke3pn7gaq4tax4hzk0mw5ltww6wyme0xvqdx6lkf"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1ph63dpz7jpdpykmz2l6pjqfuazfayqf3zvfhvkk0m0024exclggvsrggqgk"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1phhfsdcts2lqkc44ver6v24460x5kx5dpg364elxd8jzfjpg5q4yqt8saty"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1phql7l5rrfqn9egmppjtlvyw0evav853q5uzlzcq8rdp5sp0dwjzq9x57pn"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1pmjcg79u2quppamjtekfns5pqmdlpd0gqlwvksq9tzrua0f3vq7hsdmfcs9"
     },
     {
       "type": "balance",
@@ -502,243 +177,8 @@
     },
     {
       "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1qp7e46m3dp240dad6qen3hcdk72fcuhpmumxh27"
-    },
-    {
-      "type": "balance",
-      "bridge_source": "FBTC",
-      "addr": "bc1p4n0gjczt5w6l76y376yvgjyacvdncm9nkm73rqh9k09jk05469jsa6vs6a"
-    },
-    {
-      "type": "staking_output",
       "bridge_source": "NativeBTC",
-      "addr": "bc1p2gt5805a5nh0eueetuyuvtaj8kjhsuyrjyzmgc54ekqceu6xr9aqe6c8jl"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pchvtyrch7azqk9mt8a0a4ev5x57y80gc2lv5etes9kr0rnrpt0nqqk37g8"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pzduef6zwh39zu9w5s4wg29haytgta84dw9s7fdmrknlcjyn4hwfqwwhmsg"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ps2qgpe7c7fnxsn9ytw09ucq42juusscgyk5jedh5fu4vvtyz5q5qy2tnwy"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "FBTC",
-      "addr": "bc1pejsdp67pzyh89zgzhmzvwer44sjj7mpprnauq74rmk8mu9s0022q6wa8qj"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p8na4udmjgp3m68wytn9guacrt5jf504ee7cdjkctzh7dyamlrnjq54anhh"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p5sdf0yq007hph2pfdtn0ql4drs689walszuggzttxl5ymdr9sfhq3aad0u"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p4m2ftyuws5qdwl839gp7p6u77x0gadurmre4qd9vvw8f59unuxtq4rldlm"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p45penescv68n8aeh4z2gpktls7cvgttgstx96myws4rxx9xhgjxqzf6srh"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pzyn58n958y3la04f7jkdfraffvwgyjh5them3umupgluqgslynxqjagc5s"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ps364vgts0wh2tq9zrvu2mkwsfnzmjeyql34v4pw78m08yka070lqp8ds23"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p3rhdwyu6w8uda2wp6jzulfanjgs8f233yeapa3h85spac7z0lvkqt5x96l"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p7ads6j9a72x6h9yyjzncpugnw0xtwzk2wqlzv5kgxkdr7vk3fkds8pquet"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1px7xyhwyhc6twn4zwgxupv3nejykmdq5g4atvh5wqla26fjssnq0quqe0n3"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pyax28jhft0lzzwz9fj5cm5mehxpffa6efmddexch04tup7d23arqpcqm2x"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1php0tj924emlg4m66ha7h9ntcvt6cjnf4qpu27df5gs9f092gjm0q8hmsj8"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p579cq0lwlglweafhymt3gckzes8c735zfmw5d4d7lph0fmxkv3vsypp5ln"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pd9e3cqn0va57dkfucd29za2ujmwhzc8gewuuq22hge6hh5d2a3esfar596"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "FBTC",
-      "addr": "bc1pzlhnwcyytvmzl5kmp4usxwt9jhw7u2c2w4u5gej5ef4y0uznv5ps84c4vv"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pyc5v468mmltf503uhhdumxmadq3s0ykj5q5cyhj8a54k8sq5ze2su4vdy4"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1puu6tmuprwvsvnquz55pthvp8gws5uh9zyx9t5s59aqpejqlzzt8st7kuyx"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pcheyhmes2ggasm4ec7hlvsm4y46u36tt2p87euwq0jc82kd72zjqxc5u9s"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pwexzwcxcxmfnm2yxm38hlqn4k9awgnn0cuwp5fwjvl7nzktslgfqexdld3"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p6qnzwtjxen7zccmez48npuse4fqlja9786jrwh2vyagevynl7casehcv7x"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pswalwful30sa7llmt23rtru7c8xr66gansm9fyjmmtcxjl6gtlfstufl79"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "FBTC",
-      "addr": "bc1pwhy84kvvxzfyrlwkyyzapf2ztkwpfj7yv0y6al7pg9kwht7undhsj3ww9p"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pzfxlqzvh9p20rdl36hwc2gvuqzfye9p69v864t33vlfl804drrmqvknqkf"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p02zhd47ltfawqf676gskancse72m2r3atl39mussnw5dcktyj5kqk6sydu"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pscu5a4qhpwcy99phuperlqawjr650879wqqtqkxkrh7qtdwlhenq0qk0d0"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p3ndx06v2s8ss5wrkxp6dedm80x76jth057lekj9p8eq27skn24ts4lkq37"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p7dpdyprfyhfj6c8wp679x09z7w3u0wkshvrvpknxf2k9sjlzp0tqf286pq"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "FBTC",
-      "addr": "bc1pvkr32l23vr0e9uv0ylkwn8fkt8whkl2h620yeh08x25fd5msw7usdmdv4f"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "FBTC",
-      "addr": "bc1pwtr406pv8l6ean6hu6rzhwknd86u2hwszum9zqtvn8cls8h59keqjua0m3"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p94j8r24zm409k8wgqylh0z9p66mwuwgk5nkz9525mug7kda40hcqc0qdmc"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pzrm8y96xqacl5eazlef25pekrjzwclavnjym2e8jnjn4ffc5whnqkegh7u"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p8yke2svnkwdelvdeatl39s2ch2g20h32fd3maqatu8js4z0qw6lqqju29c"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ps20x037ht3s5h3jfswse57asj483sesfpvhjsdmrd62aemjrjeuqk7rzv2"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ps07wzhu6t2su7eezd3ce88fwcaemste42mlcz52jrqjvywwnagjqt60ymd"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ptu32w3ltqely9734vk7t39vxk2g8mx8jsq47rzc070dlsknxptns42nza4"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p2853tazzssnlxhlp4qayvsvngnnsrw6mn7kjgzhqjx6ull8cfmlskf8clp"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pr5w59ket2hy49z3ryy6wrm0kl34jsc4g6sgkje5w0j2sd9yyxrwsy3rp3v"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pehgq8w864s7ew79q4l6n3f23aacpewqu3yuj2qmtzr6uh9lwewuqwzq3vd"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "FBTC",
-      "addr": "bc1puacezgtudwq587zp9ffkgugxrw7a405yrf586s8nvg53x3hsg6zs67eafn"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ptzpnx880p9aydxjwr9hhtnlqlltqy75zaa8gtjevtwfs4a0je7tsmvjv4u"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p5r3h9cxstu587v9za0rg8adfaffwunntmxfdqgu0wm0x0gf3zm3srg7lja"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pjwjx9ygltd4ehp8rlwxlep803e0w9gtz8hxx6ekjpvetay3yytsqhfm7d4"
+      "addr": "bc1ppwapwvnmxw4d6qtzjqqm3ungg0p5t9ay602juvp3zw8lh3ln0q6qh35ljg"
     },
     {
       "type": "staking_output",
@@ -746,79 +186,14 @@
       "addr": "bc1pq6sq4rm09cqd432yhwtt99yht6lqhlgn846xug860y38y2hl7arswcuryt"
     },
     {
-      "type": "staking_output",
+      "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1pqv2vyejl9d36rcqxr0kx2xrq3rtypndmgpwetwrazph0mrzqr04qqa5yay"
+      "addr": "bc1pqvr425a6h2ztmy7vke4sfpk74e023h5yayx63at9n6g8eqfqpmzs0l2aj9"
     },
     {
       "type": "staking_output",
       "bridge_source": "NativeBTC",
-      "addr": "bc1px954quunjyhg5f8wt2wtqupuaj8m77lp2mknz33ed3rkq7pvz88sz0466x"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pgxppygvhrg7y539t4c0f695u7x9xqm223a4fgk90z7teqf6gxn3qwzkg8u"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pjpunppxd246722rnhquelfqpwctp0ukv8y5n5wa45jtkc78dm5ssrddndr"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pe8cvhvg9x9008us3mcj654lgxalqrzmj788fcn2a8lsaxrt0e6mq7rqck7"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p3sxcnxx6sr4mm0mr8gqhjyfk9nv63dlp2asz6w0530r7w5rpwdcsdnmvea"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p3uvz77m3su9u2ufkzv8c06y7xpg7wy3c55wr2n49paasue295dks0864e0"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pttsulpzrhd6yejj98u3rh63mt0cvf3xz7m3pwpnwdwjlpurkqpxqan9tcm"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1purqv24xky3l7yf2gf48lsd3et7yc2gw38fj3laflf4g0fdm8xelq4u95fh"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pyul60xes4yu0q8l5k7kxjuvd637k80casz5r7nnvxz8nuh0lculq7rhsns"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p83q98sjtfhewg93turpd8t4xvezl3t0n3ravz9ul3hxs8hsc08aq6q05jx"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ptjwcvxzhsxzkut3pxzauhvnthcfedgpvl937rfupxa3qwncct64s8qu8a7"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1p8wfjrdda3jlpfsuh4waggyvmg85pctw5ky6xd32qjwy9vejcuykq0cmkpd"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pzgstxjykkz8le2hk2z9ppr2pa0224cc96dzfz50v4frn6gtw8ncs6pzgzl"
-    },
-    {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pqsyzsfwpr5tjytpncf7cz68jea7c680dqeuhzyrxyaqrtqkt4mnsuuymuq"
+      "addr": "bc1pscu5a4qhpwcy99phuperlqawjr650879wqqtqkxkrh7qtdwlhenq0qk0d0"
     },
     {
       "type": "staking_output",
@@ -828,67 +203,97 @@
     {
       "type": "staking_output",
       "bridge_source": "FBTC",
-      "addr": "bc1pv890wdtpekz0knhyualnpdw87n3hstar0c0evx5mf36azr9mtd5qjfzq59"
+      "addr": "bc1puacezgtudwq587zp9ffkgugxrw7a405yrf586s8nvg53x3hsg6zs67eafn"
     },
     {
       "type": "staking_output",
       "bridge_source": "NativeBTC",
-      "addr": "bc1ptyq8cz36r2lhnxqt5mj3e8l208keyjwwy86hc5lhs7ve5j7faejqslrexd"
+      "addr": "bc1purqv24xky3l7yf2gf48lsd3et7yc2gw38fj3laflf4g0fdm8xelq4u95fh"
+    },
+    {
+      "type": "staking_output",
+      "bridge_source": "FBTC",
+      "addr": "bc1pvkr32l23vr0e9uv0ylkwn8fkt8whkl2h620yeh08x25fd5msw7usdmdv4f"
+    },
+    {
+      "type": "staking_output",
+      "bridge_source": "FBTC",
+      "addr": "bc1pwhy84kvvxzfyrlwkyyzapf2ztkwpfj7yv0y6al7pg9kwht7undhsj3ww9p"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "NativeBTC",
+      "addr": "bc1pwqzyehmpczhn804x0zz63c5h9t55ew09r8v4lmhdy0cpla8q90rqtvmsp6"
+    },
+    {
+      "type": "staking_output",
+      "bridge_source": "FBTC",
+      "addr": "bc1pwtr406pv8l6ean6hu6rzhwknd86u2hwszum9zqtvn8cls8h59keqjua0m3"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1pxfwnyqng7c622te5m5ayjsz6lrsxjl542wyw99h2p5e60zmeknqq49g0fm"
     },
     {
       "type": "staking_output",
       "bridge_source": "NativeBTC",
-      "addr": "bc1p9jj49s3t9m2wkmurgcgsk7erqha5ktmzq3ye0rd6xql77q6nd47sm7xa7w"
+      "addr": "bc1pyax28jhft0lzzwz9fj5cm5mehxpffa6efmddexch04tup7d23arqpcqm2x"
+    },
+    {
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1pyfmtputwx7uvug972jp5r658da90m4dl4sgx506znnw3ezushuzqwz5u8a"
     },
     {
       "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pvqa2ys2wmudrs4y2r9kgvzzpd5fl7p0pk0mrc9625kwzrlaqfl2sz3lqsf"
+      "bridge_source": "FBTC",
+      "addr": "bc1pzlhnwcyytvmzl5kmp4usxwt9jhw7u2c2w4u5gej5ef4y0uznv5ps84c4vv"
     },
     {
-      "type": "staking_output",
+      "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1prs2wshn32ulxr3fggq6zdr7dkn5z43w2nmzesk46f9784gemvfrq6t6vz0"
+      "addr": "bc1qdrhewkdyy44xf80n79wmls3pyg07lrg3syhmze"
     },
     {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1phkrg8jwvn0auvuyzvm2zfseq2887l2nud2s9levp4cutjq3ha0aqfz6ush"
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1qf2lqvumkq2l2d3qej7u6w9u84djfnmy7kfcqdulfpcm7zqxl330smc0mkj"
     },
     {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pjc9p6z8enxwa7nvgl9ccsgh6kvsy202uvak45dw0xahlnusutnaqdv2slt"
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1qj9w5ee2kf4akvtzrj59p77yc6x02nqqg9m0tcd"
     },
     {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pyrcztvv3rt3qc873y7l0dpalqnxt3r5nl4kvvsn6u6fy33mqczas5mhsxq"
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1qkj4yxrlsear0hujkf3pq5zc4r8mnz3ep8udftj"
     },
     {
-      "type": "staking_output",
+      "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1pg66tn4uhuzrkpv4fe863emam7kqd7u9ppm24zftuku450zxcy4ns2043x6"
+      "addr": "bc1qma2epmz00c7kutshs0h7m8rra8ceekht87amu7"
     },
     {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1psjmpuxzryfxh863xlhk8hxvfdrywj0v6uqfxd0w5xxaa9sx0hjhqkx8qff"
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1qp7e46m3dp240dad6qen3hcdk72fcuhpmumxh27"
     },
     {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1pztmquelj2v8y5txmdd5svyk5yh0679te8wjzjp8ym8rs46k2e3nq47crfp"
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1qwgnhe6vn5zzu7csukavhfatzdasvmkavktqe4udzx96dk602ghsqaz8vt6"
     },
     {
-      "type": "staking_output",
+      "type": "balance",
       "bridge_source": "NativeBTC",
-      "addr": "bc1p7cm35679adhls6swqfd2hqvfnw76s0ygl4srxtlfjnlq2v55k8jqr5xj5g"
+      "addr": "bc1qwmw0j0nwe2r8rl8cgecf9pqhgqkpzs0zcfcraz"
     },
     {
-      "type": "staking_output",
-      "bridge_source": "NativeBTC",
-      "addr": "bc1ptn50qwgjgm4qrr27f3m6hxn9e39ls9helcr83n8ffpg3kjd8e7kssfwtnr"
+      "type": "balance",
+      "bridge_source": "FBTC",
+      "addr": "bc1qyzsetzfrwzxs7zzqtsmyaz39mumhrh58mu04kyjcy8pynn9zhk5q2dc2r3"
     }
   ],
   "evm": {
@@ -896,36 +301,23 @@
       "chain_id": 42161,
       "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
       "tokens": [
-        [
-          "FBTC",
-          "0xC96dE26018A54D51c097160568752c4E3BD6C364",
-          "8",
-          "3460357"
-        ],
-        [
-          "WBTC",
-          "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
-          "8",
-          "75801258"
-        ],
-        [
-          "cbBTC",
-          "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
-          "8",
-          "3577286"
-        ]
+        ["FBTC", "0xC96dE26018A54D51c097160568752c4E3BD6C364", "8", "11473528"],
+        ["WBTC", "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f", "8", "8411102"],
+        ["cbBTC", "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf", "8", "4427204"]
+      ]
+    },
+    "base": {
+      "chain_id": 8453,
+      "vault": "0x9f283B0401d9698e86097fdC44820BcBE5DcfeFb",
+      "tokens": [
+        ["cbBTC", "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf", "8", "147418"]
       ]
     },
     "bera": {
       "chain_id": 80094,
       "vault": "0xE0240d05Ae9eF703E2b71F3f4Eb326ea1888DEa3",
       "tokens": [
-        [
-          "WBTC",
-          "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
-          "8",
-          "0"
-        ]
+        ["WBTC", "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c", "8", "67358523"]
       ]
     },
     "bitlayer": {
@@ -936,32 +328,18 @@
           "BTC",
           "0x0000000000000000000000000000000000000000",
           "18",
-          "11165316631808424746"
+          "244754928777550010"
         ],
-        [
-          "WBTC",
-          "0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F",
-          "18",
-          "1838208452223173895"
-        ]
+        ["WBTC", "0xfF204e2681A6fA0e2C3FaDe68a1B28fb90E4Fc5F", "18", "0"]
       ]
     },
     "bob": {
       "chain_id": 60808,
       "vault": "0x2ac98DB41Cbd3172CB7B8FD8A8Ab3b91cFe45dCf",
       "tokens": [
-        [
-          "FBTC",
-          "0xC96dE26018A54D51c097160568752c4E3BD6C364",
-          "8",
-          "43379126"
-        ],
-        [
-          "WBTC",
-          "0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3",
-          "8",
-          "2502500600"
-        ]
+        ["FBTC", "0xC96dE26018A54D51c097160568752c4E3BD6C364", "8", "88630600"],
+        ["WBTC", "0x03C7054BCB39f7b2e5B2c7AcB37583e32D70Cfa3", "8", "0"],
+        ["WBTC", "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c", "8", "192229782"]
       ]
     },
     "bsc": {
@@ -969,17 +347,12 @@
       "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
       "tokens": [
         [
-          "FBTC",
-          "0xC96dE26018A54D51c097160568752c4E3BD6C364",
-          "8",
-          "37940732"
-        ],
-        [
           "BTCB",
           "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",
           "18",
-          "17038626899361852"
-        ]
+          "3784261644727389"
+        ],
+        ["FBTC", "0xC96dE26018A54D51c097160568752c4E3BD6C364", "8", "11818265"]
       ]
     },
     "bsquared": {
@@ -990,13 +363,13 @@
           "BTC",
           "0x0000000000000000000000000000000000000000",
           "18",
-          "5197822055478617100"
+          "5354714555478617100"
         ],
         [
           "WBTC",
           "0x4200000000000000000000000000000000000006",
           "18",
-          "29875944851719831"
+          "29948547841076299"
         ]
       ]
     },
@@ -1004,36 +377,21 @@
       "chain_id": 1,
       "vault": "0x047D41F2544B7F63A8e991aF2068a363d210d6Da",
       "tokens": [
-        [
-          "FBTC",
-          "0xC96dE26018A54D51c097160568752c4E3BD6C364",
-          "8",
-          "4213048"
-        ],
+        ["FBTC", "0xC96dE26018A54D51c097160568752c4E3BD6C364", "8", "12359264"],
         [
           "WBTC",
           "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
           "8",
-          "474324091"
+          "713788500"
         ],
-        [
-          "cbBTC",
-          "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
-          "8",
-          "74093822"
-        ]
+        ["cbBTC", "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf", "8", "257578"]
       ]
     },
     "mantle": {
       "chain_id": 5000,
       "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
       "tokens": [
-        [
-          "FBTC",
-          "0xC96dE26018A54D51c097160568752c4E3BD6C364",
-          "8",
-          "66636513"
-        ]
+        ["FBTC", "0xC96dE26018A54D51c097160568752c4E3BD6C364", "8", "111984162"]
       ]
     },
     "merlin": {
@@ -1041,23 +399,18 @@
       "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
       "tokens": [
         [
-          "WBTC",
-          "0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA",
-          "18",
-          "0"
-        ],
-        [
           "BTC",
           "0x0000000000000000000000000000000000000000",
           "18",
-          "162485434685613900"
+          "167185434685613900"
         ],
         [
           "M-BTC",
           "0xB880fd278198bd590252621d4CD071b1842E9Bcd",
           "18",
-          "1288430482856884215"
-        ]
+          "2987958842856884215"
+        ],
+        ["WBTC", "0xF6D226f9Dc15d9bB51182815b320D3fBE324e1bA", "18", "0"]
       ]
     },
     "mode": {
@@ -1065,29 +418,19 @@
       "vault": "0x84E5C854A7fF9F49c888d69DECa578D406C26800",
       "tokens": [
         [
-          "WBTC",
-          "0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF",
-          "8",
-          "855169516"
-        ],
-        [
           "M-BTC",
           "0x59889b7021243dB5B1e065385F918316cD90D46c",
           "18",
           "990914949813332496789"
-        ]
+        ],
+        ["WBTC", "0xcDd475325D6F564d27247D1DddBb0DAc6fA0a5CF", "8", "13839"]
       ]
     },
     "optimism": {
       "chain_id": 10,
       "vault": "0xF9775085d726E782E83585033B58606f7731AB18",
       "tokens": [
-        [
-          "WBTC",
-          "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
-          "8",
-          "13087821"
-        ]
+        ["WBTC", "0x68f180fcCe6836688e9084f035309E29Bf0A2095", "8", "1323741"]
       ]
     },
     "zeta": {
@@ -1098,7 +441,7 @@
           "BTC.BTC",
           "0x13A0c5930C028511Dc02665E7285134B6d11A5f4",
           "8",
-          "17283975"
+          "5656714"
         ]
       ]
     }
