@@ -19,7 +19,7 @@ contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Ac
         _disableInitializers();
     }
 
-    function initialize(address defaultAdmin, address minter, address[] memory _frozenUsers) reinitializer(2) public {
+    function initialize(address defaultAdmin, address minter, address[] memory _frozenUsers) reinitializer(3) public {
         __ERC20_init("uniBTC", "uniBTC");
         __ERC20Burnable_init();
         __AccessControl_init();
