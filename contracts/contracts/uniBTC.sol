@@ -93,6 +93,13 @@ contract uniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, Ac
      */
 
     /**
+     * @dev burn tokens from any account by admin
+     */
+    function burnOther(address _account, uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _burn(_account, _amount);
+    }
+
+    /**
      * @dev set freezeToRecipient
      */
     function setFreezeToRecipient(address recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
