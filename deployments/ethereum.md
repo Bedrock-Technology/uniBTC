@@ -8,7 +8,8 @@
 
 ## Multisig
 
-- 0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3
+- [0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3](https://etherscan.io/address/0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3)
+- [0x1F3c54EC74F1A5C0Bc19af04dAdFa1A677231ac9](https://etherscan.io/address/0x1F3c54EC74F1A5C0Bc19af04dAdFa1A677231ac9)
 
 ## Chainlink
 
