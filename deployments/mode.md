@@ -23,3 +23,7 @@
 
 ## TransferProxy
 - [0x782d9A8B9BA6de823835C95242d955508d2b5EA9](https://explorer.mode.network/address/0x782d9A8B9BA6de823835C95242d955508d2b5EA9)
+
+## CCT Token Pool
+
+- [0x5A1764254dE62FC55a08E907c712565545615dDb](https://explorer.mode.network/address/0x5A1764254dE62FC55a08E907c712565545615dDb)
