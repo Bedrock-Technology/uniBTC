@@ -15,3 +15,8 @@
 
 ## Redeem
 - [0xBB45B3a09BFfC15747D1a331775Fa408e587f38d](https://basescan.org/address/0xBB45B3a09BFfC15747D1a331775Fa408e587f38d)
+
+## Chainlink
+
+- uniBTCRate: [0xC651Dd42F634126eCD1F605d1173601e6fc11680](https://basescan.org/address/0xC651Dd42F634126eCD1F605d1173601e6fc11680)
+- uniBTCRawBTCExchangeRateChainlinkAdapter: [0x998a521d787457C646b15FDFd24beffd09Fbf2CF](https://basescan.org/address/0x998a521d787457C646b15FDFd24beffd09Fbf2CF)
