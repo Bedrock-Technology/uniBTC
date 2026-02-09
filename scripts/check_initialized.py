@@ -88,8 +88,13 @@ def run_cmd(args, timeout=15):
     return None
 
 
+# EIP-1967 implementation slot
+IMPL_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc"
+
+
 def get_initialized_version(proxy, rpc):
-    raw = run_cmd(["cast", "storage", proxy, "0", "--rpc-url", rpc])
+    """Read slot 0 (_initialized) at the latest block."""
+    raw = run_cmd(["cast", "storage", proxy, "0", "--rpc-url", rpc, "--block", "latest"])
     if raw is None:
         return "RPC_ERR"
     try:
@@ -99,7 +104,17 @@ def get_initialized_version(proxy, rpc):
 
 
 def get_implementation(proxy, rpc):
-    return run_cmd(["cast", "implementation", proxy, "--rpc-url", rpc])
+    """Read the EIP-1967 implementation slot at the latest block."""
+    raw = run_cmd(["cast", "storage", proxy, IMPL_SLOT, "--rpc-url", rpc, "--block", "latest"])
+    if raw is None:
+        return None
+    try:
+        addr = "0x" + raw[-40:]  # last 20 bytes = address
+        if int(addr, 16) == 0:
+            return None
+        return addr
+    except (ValueError, IndexError):
+        return None
 
 
 def extract_version_from_bytecode(address, rpc):
@@ -113,7 +128,7 @@ def extract_version_from_bytecode(address, rpc):
 
     This avoids relying on `cast disassemble` which can fail on some bytecodes.
     """
-    bytecode = run_cmd(["cast", "code", address, "--rpc-url", rpc], timeout=20)
+    bytecode = run_cmd(["cast", "code", address, "--rpc-url", rpc, "--block", "latest"], timeout=20)
     if not bytecode or bytecode == "0x":
         return "N/A"
     h = bytecode[2:] if bytecode.startswith("0x") else bytecode
