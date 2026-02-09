@@ -206,6 +206,12 @@ def get_implementation(proxy, rpc):
     return run_cmd(["cast", "implementation", proxy, "--rpc-url", rpc])
 
 
+def get_runtime_bytecode(address, rpc):
+    # type: (str, str) -> Optional[str]
+    """Fetch runtime bytecode of a contract via cast code."""
+    return run_cmd(["cast", "code", address, "--rpc-url", rpc], timeout=20)
+
+
 # ────────────────────────────────────────────────────────────────────────────────
 # Source fetching: multiple strategies per chain
 # ────────────────────────────────────────────────────────────────────────────────
@@ -451,6 +457,73 @@ def main():
     results.sort(key=lambda r: chain_order.get(r["name"], 999))
 
     # Print table
+    print()
+    print("{0:<12} {1:<44} {2:>8} {3:>8} {4:<14} {5}".format(
+        "Chain", "Implementation", "Storage", "Source", "Via", "Match"))
+    print("{0} {1} {2} {3} {4} {5}".format(
+        "-" * 12, "-" * 44, "-" * 8, "-" * 8, "-" * 14, "-" * 5))
+
+    for r in results:
+        icon = {"ok": "✅", "MISMATCH": "❌", "warn": "⚠️ "}[r["match"]]
+        print("{0:<12} {1:<44} {2:>8} {3:>8} {4:<14} {5}".format(
+            r["name"], r["impl"],
+            r["storage_ver"], r["source_ver"], r["src_from"], icon))
+
+    # ── Second pass: bytecode comparison for unverified chains ──────────────
+    # Build a map: impl_address_lower -> (source_ver, reference_chain_name, rpc)
+    verified_impls = {}  # type: Dict[str, Tuple[str, str, str]]
+    for r in results:
+        if r["match"] == "ok" and r["impl"] != "N/A":
+            impl_lower = r["impl"].lower()
+            if impl_lower not in verified_impls:
+                # Store reference info from the verified chain
+                chain_info = next((c for c in CHAINS if c[0] == r["name"]), None)
+                if chain_info:
+                    verified_impls[impl_lower] = (r["source_ver"], r["name"], chain_info[2])
+
+    warn_results = [r for r in results if r["match"] == "warn" and r["source_ver"] == "N/A" and r["impl"] != "N/A"]
+    if warn_results:
+        print("\n── Bytecode comparison for unverified chains ──")
+        for r in warn_results:
+            impl_lower = r["impl"].lower()
+            if impl_lower not in verified_impls:
+                print("  {0:<12} impl {1} not verified on any other chain, skipping".format(
+                    r["name"], r["impl"]))
+                continue
+
+            ref_ver, ref_chain, ref_rpc = verified_impls[impl_lower]
+            chain_info = next((c for c in CHAINS if c[0] == r["name"]), None)
+            if not chain_info:
+                continue
+
+            sys.stderr.write("  Comparing bytecode: {0} vs {1} (impl {2})...\n".format(
+                r["name"], ref_chain, impl_lower[:10]))
+
+            bc_this = get_runtime_bytecode(r["impl"], chain_info[2])
+            bc_ref = get_runtime_bytecode(impl_lower, ref_rpc)
+
+            if not bc_this or not bc_ref:
+                print("  {0:<12} ⚠️  bytecode fetch failed (this={1}, ref={2})".format(
+                    r["name"],
+                    "ok" if bc_this else "FAIL",
+                    "ok" if bc_ref else "FAIL"))
+                continue
+
+            if bc_this == bc_ref:
+                r["source_ver"] = ref_ver
+                r["src_from"] = "bytecode={0}".format(ref_chain)
+                if r["storage_ver"] == ref_ver:
+                    r["match"] = "ok"
+                else:
+                    r["match"] = "MISMATCH"
+                icon = {"ok": "✅", "MISMATCH": "❌", "warn": "⚠️ "}[r["match"]]
+                print("  {0:<12} {1} bytecode matches {2}, source_ver={3}".format(
+                    r["name"], icon, ref_chain, ref_ver))
+            else:
+                print("  {0:<12} ⚠️  bytecode DIFFERS from {1} (same address, different code)".format(
+                    r["name"], ref_chain))
+
+    # Reprint updated table
     print()
     print("{0:<12} {1:<44} {2:>8} {3:>8} {4:<14} {5}".format(
         "Chain", "Implementation", "Storage", "Source", "Via", "Match"))
