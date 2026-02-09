@@ -99,11 +99,11 @@ CHAINS = [
      [("https://api.routescan.io/v2/network/mainnet/evm/80094/etherscan/api", "routescan"),
       ("etherscan_v2", "etherscan_v2")]),
 
-    ("Corn",      21000000, "https://rpc.corn.fun",
+    ("Corn",      21000000, "https://mainnet.corn-rpc.com", 
      "0x93919784c523f39cacaa98ee0a9d96c3f32b593e",
      [("https://maizenet-explorer.usecorn.com/api", "etherscan")]),
 
-    ("TAC",       2390,     "https://turin.rpc.tac.build",
+    ("TAC",       2390,     "https://rpc.tac.build",
      "0xF9775085d726E782E83585033B58606f7731AB18",
      [("https://explorer.tac.build/api", "etherscan")]),
 
@@ -136,7 +136,7 @@ CHAINS = [
 
     ("Sei",       1329,     "https://evm-rpc.sei-apis.com",
      "0xDfc7D2d003A053b2E0490531e9317A59962b511E",
-     []),  # seistream.app / seitrace.com have no Etherscan-compatible API
+     [("etherscan_v2", "etherscan_v2")]),  # seistream.app / seitrace.com have no Etherscan-compatible API
 
     ("XLayer",    196,      "https://rpc.xlayer.tech",
      "0xd3c8dA379d71a33BfEE8875F87Ac2748bEB1d58d",
