@@ -138,7 +138,7 @@ CHAINS = [
      "0xDfc7D2d003A053b2E0490531e9317A59962b511E",
      [("etherscan_v2", "etherscan_v2")]),  # seistream.app / seitrace.com have no Etherscan-compatible API
 
-    ("XLayer",    196,      "https://rpc.xlayer.tech",
+    ("XLayer",    196,      "https://xlayerrpc.okx.com",
      "0xd3c8dA379d71a33BfEE8875F87Ac2748bEB1d58d",
      []),  # oklink.com requires API key with different format
 
@@ -146,7 +146,7 @@ CHAINS = [
      "0x93919784C523f39CACaa98Ee0a9d96c3F32b593e",
      []),  # explorer.taker.xyz behind Cloudflare challenge
 
-    ("DuckChain", 5545,     "https://rpc.duckchain.com",
+    ("DuckChain", 5545,     "https://rpc.duckchain.io",
      "0x93919784C523f39CACaa98Ee0a9d96c3F32b593e",
      []),  # scan.duckchain.io times out
 ]
@@ -210,6 +210,38 @@ def get_runtime_bytecode(address, rpc):
     # type: (str, str) -> Optional[str]
     """Fetch runtime bytecode of a contract via cast code."""
     return run_cmd(["cast", "code", address, "--rpc-url", rpc], timeout=20)
+
+
+def extract_version_from_bytecode(address, rpc):
+    # type: (str, str) -> str
+    """Extract reinitializer version by disassembling the bytecode.
+
+    Looks for the OZ Initializable reinitializer(N) pattern:
+        PUSH1 0x00 / SLOAD / PUSH1 <N>      (slot 0 = _initialized)
+    Returns the version string or 'N/A'.
+    """
+    # First fetch the runtime bytecode, then disassemble it
+    bytecode = get_runtime_bytecode(address, rpc)
+    if not bytecode:
+        return "N/A"
+
+    disasm = run_cmd(["cast", "disassemble", bytecode], timeout=30)
+    if not disasm:
+        return "N/A"
+
+    lines = disasm.splitlines()
+    for i in range(len(lines) - 2):
+        # Pattern: PUSH1 0x00 → SLOAD → PUSH1 0xNN
+        l0 = lines[i].strip()
+        l1 = lines[i + 1].strip()
+        l2 = lines[i + 2].strip()
+        if ("PUSH1 0x00" in l0 and "SLOAD" in l1 and "PUSH1" in l2):
+            m = re.search(r'PUSH1 0x([0-9a-fA-F]+)', l2)
+            if m:
+                ver = int(m.group(1), 16)
+                if 1 <= ver <= 255 and ver != 0xff:
+                    return str(ver)
+    return "N/A"
 
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -522,6 +554,29 @@ def main():
             else:
                 print("  {0:<12} ⚠️  bytecode DIFFERS from {1} (same address, different code)".format(
                     r["name"], ref_chain))
+
+    # ── Third pass: disassembly for remaining unverified chains ────────────
+    still_warn = [r for r in results if r["match"] == "warn" and r["source_ver"] == "N/A" and r["impl"] != "N/A"]
+    if still_warn:
+        print("\n── Disassembly extraction for remaining unverified chains ──")
+        for r in still_warn:
+            chain_info = next((c for c in CHAINS if c[0] == r["name"]), None)
+            if not chain_info:
+                continue
+            sys.stderr.write("  Disassembling {0} impl {1}...\n".format(r["name"], r["impl"]))
+            ver = extract_version_from_bytecode(r["impl"], chain_info[2])
+            if ver != "N/A":
+                r["source_ver"] = ver
+                r["src_from"] = "disasm"
+                if r["storage_ver"] == ver:
+                    r["match"] = "ok"
+                else:
+                    r["match"] = "MISMATCH"
+                icon = {"ok": "✅", "MISMATCH": "❌", "warn": "⚠️ "}[r["match"]]
+                print("  {0:<12} {1} reinitializer({2}) found via disassembly".format(
+                    r["name"], icon, ver))
+            else:
+                print("  {0:<12} ⚠️  could not extract version from bytecode".format(r["name"]))
 
     # Reprint updated table
     print()
