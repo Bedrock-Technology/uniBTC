@@ -120,20 +120,27 @@ def get_implementation(proxy, rpc):
 def extract_version_from_bytecode(address, rpc):
     """
     Extract reinitializer(N) by searching the raw bytecode hex for the
-    OZ Initializable opcode pattern:
+    OZ Initializable modifier's compiled opcode pattern:
 
-        PUSH1 0x00  →  0x6000
-        SLOAD       →  0x54
-        PUSH1 <N>   →  0x60<NN>
+        PUSH1 0x00   (6000)   ; storage slot of _initialized / _initializing
+        SLOAD        (54)     ; load packed slot value
+        PUSH1 <N>    (60NN)   ; version literal from reinitializer(N)
+        SWAP1        (90)     ; reorder stack
+        PUSH2 0x0100 (610100) ; 256 — to extract _initializing (byte 1)
+        SWAP1        (90)     ;
+        DIV          (04)     ; slot_val / 256 → _initializing
+        PUSH1 0xFF   (60ff)   ; mask
+        AND          (16)     ; & 0xFF
+        ISZERO       (15)     ; !_initializing
 
-    This avoids relying on `cast disassemble` which can fail on some bytecodes.
+    Full hex pattern: 600054 60<NN> 90 610100 90 04 60ff 16 15
     """
     bytecode = run_cmd(["cast", "code", address, "--rpc-url", rpc, "--block", "latest"], timeout=20)
     if not bytecode or bytecode == "0x":
         return "N/A"
     h = bytecode[2:] if bytecode.startswith("0x") else bytecode
-    # Search for PUSH1 0x00 + SLOAD + PUSH1 <N>
-    for m in re.finditer(r"60005460([0-9a-fA-F]{2})", h):
+    # Strict pattern: PUSH1 0x00 + SLOAD + PUSH1 <N> + SWAP1 + PUSH2 0x0100 + SWAP1 + DIV + PUSH1 0xFF + AND + ISZERO
+    for m in re.finditer(r"60005460([0-9a-fA-F]{2})90610100900460ff1615", h):
         ver = int(m.group(1), 16)
         if 1 <= ver <= 255 and ver != 0xFF:
             return str(ver)
