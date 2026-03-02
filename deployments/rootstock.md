@@ -8,3 +8,6 @@
 
 ## Meson
 - 0x70aF4743F85E5E74E3b6dDFa38926c0a762Ad21C
+
+## TransferProxy
+- [0x782d9A8B9ba6dE823835c95242d955508d2b5EA9](https://rootstock.blockscout.com/address/0x782d9A8B9ba6dE823835c95242d955508d2b5EA9)
