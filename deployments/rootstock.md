@@ -11,3 +11,6 @@
 
 ## TransferProxy
 - [0x782d9A8B9ba6dE823835c95242d955508d2b5EA9](https://rootstock.blockscout.com/address/0x782d9A8B9ba6dE823835c95242d955508d2b5EA9)
+
+## Multisig
+- [0xeFa37A717C128b2Eb4739C26b180E3da26FE5075](https://safe.rootstock.io/home?safe=rsk:0xeFa37A717C128b2Eb4739C26b180E3da26FE5075)
