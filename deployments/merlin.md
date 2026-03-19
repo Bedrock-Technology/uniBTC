@@ -9,7 +9,7 @@
 - 0x11b3808A5C0B612BC284EF7c2c6034C77A66BE7b
 
 ## Multisig
-- https://safewallet.merlinverify.com/welcome
+- https://safewallet.merlinverify.com/home?safe=MCM:0xc7228f154C04C700fFe8460Ab0fbA202ce0e122c
 
 ## M-BTC
 - MBTCProxy: 0xF1376bceF0f78459C0Ed0ba5ddce976F1ddF51F4
