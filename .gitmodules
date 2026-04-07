@@ -34,3 +34,12 @@
 [submodule "contracts/lib/chainlink-local"]
 	path = contracts/lib/chainlink-local
 	url = https://github.com/smartcontractkit/chainlink-local
+[submodule "cuniBTC/lib/forge-std"]
+	path = cuniBTC/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
+[submodule "cuniBTC/lib/OpenZeppelin/openzeppelin-contracts@4.8.3"]
+	path = cuniBTC/lib/OpenZeppelin/openzeppelin-contracts@4.8.3
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git
+[submodule "cuniBTC/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3"]
+	path = cuniBTC/lib/OpenZeppelin/openzeppelin-contracts-upgradeable@4.8.3
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable.git
