@@ -43,6 +43,7 @@ contract cuniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, A
     }
 
     function _transfer(address sender, address recipient, uint256 amount) internal override {
+        require(redeemRouter != address(0), "SYS001");
         if (recipient != redeemRouter) {
             revert("TRANSFER_NOT_ALLOWED");
         }

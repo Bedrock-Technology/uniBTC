@@ -226,22 +226,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
         return true;
     }
 
-    /**
-     * ======================================================================================
-     *
-     * EXTERNAL FUNCTIONS
-     *
-     * ======================================================================================
-     */
-
-    /**
-     * @notice Claims airdrop tokens for the current epoch and locks them in VotingEscrow.
-     * @dev Verifies Merkle proof and handles token transfer and locking.
-     * @param _amount The amount of tokens to claim.
-     * @param _proof The Merkle proof verifying the claim eligibility.
-     * @param _epoch The epoch number for which to claim the airdrop.
-     */
-    function claim(uint256 _amount, bytes32[] calldata _proof, uint256 _epoch) public whenNotPaused nonReentrant {
+    function _claim(uint256 _amount, bytes32[] calldata _proof, uint256 _epoch) internal {
         require(_isActive(_epoch), "USR006");
         require(!claimed[_epoch][msg.sender], "USR005");
 
@@ -265,32 +250,32 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
     }
 
     /**
+     * ======================================================================================
+     *
+     * EXTERNAL FUNCTIONS
+     *
+     * ======================================================================================
+     */
+
+    /**
+     * @notice Claims airdrop tokens for the current epoch and locks them in VotingEscrow.
+     * @dev Verifies Merkle proof and handles token transfer and locking.
+     * @param _amount The amount of tokens to claim.
+     * @param _proof The Merkle proof verifying the claim eligibility.
+     * @param _epoch The epoch number for which to claim the airdrop.
+     */
+    function claim(uint256 _amount, bytes32[] calldata _proof, uint256 _epoch) external whenNotPaused nonReentrant {
+        _claim(_amount, _proof, _epoch);
+    }
+
+    /**
      * @notice Claims airdrop tokens for the current epoch and locks them in VotingEscrow.
      * @dev Verifies Merkle proof and handles token transfer and locking.
      * @param _amount The amount of tokens to claim.
      * @param _proof The Merkle proof verifying the claim eligibility.
      */
-    function claim(uint256 _amount, bytes32[] calldata _proof) public whenNotPaused nonReentrant {
-        require(_isActive(currentEpoch), "USR006");
-        require(!claimed[currentEpoch][msg.sender], "USR005");
-
-        Dist memory distribution = merkleRoots[currentEpoch];
-
-        // Verify Merkle proof.
-        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(msg.sender, _amount))));
-        require(MerkleProofUpgradeable.verify(_proof, distribution.root, leaf), "USR009");
-
-        // Mark as claimed.
-        claimed[currentEpoch][msg.sender] = true;
-
-        if (distribution.token == address(0)) {
-            (bool ok,) = payable(msg.sender).call{value: _amount}("");
-            require(ok, "SYS002");
-        } else {
-            SafeERC20.safeTransfer(IERC20(distribution.token), msg.sender, _amount);
-        }
-
-        emit AirdropClaimed(currentEpoch, msg.sender, distribution.token, _amount);
+    function claim(uint256 _amount, bytes32[] calldata _proof) external whenNotPaused nonReentrant {
+        _claim(_amount, _proof, currentEpoch);
     }
 
     /**
@@ -307,7 +292,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
     {
         require(_amount.length == _proof.length && _amount.length == _epoch.length, "USR010");
         for (uint256 i = 0; i < _amount.length; i++) {
-            claim(_amount[i], _proof[i], _epoch[i]);
+            _claim(_amount[i], _proof[i], _epoch[i]);
         }
     }
 
