@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/utils/cryptography/MerkleProofUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -17,9 +16,9 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
         /// @notice The root of Merkle tree for airdrop distribution.
         bytes32 root;
         /// @notice The timestamp when this distribution becomes active.
-        uint32 activatedAt;
+        uint256 activatedAt;
         /// @notice The duration in seconds that this distribution remains active. zero means no expiration.
-        uint32 duration;
+        uint256 duration;
         /// @notice The flag indicating if this distribution is disabled.
         bool disabled;
         /// @notice The address of the token used for airdrop for this epoch, if zero address, native token is used.
@@ -31,7 +30,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
     /// @notice Mapping of epoch and user address to claim status.
     mapping(uint256 => mapping(address => bool)) private claimed;
     /// @notice Delay in timestamp (seconds) before a posted root can be claimed against.
-    uint32 public activationDelay;
+    uint256 public activationDelay;
     /// @notice Current epoch number of the airdrop distribution.
     uint256 public currentEpoch;
 
@@ -61,7 +60,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @param _activationDelay The initial delay before claims can be made.
      * @param _admin The address of the contract administrator.
      */
-    function initialize(uint32 _activationDelay, address _admin) public initializer {
+    function initialize(uint256 _activationDelay, address _admin) public initializer {
         require(_admin != address(0), "SYS001");
 
         __AccessControl_init();
@@ -97,7 +96,8 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @dev Only callable by accounts with OPERATOR_ROLE.
      * @param _activationDelay The new value for activationDelay.
      */
-    function setDelay(uint32 _activationDelay) external onlyRole(OPERATOR_ROLE) {
+    function setDelay(uint256 _activationDelay) external onlyRole(OPERATOR_ROLE) {
+        require(_activationDelay < type(uint32).max, "USR001");
         _setDelay(_activationDelay);
     }
 
@@ -108,23 +108,22 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @param _duration The duration in seconds for which this distribution is valid.
      * @param _token The address of the token used for airdrop for this epoch, if zero address, native token is used.
      */
-    function submitRoot(bytes32 _newRoot, uint32 _duration, address _token) external onlyRole(OPERATOR_ROLE) {
+    function submitRoot(bytes32 _newRoot, uint256 _duration, address _token) external onlyRole(OPERATOR_ROLE) {
         require(_newRoot != bytes32(0), "SYS002");
         currentEpoch++;
 
         merkleRoots[currentEpoch] = Dist({
             root: _newRoot,
-            activatedAt: uint32(block.timestamp) + activationDelay,
+            activatedAt: uint256(block.timestamp) + activationDelay,
             duration: _duration,
             disabled: false,
             token: _token
         });
 
-        emit MerkleRootSubmit(currentEpoch, _newRoot, _duration, uint32(block.timestamp) + activationDelay, _token);
+        emit MerkleRootSubmit(currentEpoch, _newRoot, _duration, uint256(block.timestamp) + activationDelay, _token);
     }
 
     /**
-     *
      * @dev Only callable by accounts with OPERATOR_ROLE.
      * @param _newRoot The new Merkle root to replace the current one.
      * @param _epoch The epoch for which to update the root.
@@ -153,7 +152,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @dev Only callable by accounts with OPERATOR_ROLE.
      * @param _duration The new duration in seconds.
      */
-    function updateDuration(uint32 _duration, uint256 _epoch) external onlyRole(OPERATOR_ROLE) {
+    function updateDuration(uint256 _duration, uint256 _epoch) external onlyRole(OPERATOR_ROLE) {
         require(_epoch > 0 && _epoch <= currentEpoch, "USR002");
         emit ValidDurationUpdate(_epoch, merkleRoots[_epoch].duration, _duration);
         merkleRoots[_epoch].duration = _duration;
@@ -173,16 +172,17 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
 
     /**
      * @notice Withdraws tokens from the contract.
-     * @dev Only callable by accounts with OPERATOR_ROLE.
+     * @dev Only callable by accounts with DEFAULT_ADMIN_ROLE.
      * @param _token The address of the token to withdraw (use address(0) for native tokens).
      * @param _to The address to send the withdrawn tokens to.
      * @param _amount The amount of tokens to withdraw.
      */
-    function withdraw(address _token, address _to, uint256 _amount) external onlyRole(OPERATOR_ROLE) {
+    function withdraw(address _token, address _to, uint256 _amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_to != address(0), "USR003");
         if (_token == address(0)) {
             payable(_to).transfer(_amount);
         } else {
-            IERC20(_token).transfer(_to, _amount);
+            SafeERC20.safeTransfer(IERC20(_token), _to, _amount);
         }
     }
 
@@ -198,7 +198,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @dev Internal function to update the delay before claims can be made.
      * @param _activationDelay The new activation delay value in seconds.
      */
-    function _setDelay(uint32 _activationDelay) internal {
+    function _setDelay(uint256 _activationDelay) internal {
         emit ActivationDelaySet(activationDelay, _activationDelay);
         activationDelay = _activationDelay;
     }
@@ -357,17 +357,17 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      */
     /// @notice Emitted when a new Merkle root is submitted for a new epoch.
     event MerkleRootSubmit(
-        uint256 indexed epoch, bytes32 root, uint32 rewardsValidTime, uint32 activatedAt, address token
+        uint256 indexed epoch, bytes32 root, uint256 rewardsValidTime, uint256 activatedAt, address token
     );
     /// @notice Emitted when the Merkle root is updated for the current epoch.
     event MerkleRootUpdate(uint256 indexed epoch, bytes32 preRoot, bytes32 root);
     event TokenUpdate(uint256 indexed epoch, address preToken, address token);
     /// @notice Emitted when the valid duration is updated for the current epoch.
-    event ValidDurationUpdate(uint256 indexed epoch, uint32 preValidDuration, uint32 validDuration);
+    event ValidDurationUpdate(uint256 indexed epoch, uint256 preValidDuration, uint256 validDuration);
     /// @notice Emitted when an airdrop is claimed by a user.
     event AirdropClaimed(uint256 indexed epoch, address indexed user, address tokenAddress, uint256 amount);
     /// @notice Emitted when the activation delay is updated.
-    event ActivationDelaySet(uint32 oldActivationDelay, uint32 newActivationDelay);
+    event ActivationDelaySet(uint256 oldActivationDelay, uint256 newActivationDelay);
     /// @notice Emitted when the distribution status is changed.
     event DistributionDisabledSet(uint256 indexed epoch, bool preStatus, bool status);
 }

@@ -17,7 +17,9 @@ contract Deploy is Script {
         vm.startBroadcast();
         cuniBTC implementation = new cuniBTC();
         TransparentUpgradeableProxy cuniBTCProxy = new TransparentUpgradeableProxy(
-            address(implementation), proxyAdmin, abi.encodeCall(implementation.initialize, (defaultAdmin, minter))
+            address(implementation),
+            proxyAdmin,
+            abi.encodeCall(implementation.initialize, (defaultAdmin, minter, "uniBTC", "cuniBTC"))
         );
         vm.stopBroadcast();
 

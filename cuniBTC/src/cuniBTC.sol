@@ -16,13 +16,18 @@ contract cuniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, A
         _disableInitializers();
     }
 
-    function initialize(address defaultAdmin, address minter) public initializer {
-        __ERC20_init("cuniBTC", "cuniBTC");
+    function initialize(address _defaultAdmin, address _minter, string memory _name, string memory _symbol)
+        public
+        initializer
+    {
+        __ERC20_init(_name, _symbol);
         __ERC20Burnable_init();
         __AccessControl_init();
+        require(_defaultAdmin != address(0) && _minter != address(0), "SYS001");
+        require(bytes(_name).length > 0 && bytes(_symbol).length > 0, "SYS002");
 
-        _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
-        _grantRole(MINTER_ROLE, minter);
+        _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
+        _grantRole(MINTER_ROLE, _minter);
     }
 
     function decimals() public view virtual override returns (uint8) {
