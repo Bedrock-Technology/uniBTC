@@ -11,6 +11,8 @@ contract cuniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, A
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     address public redeemRouter;
 
+    uint256 public version;
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -75,5 +77,9 @@ contract cuniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, A
      */
     function setRedeemRouter(address _redeemRouter) external onlyRole(DEFAULT_ADMIN_ROLE) {
         redeemRouter = _redeemRouter;
+    }
+
+    function setVersion(uint256 _version) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        version = _version;
     }
 }

@@ -8,23 +8,24 @@ import {ITransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transp
 import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import {cuniBTC} from "../src/cuniBTC.sol";
 //forge script fscripts/deploy_cuniBTC.s.sol --sig 'run(address,address,address)' \
-//$PROXY_ADMIN $OWNER_ADDRESS $OWNER_ADDRESS \
+//$PROXY_ADMIN $OWNER_ADDRESS \
 //--rpc-url $RPC_ETH_HOODI --account $DEPLOYER --broadcast \
 //--verify --verifier-url $RPC_ETH_HOODI_SCAN --etherscan-api-key $KEY_ETH_HOODI_SCAN --delay 30
 
 contract Deploy is Script {
-    function run(address proxyAdmin, address defaultAdmin, address minter) external {
+    function run(address proxyAdmin, address defaultAdmin) external {
         vm.startBroadcast();
         cuniBTC implementation = new cuniBTC();
         TransparentUpgradeableProxy cuniBTCProxy = new TransparentUpgradeableProxy(
-            address(implementation), proxyAdmin, abi.encodeCall(implementation.initialize, (defaultAdmin, minter))
+            address(implementation),
+            proxyAdmin,
+            abi.encodeCall(implementation.initialize, (defaultAdmin, "uniBTC", "cuniBTC"))
         );
         vm.stopBroadcast();
 
         console.log("cuniBTC Proxy address:", address(cuniBTCProxy));
         console.log("cuniBTC Proxy Admin address:", proxyAdmin);
         console.log("cuniBTC default admin:", defaultAdmin);
-        console.log("cuniBTC minter:", minter);
     }
 
     //forge script fscripts/deploy_cuniBTC.s.sol --sig 'upgrade(address,address)' \
