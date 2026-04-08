@@ -20,7 +20,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     address public cuniBTC;
 
-    mapping(address => uint256) public caps;
     mapping(address => bool) public paused;
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
@@ -189,24 +188,13 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         emit StopService();
     }
 
-    /**
-     * @dev set cap for a specific type of wrapped BTC
-     */
-    function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_token != address(0x0), "SYS003");
-        require(_cap > 0, "USR017");
-
-        uint8 decs = ERC20(_token).decimals();
-
-        require(decs == 8 || decs == 18, "SYS004");
-
-        caps[_token] = _cap;
-    }
-
     function setPeriod(uint256 _start, uint256 _operatePeriod, uint256 _lockupPeriod) external onlyRole(OPERATOR_ROLE) {
+        require(_operatePeriod + _lockupPeriod > 0, "USR018");
+        require(_start <= block.number, "USR019");
         startGenesis = _start;
         operatePeriod = _operatePeriod;
         lockupPeriod = _lockupPeriod;
+        emit PeriodSeted(_start, _operatePeriod, _lockupPeriod);
     }
 
     /**
@@ -223,7 +211,6 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     function _mint(address _sender, address _token, uint256 _amount) internal {
         (, uint256 cuniBTCAmount) = _amounts(_token, _amount);
         require(cuniBTCAmount > 0, "USR010");
-        require((_amount <= caps[_token]) && caps[_token] != 0, "USR003");
 
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
         IMintableContract(cuniBTC).mint(_sender, cuniBTCAmount);
@@ -258,6 +245,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     event TokenDenied(address[] token);
     event TargetAllowed(address[] token);
     event TargetDenied(address[] token);
+    event PeriodSeted(uint256 start, uint256 operatePeriod, uint256 lockupPeriod);
     event StartService();
     event StopService();
 }
