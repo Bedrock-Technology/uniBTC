@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 
 import "../interface/IMintableContract.sol";
 
-contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable {
+contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgradeable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
@@ -20,7 +20,9 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
 
     address public cuniBTC;
 
-    mapping(address => bool) public paused;
+    mapping(address => uint256) public tokenCaps;
+    mapping(address => uint256) public tokenMinted;
+    mapping(address => bool) public tokenPaused;
 
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
@@ -47,8 +49,8 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
     /**
      * @dev mint uniBTC with the given type of wrapped BTC
      */
-    function mint(address _token, uint256 _amount) external serviceNormal {
-        require(allowedTokenList[_token] && !paused[_token], "SYS002");
+    function mint(address _token, uint256 _amount) external serviceNormal nonReentrant {
+        require(allowedTokenList[_token] && !tokenPaused[_token], "SYS002");
         require(isOperatePeriod(), "USR012");
         _mint(msg.sender, _token, _amount);
     }
@@ -98,10 +100,10 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function initialize(address _defaultAdmin, address _cuniBTC) public initializer {
         __AccessControl_init();
-        __Pausable_init();
         __ReentrancyGuard_init();
 
         require(_cuniBTC != address(0x0), "SYS001");
+        require(_defaultAdmin != address(0x0), "SYS001");
 
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
         _grantRole(PAUSER_ROLE, _defaultAdmin);
@@ -157,7 +159,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function pauseToken(address[] memory _tokens) external onlyRole(PAUSER_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
-            paused[_tokens[i]] = true;
+            tokenPaused[_tokens[i]] = true;
         }
         emit TokenPaused(_tokens);
     }
@@ -167,7 +169,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     function unpauseToken(address[] memory _tokens) external onlyRole(PAUSER_ROLE) {
         for (uint256 i = 0; i < _tokens.length; i++) {
-            paused[_tokens[i]] = false;
+            tokenPaused[_tokens[i]] = false;
         }
         emit TokenUnpaused(_tokens);
     }
@@ -194,7 +196,18 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         startGenesis = _start;
         operatePeriod = _operatePeriod;
         lockupPeriod = _lockupPeriod;
-        emit PeriodSeted(_start, _operatePeriod, _lockupPeriod);
+        emit PeriodSet(_start, _operatePeriod, _lockupPeriod);
+    }
+
+    /**
+     * @dev set cap for a specific type of wrapped BTC
+     */
+    function setCap(address _token, uint256 _cap) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_token != address(0x0), "SYS003");
+        uint8 decs = ERC20(_token).decimals();
+        require(decs == 8 || decs == 18, "SYS004");
+        tokenCaps[_token] = _cap;
+        emit CapSet(_token, _cap);
     }
 
     /**
@@ -212,6 +225,11 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
         (, uint256 cuniBTCAmount) = _amounts(_token, _amount);
         require(cuniBTCAmount > 0, "USR010");
 
+        if (tokenCaps[_token] != 0) {
+            require(tokenMinted[_token] + _amount <= tokenCaps[_token], "SYS003");
+        }
+        tokenMinted[_token] += _amount;
+
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
         IMintableContract(cuniBTC).mint(_sender, cuniBTCAmount);
 
@@ -228,7 +246,7 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
             uint256 uniBTCAmt = _amount / EXCHANGE_RATE_BASE;
             return (uniBTCAmt * EXCHANGE_RATE_BASE, uniBTCAmt);
         }
-        return (0, 0);
+        revert("USR010");
     }
 
     /**
@@ -240,12 +258,13 @@ contract Vault is Initializable, AccessControlUpgradeable, PausableUpgradeable, 
      */
     event Minted(address sender, address token, uint256 amount);
     event TokenPaused(address[] token);
+    event CapSet(address token, uint256 cap);
     event TokenUnpaused(address[] token);
     event TokenAllowed(address[] token);
     event TokenDenied(address[] token);
     event TargetAllowed(address[] token);
     event TargetDenied(address[] token);
-    event PeriodSeted(uint256 start, uint256 operatePeriod, uint256 lockupPeriod);
+    event PeriodSet(uint256 start, uint256 operatePeriod, uint256 lockupPeriod);
     event StartService();
     event StopService();
 }
