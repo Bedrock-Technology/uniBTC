@@ -288,7 +288,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
         require(_vault != address(0x0), "SYS001");
 
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
-        _grantRole(PAUSER_ROLE, _defaultAdmin);
 
         uniBTC = _uniBTC;
         vault = _vault;

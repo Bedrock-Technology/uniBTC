@@ -68,8 +68,6 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
         __ReentrancyGuard_init();
 
         _setupRole(DEFAULT_ADMIN_ROLE, _admin);
-        _setupRole(PAUSER_ROLE, _admin);
-        _setupRole(OPERATOR_ROLE, _admin);
 
         _setDelay(_activationDelay);
         currentEpoch = 0;

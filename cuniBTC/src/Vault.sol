@@ -106,7 +106,6 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
         require(_defaultAdmin != address(0x0), "SYS001");
 
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
-        _grantRole(PAUSER_ROLE, _defaultAdmin);
 
         cuniBTC = _cuniBTC;
         startGenesis = block.number;
