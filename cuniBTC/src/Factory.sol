@@ -38,18 +38,25 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         _disableInitializers();
     }
 
-    function initialize() public initializer {
+    function initialize(address _cuniBTCImpl, address _vaultImpl, address _airdropImpl, address _delayRedeemRouterImpl)
+        public
+        initializer
+    {
         __Ownable_init();
-        cuniBTCImpl = new cuniBTC();
+        require(
+            _cuniBTCImpl != address(0) && _vaultImpl != address(0) && _airdropImpl != address(0)
+                && _delayRedeemRouterImpl != address(0)
+        );
+        cuniBTCImpl = cuniBTC(_cuniBTCImpl);
         cuniBTCBeacon = new UpgradeableBeacon(address(cuniBTCImpl));
 
-        vaultImpl = new Vault();
+        vaultImpl = Vault(payable(_vaultImpl));
         vaultBeacon = new UpgradeableBeacon(address(vaultImpl));
 
-        airdropImpl = new Airdrop();
+        airdropImpl = Airdrop(payable(_airdropImpl));
         airdropBeacon = new UpgradeableBeacon(address(airdropImpl));
 
-        delayRedeemRouterImpl = new DelayRedeemRouter();
+        delayRedeemRouterImpl = DelayRedeemRouter(payable(_delayRedeemRouterImpl));
         delayRedeemRouterBeacon = new UpgradeableBeacon(address(delayRedeemRouterImpl));
     }
 
@@ -58,6 +65,11 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         nonReentrant
         onlyOwner
     {
+        Strategy memory existing = strategies[_symbol];
+        if (existing.vault != address(0)) {
+            revert("Strategy already exists");
+        }
+
         BeaconProxy cuniBTCProxy = new BeaconProxy(
             address(cuniBTCBeacon), abi.encodeCall(cuniBTC.initialize, (address(this), _name, _symbol))
         );
@@ -80,11 +92,6 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
             delayRedeemRouter: address(delayRedeemRouterProxy),
             airdrop: address(airdropProxy)
         });
-
-        Strategy memory existing = strategies[_symbol];
-        if (existing.vault != address(0)) {
-            revert("Strategy already exists");
-        }
 
         strategies[_symbol] = strategy;
         _setup(strategy, _uniBTC);

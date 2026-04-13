@@ -72,5 +72,15 @@ git submodule add https://github.com/OpenZeppelin/openzeppelin-contracts-upgrade
 # Hoodi
 ## ProxyAdmin
 0xB36F69446C756831cCE73bb35bb2D6f75007212c
+## uniBTC
+0x611160Ae2DA00A2735e3400AC4f401918A61800a
 
 ## Factory
+0x677F4D7Fe9d78223041E2B0f78F5Ac7ae212b3D5
+### defaultImpl
+```bash
+  deploy cuniBTC implementation at 0x7DbF877B6550D01155A29084Ba923bF4672f862b
+  deploy vault implementation at 0xa29e2193EC161756f9fa6c0B6b9377312A53E104
+  deploy airdrop implementation at 0x919B67b5949CF892Cbff9B3708f3c150C6a4aD55
+  deploy delayredeemrouter implementation at 0xE17A430d8f9f1BCB5C8e3842EC5BC7362Ed676D7
+```

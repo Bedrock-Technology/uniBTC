@@ -35,9 +35,22 @@ contract FactoryTest is Test {
         );
         unibtc = uniBTC(address(uniBTCProxy));
 
+        cuniBTC cuniBTCimpl = new cuniBTC();
+        Vault vaultimpl = new Vault();
+        Airdrop airdropimpl = new Airdrop();
+        DelayRedeemRouter delayRedeemRouterImpl = new DelayRedeemRouter();
         Factory factoryImpl = new Factory();
+
         TransparentUpgradeableProxy factoryProxy = new TransparentUpgradeableProxy(
-            address(factoryImpl), address(proxyAdmin), abi.encodeWithSelector(Factory.initialize.selector)
+            address(factoryImpl),
+            address(proxyAdmin),
+            abi.encodeWithSelector(
+                Factory.initialize.selector,
+                address(cuniBTCimpl),
+                address(vaultimpl),
+                address(airdropimpl),
+                address(delayRedeemRouterImpl)
+            )
         );
         factory = Factory(address(factoryProxy));
 
