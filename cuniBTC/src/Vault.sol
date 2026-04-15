@@ -51,7 +51,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
      */
     function mint(address _token, uint256 _amount) external serviceNormal nonReentrant {
         require(allowedTokenList[_token] && !tokenPaused[_token], "SYS002");
-        require(isOperatePeriod(), "USR012");
+        // require(isOperatePeriod(), "USR012");
         _mint(msg.sender, _token, _amount);
     }
 
@@ -189,7 +189,10 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
         emit StopService();
     }
 
-    function setPeriod(uint256 _start, uint256 _operatePeriod, uint256 _lockupPeriod) external onlyRole(OPERATOR_ROLE) {
+    function setPeriod(uint256 _start, uint256 _operatePeriod, uint256 _lockupPeriod)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         require(_operatePeriod + _lockupPeriod > 0, "USR018");
         require(_start <= block.number, "USR019");
         startGenesis = _start;

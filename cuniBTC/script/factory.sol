@@ -46,4 +46,13 @@ contract Deploy is Script {
         Factory(payable(factory)).createStrategy(name, symbol, defaultAdmin, unibtc);
         vm.stopBroadcast();
     }
+
+    //forge script script/factory.sol --sig 'updateBeacon(address,address,address)' \
+    // $FACTORY_ADDRESS $BEACON_ADDRESS $NEW_IMPLEMENTATION_ADDRESS \
+    // --rpc-url $RPC_ETH_HOODI --account $DEPLOYER --broadcast
+    function updateBeacon(address factory, address Beacon, address newImplementation) external {
+        vm.startBroadcast();
+        Factory(payable(factory)).upgradeBeacon(Beacon, newImplementation);
+        vm.stopBroadcast();
+    }
 }
