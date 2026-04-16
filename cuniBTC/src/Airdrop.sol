@@ -31,8 +31,8 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
     mapping(uint256 => mapping(address => bool)) private claimed;
     /// @notice Delay in timestamp (seconds) before a posted root can be claimed against.
     uint256 public activationDelay;
-    /// @notice Current epoch number of the airdrop distribution.
-    uint256 public currentEpoch;
+    /// @notice Length of each airdrop epoch added.
+    uint256 public epochAdded;
 
     receive() external payable {}
 
@@ -70,7 +70,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
         _setupRole(DEFAULT_ADMIN_ROLE, _admin);
 
         _setDelay(_activationDelay);
-        currentEpoch = 0;
+        epochAdded = 0;
     }
 
     /**
@@ -106,11 +106,15 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @param _duration The duration in seconds for which this distribution is valid.
      * @param _token The address of the token used for airdrop for this epoch, if zero address, native token is used.
      */
-    function submitRoot(bytes32 _newRoot, uint256 _duration, address _token) external onlyRole(OPERATOR_ROLE) {
+    function submitRoot(bytes32 _newRoot, uint256 _duration, address _token, uint256 _epoch)
+        external
+        onlyRole(OPERATOR_ROLE)
+    {
         require(_newRoot != bytes32(0), "SYS002");
-        currentEpoch++;
+        require(merkleRoots[_epoch].root == bytes32(0), "USR002");
+        epochAdded++;
 
-        merkleRoots[currentEpoch] = Dist({
+        merkleRoots[_epoch] = Dist({
             root: _newRoot,
             activatedAt: uint256(block.timestamp) + activationDelay,
             duration: _duration,
@@ -118,7 +122,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
             token: _token
         });
 
-        emit MerkleRootSubmit(currentEpoch, _newRoot, _duration, uint256(block.timestamp) + activationDelay, _token);
+        emit MerkleRootSubmit(_epoch, _newRoot, _duration, uint256(block.timestamp) + activationDelay, _token);
     }
 
     /**
@@ -127,7 +131,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @param _epoch The epoch for which to update the root.
      */
     function updateRoot(bytes32 _newRoot, uint256 _epoch) external onlyRole(OPERATOR_ROLE) {
-        require(_epoch > 0 && _epoch <= currentEpoch, "USR002");
+        require(merkleRoots[_epoch].root != bytes32(0), "USR002");
         require(_newRoot != bytes32(0), "USR003");
         emit MerkleRootUpdate(_epoch, merkleRoots[_epoch].root, _newRoot);
         merkleRoots[_epoch].root = _newRoot;
@@ -140,7 +144,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @param _epoch The epoch for which to update the token.
      */
     function updateToken(address _token, uint256 _epoch) external onlyRole(OPERATOR_ROLE) {
-        require(_epoch > 0 && _epoch <= currentEpoch, "USR002");
+        require(merkleRoots[_epoch].root != bytes32(0), "USR002");
         emit TokenUpdate(_epoch, merkleRoots[_epoch].token, _token);
         merkleRoots[_epoch].token = _token;
     }
@@ -151,7 +155,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @param _duration The new duration in seconds.
      */
     function updateDuration(uint256 _duration, uint256 _epoch) external onlyRole(OPERATOR_ROLE) {
-        require(_epoch > 0 && _epoch <= currentEpoch, "USR002");
+        require(merkleRoots[_epoch].root != bytes32(0), "USR002");
         emit ValidDurationUpdate(_epoch, merkleRoots[_epoch].duration, _duration);
         merkleRoots[_epoch].duration = _duration;
     }
@@ -162,7 +166,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @param _disabled The status to set (true = disabled, false = enabled).
      */
     function setAirdrop(bool _disabled, uint256 _epoch) external onlyRole(OPERATOR_ROLE) {
-        require(_epoch > 0 && _epoch <= currentEpoch, "USR002");
+        require(merkleRoots[_epoch].root != bytes32(0), "USR002");
         Dist storage distribution = merkleRoots[_epoch];
         emit DistributionDisabledSet(_epoch, distribution.disabled, _disabled);
         distribution.disabled = _disabled;
@@ -207,7 +211,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      * @return True if the current epoch's airdrop is valid and active.
      */
     function _isActive(uint256 _epoch) internal view returns (bool) {
-        if (_epoch == 0 || _epoch > currentEpoch) return false;
+        if (merkleRoots[_epoch].root == bytes32(0)) return false;
 
         Dist memory distribution = merkleRoots[_epoch];
         if (distribution.disabled) return false;
@@ -267,16 +271,6 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
     }
 
     /**
-     * @notice Claims airdrop tokens for the current epoch and locks them in VotingEscrow.
-     * @dev Verifies Merkle proof and handles token transfer and locking.
-     * @param _amount The amount of tokens to claim.
-     * @param _proof The Merkle proof verifying the claim eligibility.
-     */
-    function claim(uint256 _amount, bytes32[] calldata _proof) external whenNotPaused nonReentrant {
-        _claim(_amount, _proof, currentEpoch);
-    }
-
-    /**
      * @notice Claims airdrop tokens for multiple epochs and locks them in VotingEscrow.
      * @dev Verifies Merkle proofs and handles token transfers and locking.
      * @param _amount The amounts of tokens to claim.
@@ -331,7 +325,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
         require(_epoch.length > 0, "SYS002");
         bool[] memory claims = new bool[](_epoch.length);
         for (uint256 i = 0; i < _epoch.length; i++) {
-            require(_epoch[i] > 0 && _epoch[i] <= currentEpoch, "USR002");
+            require(merkleRoots[_epoch[i]].root != bytes32(0), "USR002");
             claims[i] = claimed[_epoch[i]][_user];
         }
         return claims;

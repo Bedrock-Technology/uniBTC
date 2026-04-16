@@ -46,6 +46,9 @@ contract AirdropTest is Test {
             abi.encodeWithSelector(uniBTC.initialize.selector, Owner.addr, Owner.addr, new address[](0))
         );
         airdrop = Airdrop(payable(airdropProxy));
+        vm.startPrank(Owner.addr);
+        airdrop.grantRole(airdrop.OPERATOR_ROLE(), Owner.addr);
+        vm.stopPrank();
         unibtc = uniBTC(address(uniBTCProxy));
         // Deal tokens to airdrop contract for distribution
         deal(address(airdrop), 1 ether);
@@ -54,13 +57,13 @@ contract AirdropTest is Test {
     //forge test test/Airdrop.t.sol --match-test testInitialize
     function testInitialize() public view {
         assertEq(airdrop.activationDelay(), activationDelay);
-        assertEq(airdrop.currentEpoch(), 0);
+        assertEq(airdrop.epochAdded(), 0);
     }
 
     //forge test test/Airdrop.t.sol --match-test testSubmitMerkleRoot
     function testSubmitMerkleRoot() public {
         vm.prank(Owner.addr);
-        airdrop.submitRoot(merkleRoot, validDuration, address(0));
+        airdrop.submitRoot(merkleRoot, validDuration, address(0), 1);
         Airdrop.Dist memory distribution = airdrop.getRoot(1);
         assertEq(distribution.root, merkleRoot);
         assertEq(distribution.duration, validDuration);
@@ -71,7 +74,7 @@ contract AirdropTest is Test {
     function testClaim() public {
         // Submit merkle root and wait for activation
         vm.prank(Owner.addr);
-        airdrop.submitRoot(merkleRoot, validDuration, address(0));
+        airdrop.submitRoot(merkleRoot, validDuration, address(0), 1);
         vm.warp(block.timestamp + activationDelay);
 
         // Calculate leaf using the same method as in contract
@@ -86,9 +89,12 @@ contract AirdropTest is Test {
         bytes32[] memory proof = new bytes32[](0);
 
         uint256 _beforeBalance = address(this).balance;
+        vm.expectRevert(bytes("USR006"));
+        // Execute claim failed
+        airdrop.claim(1000, proof, 0);
 
         // Execute claim
-        airdrop.claim(1000, proof);
+        airdrop.claim(1000, proof, 1);
 
         assertEq(address(this).balance, _beforeBalance + 1000);
 
@@ -99,11 +105,29 @@ contract AirdropTest is Test {
         assertTrue(claims[0]);
     }
 
+    //forge test test/Airdrop.t.sol --match-test testUpdateRoot
+    function testUpdateRoot() public {
+        // Submit initial merkle root
+        vm.prank(Owner.addr);
+        airdrop.submitRoot(merkleRoot, validDuration, address(0), 1);
+
+        // Update to new merkle root
+        bytes32 newMerkleRoot = keccak256(bytes.concat(keccak256(abi.encode(address(this), 2000))));
+        vm.prank(Owner.addr);
+        airdrop.updateRoot(newMerkleRoot, 1);
+
+        Airdrop.Dist memory distribution = airdrop.getRoot(1);
+        assertEq(distribution.root, newMerkleRoot);
+        vm.prank(Owner.addr);
+        vm.expectRevert(bytes("USR002"));
+        airdrop.updateRoot(newMerkleRoot, 2);
+    }
+
     //forge test test/Airdrop.t.sol --match-test testClaimWithERC20
     function testClaimWithERC20() public {
         // Submit merkle root and wait for activation
         vm.prank(Owner.addr);
-        airdrop.submitRoot(merkleRoot, validDuration, address(unibtc));
+        airdrop.submitRoot(merkleRoot, validDuration, address(unibtc), 1);
         vm.warp(block.timestamp + activationDelay);
 
         // Calculate leaf using the same method as in contract
@@ -122,7 +146,7 @@ contract AirdropTest is Test {
         uint256 _beforeBalance = unibtc.balanceOf(address(this));
 
         // Execute claim
-        airdrop.claim(1000, proof);
+        airdrop.claim(1000, proof, 1);
 
         assertEq(unibtc.balanceOf(address(this)), _beforeBalance + 1000);
     }

@@ -35,4 +35,14 @@ contract Deploy is Script {
         vm.stopBroadcast();
         console.log("deploy vault implementation at", address(vaultImpl));
     }
+
+    //forge script script/defaultImpl.s.sol --sig 'airdropDeploy()' \
+    // --rpc-url $RPC_ETH_HOODI --account $DEPLOYER --broadcast \
+    // --verify --verifier-url $RPC_ETH_HOODI_SCAN --etherscan-api-key $KEY_ETH_HOODI_SCAN --delay 30
+    function airdropDeploy() external {
+        vm.startBroadcast();
+        Airdrop airdropImpl = new Airdrop();
+        vm.stopBroadcast();
+        console.log("deploy airdrop implementation at", address(airdropImpl));
+    }
 }

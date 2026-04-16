@@ -43,6 +43,7 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         initializer
     {
         __Ownable_init();
+        __ReentrancyGuard_init();
         require(
             _cuniBTCImpl != address(0) && _vaultImpl != address(0) && _airdropImpl != address(0)
                 && _delayRedeemRouterImpl != address(0)
