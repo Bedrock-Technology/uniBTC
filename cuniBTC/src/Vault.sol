@@ -52,7 +52,6 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
      */
     function mint(address _token, uint256 _amount) external serviceNormal nonReentrant {
         require(allowedTokenList[_token] && !tokenPaused[_token], "SYS002");
-        // require(isOperatePeriod(), "USR012");
         _mint(msg.sender, _token, _amount);
     }
 
@@ -240,7 +239,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
         if (tokenCaps[_token] != 0) {
             require(tokenMinted[_token] + _amount <= tokenCaps[_token], "SYS003");
         }
-        require(IERC20(cuniBTC).totalSupply() + _amount <= totalSupply, "SYS004");
+        require(IERC20(cuniBTC).totalSupply() + cuniBTCAmount <= totalSupply, "SYS004");
         tokenMinted[_token] += _amount;
 
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
