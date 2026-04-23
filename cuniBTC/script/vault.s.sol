@@ -17,7 +17,9 @@ contract Deploy is Script {
         vm.startBroadcast();
         Vault implementation = new Vault();
         TransparentUpgradeableProxy cVaultWithoutNativeProxy = new TransparentUpgradeableProxy(
-            address(implementation), proxyAdmin, abi.encodeCall(implementation.initialize, (defaultAdmin, cuniBTC))
+            address(implementation),
+            proxyAdmin,
+            abi.encodeCall(implementation.initialize, (defaultAdmin, cuniBTC, 50e8))
         );
         vm.stopBroadcast();
         console.log("deploy cVaultWithoutNative proxy at", address(cVaultWithoutNativeProxy));

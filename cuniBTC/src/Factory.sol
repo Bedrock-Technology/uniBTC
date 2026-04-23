@@ -75,7 +75,7 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
             address(cuniBTCBeacon), abi.encodeCall(cuniBTC.initialize, (address(this), _name, _symbol))
         );
         BeaconProxy vaultProxy = new BeaconProxy(
-            address(vaultBeacon), abi.encodeCall(Vault.initialize, (address(this), address(cuniBTCProxy)))
+            address(vaultBeacon), abi.encodeCall(Vault.initialize, (address(this), address(cuniBTCProxy), 50e8))
         );
         BeaconProxy airdropProxy =
             new BeaconProxy(address(airdropBeacon), abi.encodeCall(Airdrop.initialize, (1 days, address(this))));
@@ -132,6 +132,7 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setMaxQuotaForTokens(btcList, quotas);
         quotas[0] = 114583;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setQuotaRates(btcList, quotas);
+        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setRedeemFeeRate(0);
         // DelayRedeemRouter(payable(strategy.delayRedeemRouter))
         //     .grantRole(DelayRedeemRouter(payable(strategy.delayRedeemRouter)).OPERATOR_ROLE(), strategy.vault);
         //allow transfer cuniBTC to redeem

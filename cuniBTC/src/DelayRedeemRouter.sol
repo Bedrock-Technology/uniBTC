@@ -162,11 +162,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     uint256 public constant EXCHANGE_RATE_BASE = 1e10;
 
     /**
-     * @notice Principal redemption period.
-     */
-    uint256 public redeemPrincipalDelay;
-
-    /**
      * @notice Mapping to store the blacklist status of accounts.
      * Only accounts not in the blacklist can redeem using uniBTC.
      */
@@ -292,7 +287,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
         uniBTC = _uniBTC;
         vault = _vault;
         _setWhitelistEnabled(_whitelistEnabled);
-        _setRedeemPrincipalDelay(MAX_REDEEM_DELAY);
         _setRedeemDelay(_redeemDelay);
         _setRedeemFeeRate(DEFAULT_REDEEM_FEE_RATE);
     }
@@ -468,14 +462,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     }
 
     /**
-     * @dev Sets a new delay for principal redemption.
-     * @param _newDelay New delay time after which users can claim the principal.
-     */
-    function setRedeemPrincipalDelay(uint256 _newDelay) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setRedeemPrincipalDelay(_newDelay);
-    }
-
-    /**
      * @dev Sets the redeem management rate for the contract.
      * @param _newFeeRate The new value for the redeem management rate,
      * which is used to calculate the redemption management fee.
@@ -601,27 +587,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     }
 
     /**
-     * @notice Claims delayed redemption principals that have passed the `redeemPrincipalDelay` period.
-     * @dev The caller controls when funds are released once the principal becomes claimable.
-     * @param maxNumberOfDelayedRedeemsToClaim Limits the maximum number of delayed redemption principals to claim in a loop.
-     */
-    function claimPrincipals(uint256 maxNumberOfDelayedRedeemsToClaim)
-        external
-        nonReentrant
-        whenNotPaused
-        onlyNotBlacklisted
-    {
-        _claimPrincipals(msg.sender, maxNumberOfDelayedRedeemsToClaim);
-    }
-
-    /**
-     * @notice Claims all delayed redemption principals that have passed the `redeemPrincipalDelay` period.
-     */
-    function claimPrincipals() external nonReentrant whenNotPaused onlyNotBlacklisted {
-        _claimPrincipals(msg.sender, type(uint256).max);
-    }
-
-    /**
      * @notice Getter function for retrieving the delayed redemption records of a user.
      * @param user The account that created the delayed redemption.
      * @return The UserDelayedRedeems struct for the specified user.
@@ -658,17 +623,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     function canClaimDelayedRedeem(address user, uint256 index) external view returns (bool) {
         return ((index >= _userRedeems[user].delayedRedeemsCompleted)
                 && (block.timestamp >= _userRedeems[user].delayedRedeems[index].createdAt + redeemDelay));
-    }
-
-    /**
-     * @notice Checks if the principal of a delayed redemption at the specified `index` in the user's array is claimable.
-     * @param user The account that created the delayed redemption.
-     * @param index The index of the delayed redemption in the user's array.
-     * @return True if the principal of the delayed redemption at the specified `index` is claimable, false otherwise.
-     */
-    function canClaimDelayedRedeemPrincipal(address user, uint256 index) external view returns (bool) {
-        return ((index >= _userRedeems[user].delayedRedeemsCompleted)
-                && (block.timestamp >= _userRedeems[user].delayedRedeems[index].createdAt + redeemPrincipalDelay));
     }
 
     /**
@@ -803,31 +757,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     }
 
     /**
-     * @notice Retrieves the user's delayed redeems that are ready to be claimed for principal.
-     * @param recipient The address of the user whose delayed redeems are being queried.
-     * @param maxNumberOfDelayedRedeemsToClaim The maximum number of delayed redeems to claim in a single call.
-     * @return An array of DebtTokenAmount structs representing the user's delayed redeems for principal.
-     */
-    function getUserPrincipal(address recipient, uint256 maxNumberOfDelayedRedeemsToClaim)
-        external
-        view
-        returns (DebtTokenAmount[] memory)
-    {
-        uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient].delayedRedeemsCompleted;
-        DebtTokenAmount[] memory debtAmounts;
-        uint256 numToClaim = 0;
-
-        //================================================================================================
-        // 1. Get the length of debt that need to be repaid and the amount of each type of debt.
-        //================================================================================================
-        (numToClaim, debtAmounts) = _getDebtTokenAmount(
-            recipient, delayedRedeemsCompletedBefore, redeemPrincipalDelay, maxNumberOfDelayedRedeemsToClaim
-        );
-
-        return debtAmounts;
-    }
-
-    /**
      * ======================================================================================
      *
      * INTERNAL FUNCTIONS
@@ -843,16 +772,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
         require(newDelay <= MAX_REDEEM_DELAY, "USR012");
         emit RedeemDelaySet(redeemDelay, newDelay);
         redeemDelay = newDelay;
-    }
-
-    /**
-     * @notice Internal function to update `redeemPrincipalDelay`. Includes a sanity check and emits an event.
-     * @param newDelay The new delayed time for the redemption principal delay.
-     */
-    function _setRedeemPrincipalDelay(uint256 newDelay) internal {
-        require(newDelay <= MAX_REDEEM_DELAY, "USR012");
-        emit RedeemPrincipalDelaySet(redeemPrincipalDelay, newDelay);
-        redeemPrincipalDelay = newDelay;
     }
 
     /**
@@ -943,54 +862,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
             IVault(vault).execute(uniBTC, data, 0);
 
             emit DelayedRedeemsCompleted(recipient, burnAmount, delayedRedeemsCompletedBefore + numToClaim, totalFee);
-        }
-    }
-
-    /**
-     * @notice Internal function used by both overloaded `claimPrincipals` functions.
-     * @param recipient The account to receive the claimed principals.
-     * @param maxNumberOfDelayedRedeemsToClaim The maximum number of delayed redeems to claim in a single call.
-     */
-    function _claimPrincipals(address recipient, uint256 maxNumberOfDelayedRedeemsToClaim) internal {
-        uint256 delayedRedeemsCompletedBefore = _userRedeems[recipient].delayedRedeemsCompleted;
-        uint256 numToClaim = 0;
-        DebtTokenAmount[] memory debtAmounts;
-
-        //================================================================================================
-        // 1. Get the length of debt that need to be repaid and the amount of each type of debt.
-        //================================================================================================
-        (numToClaim, debtAmounts) = _getDebtTokenAmount(
-            recipient, delayedRedeemsCompletedBefore, redeemPrincipalDelay, maxNumberOfDelayedRedeemsToClaim
-        );
-
-        //================================================================================================
-        // 2. Debt is present and can be repaid through principal redemption.
-        //================================================================================================
-        if (numToClaim > 0) {
-            // Mark the ith delayed redeem as successfully claimed.
-            _userRedeems[recipient].delayedRedeemsCompleted = delayedRedeemsCompletedBefore + numToClaim;
-
-            uint256 amountToSend = 0;
-            uint256 totalPrincipal = 0;
-            for (uint256 i = 0; i < debtAmounts.length; i++) {
-                address token = debtAmounts[i].token;
-                uint256 uniBTCAmount = debtAmounts[i].amount;
-                uint256 tokenFee = debtAmounts[i].fee;
-                tokenDebts[token].totalCleared += uniBTCAmount;
-                uint256 principalAmount = uniBTCAmount + tokenFee;
-                totalPrincipal += principalAmount;
-                emit DelayedRedeemsPrincipalClaimed(recipient, token, uniBTCAmount, principalAmount);
-            }
-            // The user is required to pay the cancel fee.
-            amountToSend = (totalPrincipal * (REDEEM_FEE_RATE_RANGE - cancelFeeRate)) / REDEEM_FEE_RATE_RANGE;
-            uint256 userCancelFee = totalPrincipal - amountToSend;
-            //the cancel fee is added to the management fee
-            managementFee += userCancelFee;
-
-            IERC20(uniBTC).safeTransfer(recipient, amountToSend);
-            emit DelayedRedeemsPrincipalCompleted(
-                recipient, amountToSend, delayedRedeemsCompletedBefore + numToClaim, userCancelFee
-            );
         }
     }
 
@@ -1163,11 +1034,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     event DelayedRedeemsClaimed(address recipient, address token, uint256 claimedAmount);
 
     /**
-     * @notice Event emitted when the principal of delayedRedeems is claimed.
-     */
-    event DelayedRedeemsPrincipalClaimed(address recipient, address token, uint256 debtAmount, uint256 principalAmount);
-
-    /**
      * @notice Event emitted when delayedRedeems are completed.
      */
     event DelayedRedeemsCompleted(
@@ -1175,21 +1041,9 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     );
 
     /**
-     * @notice Event emitted when the principal of delayedRedeems is completed.
-     */
-    event DelayedRedeemsPrincipalCompleted(
-        address recipient, uint256 principalAmount, uint256 delayedRedeemsCompleted, uint256 totalFee
-    );
-
-    /**
      * @notice Event emitted when the `redeemDelay` variable is modified.
      */
     event RedeemDelaySet(uint256 previousDelay, uint256 newDelay);
-
-    /**
-     * @notice Event emitted when the `redeemPrincipalDelay` variable is modified.
-     */
-    event RedeemPrincipalDelaySet(uint256 previousDelay, uint256 newDelay);
 
     /**
      * @notice Event emitted when tokens are added to the BTC list.

@@ -33,6 +33,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
     uint256 public operatePeriod;
     uint256 public lockupPeriod;
     uint256 public startGenesis;
+    uint256 public totalSupply;
 
     receive() external payable {}
 
@@ -98,7 +99,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
      *
      * ======================================================================================
      */
-    function initialize(address _defaultAdmin, address _cuniBTC) public initializer {
+    function initialize(address _defaultAdmin, address _cuniBTC, uint256 _totalSupply) public initializer {
         __AccessControl_init();
         __ReentrancyGuard_init();
 
@@ -111,6 +112,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
         startGenesis = block.number;
         operatePeriod = 7200 * 7; //7day
         lockupPeriod = 7200 * 30; //30day
+        totalSupply = _totalSupply;
     }
 
     /**
@@ -213,6 +215,14 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
     }
 
     /**
+     * @dev set total supply for a specific type of wrapped BTC
+     */
+    function setTotalSupply(uint256 _totalSupply) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        totalSupply = _totalSupply;
+        emit TotalSupplySet(totalSupply);
+    }
+
+    /**
      * ======================================================================================
      *
      * INTERNAL
@@ -230,6 +240,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
         if (tokenCaps[_token] != 0) {
             require(tokenMinted[_token] + _amount <= tokenCaps[_token], "SYS003");
         }
+        require(IERC20(cuniBTC).totalSupply() + _amount <= totalSupply, "SYS004");
         tokenMinted[_token] += _amount;
 
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
@@ -261,6 +272,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
     event Minted(address sender, address token, uint256 amount);
     event TokenPaused(address[] token);
     event CapSet(address token, uint256 cap);
+    event TotalSupplySet(uint256 totalSupply);
     event TokenUnpaused(address[] token);
     event TokenAllowed(address[] token);
     event TokenDenied(address[] token);
