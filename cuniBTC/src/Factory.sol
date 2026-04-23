@@ -128,9 +128,9 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         btcList[0] = uniBTC;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).addToBtclist(btcList);
         uint256[] memory quotas = new uint256[](1);
-        quotas[0] = 99e8;
+        quotas[0] = 2e8;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setMaxQuotaForTokens(btcList, quotas);
-        quotas[0] = 114583;
+        quotas[0] = 2314;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setQuotaRates(btcList, quotas);
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setRedeemFeeRate(0);
         // DelayRedeemRouter(payable(strategy.delayRedeemRouter))
