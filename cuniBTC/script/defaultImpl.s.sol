@@ -45,4 +45,14 @@ contract Deploy is Script {
         vm.stopBroadcast();
         console.log("deploy airdrop implementation at", address(airdropImpl));
     }
+
+    //forge script script/defaultImpl.s.sol --sig 'redeemDeploy()' \
+    // --rpc-url $RPC_ETH_HOODI --account $DEPLOYER --broadcast \
+    // --verify --verifier-url $RPC_ETH_HOODI_SCAN --etherscan-api-key $KEY_ETH_HOODI_SCAN --delay 30
+    function redeemDeploy() external {
+        vm.startBroadcast();
+        DelayRedeemRouter redeemImpl = new DelayRedeemRouter();
+        vm.stopBroadcast();
+        console.log("deploy redeem implementation at", address(redeemImpl));
+    }
 }
