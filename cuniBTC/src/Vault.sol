@@ -190,10 +190,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
         emit StopService();
     }
 
-    function setPeriod(uint256 _start, uint256 _operatePeriod, uint256 _lockupPeriod)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
+    function setPeriod(uint256 _start, uint256 _operatePeriod, uint256 _lockupPeriod) external onlyRole(OPERATOR_ROLE) {
         require(_operatePeriod + _lockupPeriod > 0, "USR018");
         require(_start <= block.number, "USR019");
         startGenesis = _start;
