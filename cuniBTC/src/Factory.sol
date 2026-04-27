@@ -38,18 +38,26 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         _disableInitializers();
     }
 
-    function initialize() public initializer {
+    function initialize(address _cuniBTCImpl, address _vaultImpl, address _airdropImpl, address _delayRedeemRouterImpl)
+        public
+        initializer
+    {
         __Ownable_init();
-        cuniBTCImpl = new cuniBTC();
+        __ReentrancyGuard_init();
+        require(
+            _cuniBTCImpl != address(0) && _vaultImpl != address(0) && _airdropImpl != address(0)
+                && _delayRedeemRouterImpl != address(0)
+        );
+        cuniBTCImpl = cuniBTC(_cuniBTCImpl);
         cuniBTCBeacon = new UpgradeableBeacon(address(cuniBTCImpl));
 
-        vaultImpl = new Vault();
+        vaultImpl = Vault(payable(_vaultImpl));
         vaultBeacon = new UpgradeableBeacon(address(vaultImpl));
 
-        airdropImpl = new Airdrop();
+        airdropImpl = Airdrop(payable(_airdropImpl));
         airdropBeacon = new UpgradeableBeacon(address(airdropImpl));
 
-        delayRedeemRouterImpl = new DelayRedeemRouter();
+        delayRedeemRouterImpl = DelayRedeemRouter(payable(_delayRedeemRouterImpl));
         delayRedeemRouterBeacon = new UpgradeableBeacon(address(delayRedeemRouterImpl));
     }
 
@@ -58,11 +66,16 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         nonReentrant
         onlyOwner
     {
+        Strategy memory existing = strategies[_symbol];
+        if (existing.vault != address(0)) {
+            revert("Strategy already exists");
+        }
+
         BeaconProxy cuniBTCProxy = new BeaconProxy(
             address(cuniBTCBeacon), abi.encodeCall(cuniBTC.initialize, (address(this), _name, _symbol))
         );
         BeaconProxy vaultProxy = new BeaconProxy(
-            address(vaultBeacon), abi.encodeCall(Vault.initialize, (address(this), address(cuniBTCProxy)))
+            address(vaultBeacon), abi.encodeCall(Vault.initialize, (address(this), address(cuniBTCProxy), 50e8))
         );
         BeaconProxy airdropProxy =
             new BeaconProxy(address(airdropBeacon), abi.encodeCall(Airdrop.initialize, (1 days, address(this))));
@@ -80,11 +93,6 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
             delayRedeemRouter: address(delayRedeemRouterProxy),
             airdrop: address(airdropProxy)
         });
-
-        Strategy memory existing = strategies[_symbol];
-        if (existing.vault != address(0)) {
-            revert("Strategy already exists");
-        }
 
         strategies[_symbol] = strategy;
         _setup(strategy, _uniBTC);
@@ -120,10 +128,11 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         btcList[0] = uniBTC;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).addToBtclist(btcList);
         uint256[] memory quotas = new uint256[](1);
-        quotas[0] = 99e8;
+        quotas[0] = 2e8;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setMaxQuotaForTokens(btcList, quotas);
-        quotas[0] = 114583;
+        quotas[0] = 2314;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setQuotaRates(btcList, quotas);
+        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setRedeemFeeRate(0);
         // DelayRedeemRouter(payable(strategy.delayRedeemRouter))
         //     .grantRole(DelayRedeemRouter(payable(strategy.delayRedeemRouter)).OPERATOR_ROLE(), strategy.vault);
         //allow transfer cuniBTC to redeem
