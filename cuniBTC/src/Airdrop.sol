@@ -156,6 +156,7 @@ contract Airdrop is Initializable, AccessControlUpgradeable, PausableUpgradeable
      */
     function updateDuration(uint256 _duration, uint256 _epoch) external onlyRole(OPERATOR_ROLE) {
         require(merkleRoots[_epoch].root != bytes32(0), "USR002");
+        require(_duration + merkleRoots[_epoch].activatedAt < type(uint256).max, "USR020");
         emit ValidDurationUpdate(_epoch, merkleRoots[_epoch].duration, _duration);
         merkleRoots[_epoch].duration = _duration;
     }
