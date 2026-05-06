@@ -2,6 +2,7 @@
 pragma solidity ^0.8.12;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
@@ -66,7 +67,7 @@ contract cuniBTC is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, A
         if (_token == address(0)) {
             payable(_to).transfer(_amount);
         } else {
-            IERC20(_token).transfer(_to, _amount);
+            SafeERC20.safeTransfer(IERC20(_token), _to, _amount);
         }
     }
 
