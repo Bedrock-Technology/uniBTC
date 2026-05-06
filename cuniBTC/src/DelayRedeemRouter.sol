@@ -197,11 +197,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     mapping(address => uint256) public retainAmounts;
 
     /**
-     * @notice Tracks the user cancel fee rate for the contract.
-     */
-    uint256 public cancelFeeRate;
-
-    /**
      * @notice The management fee for the contract.
      * This is used to cover the costs of managing the contract.
      */
@@ -500,17 +495,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
             fastLanes[_accounts[i]] = _fastLaneStatus[i];
         }
         emit FastLaneSet(_accounts, _fastLaneStatus);
-    }
-
-    /**
-     * @dev Sets the cancel fee rate for the contract.
-     * @param _newFeeRate The new value for the cancel fee rate,
-     * which is used to calculate the cancellation fee.
-     */
-    function setCancelFeeRate(uint256 _newFeeRate) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_newFeeRate <= REDEEM_FEE_RATE_RANGE, "USR011");
-        emit CancelFeeRateSet(cancelFeeRate, _newFeeRate);
-        cancelFeeRate = _newFeeRate;
     }
 
     /**
@@ -1119,9 +1103,4 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
      * @notice Event emitted when the retain amounts for fast lane redemption are set.
      */
     event RetainAmountsSet(address[] tokens, uint256[] balances);
-
-    /**
-     * @notice Event emitted when the cancel fee rate is set.
-     */
-    event CancelFeeRateSet(uint256 previousFeeRate, uint256 newFeeRate);
 }
