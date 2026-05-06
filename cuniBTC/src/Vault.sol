@@ -68,7 +68,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
     }
 
     function isOperatePeriod() public view returns (bool) {
-        uint256 delta = block.number - startGenesis;
+        uint256 delta = block.timestamp - startGenesis;
         uint256 mod = delta % (operatePeriod + lockupPeriod);
         if (mod < operatePeriod) {
             return true;
@@ -82,7 +82,7 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
     }
 
     function periodRemain() external view returns (uint256) {
-        uint256 delta = block.number - startGenesis;
+        uint256 delta = block.timestamp - startGenesis;
         uint256 mod = delta % (operatePeriod + lockupPeriod);
         if (mod < operatePeriod) {
             return operatePeriod - mod;
@@ -108,9 +108,9 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
         _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
 
         cuniBTC = _cuniBTC;
-        startGenesis = block.number;
-        operatePeriod = 7200 * 7; //7day
-        lockupPeriod = 7200 * 30; //30day
+        startGenesis = block.timestamp;
+        operatePeriod = 86400 * 7; //7day
+        lockupPeriod = 86400 * 30; //30day
         totalSupply = _totalSupply;
     }
 
@@ -192,7 +192,8 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
 
     function setPeriod(uint256 _start, uint256 _operatePeriod, uint256 _lockupPeriod) external onlyRole(OPERATOR_ROLE) {
         require(_operatePeriod + _lockupPeriod > 0, "USR018");
-        require(_start <= block.number, "USR019");
+        require(_start <= block.timestamp, "USR019");
+        require(_operatePeriod + _lockupPeriod < type(uint256).max, "USR020");
         startGenesis = _start;
         operatePeriod = _operatePeriod;
         lockupPeriod = _lockupPeriod;
