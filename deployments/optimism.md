@@ -26,3 +26,6 @@
 ## CCT Token Pool
 
 - [0x99D94f528CeA3eE1791ab7B476A1FACb4297CA17](https://optimistic.etherscan.io/address/0x99D94f528CeA3eE1791ab7B476A1FACb4297CA17)
+
+## TimelockController
+- [0x782d9a8b9ba6de823835c95242d955508d2b5ea9](https://optimistic.etherscan.io/address/0x782d9a8b9ba6de823835c95242d955508d2b5ea9)
