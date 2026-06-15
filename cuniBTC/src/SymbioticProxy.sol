@@ -26,13 +26,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable, ReentrancyGu
 		_disableInitializers();
 	}
 
-	function initialize(
-		address _symbioticVault,
-		address _defaultStakerRewards,
-		address _vault,
-		address _uniBTC,
-		address _admin
-	) external initializer {
+	function initialize(address _symbioticVault, address _defaultStakerRewards, address _vault, address _uniBTC, address _admin) external initializer {
 		__AccessControl_init();
 		__ReentrancyGuard_init();
 
@@ -68,12 +62,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable, ReentrancyGu
 		rewardToken = _rewardToken;
 	}
 
-	function deposit(uint256 amount)
-		external
-		onlyRole(DEFAULT_ADMIN_ROLE)
-		nonReentrant
-		returns (uint256 depositedAmount, uint256 mintedShares)
-	{
+	function deposit(uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant returns (uint256 depositedAmount, uint256 mintedShares) {
 		require(amount > 0, "SymbioticProxy: invalid amount");
 
 		bytes memory approveZeroData = abi.encodeWithSelector(IERC20.approve.selector, symbioticVault, 0);
@@ -89,12 +78,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable, ReentrancyGu
 		require(depositedAmount == amount, "SymbioticProxy: invalid deposited amount");
 	}
 
-	function withdraw(uint256 amount)
-		external
-		onlyRole(DEFAULT_ADMIN_ROLE)
-		nonReentrant
-		returns (uint256 burnedShares, uint256 mintedShares)
-	{
+	function withdraw(uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant returns (uint256 burnedShares, uint256 mintedShares) {
 		require(amount > 0, "SymbioticProxy: invalid amount");
 
 		bytes memory withdrawData = abi.encodeWithSelector(ISymbioticVault.withdraw.selector, vault, amount);
@@ -103,12 +87,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable, ReentrancyGu
 		(burnedShares, mintedShares) = abi.decode(result, (uint256, uint256));
 	}
 
-	function redeem(uint256 shares)
-		external
-		onlyRole(DEFAULT_ADMIN_ROLE)
-		nonReentrant
-		returns (uint256 withdrawnAssets, uint256 mintedShares)
-	{
+	function redeem(uint256 shares) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant returns (uint256 withdrawnAssets, uint256 mintedShares) {
 		require(shares > 0, "SymbioticProxy: invalid shares");
 
 		bytes memory redeemData = abi.encodeWithSelector(ISymbioticVault.redeem.selector, vault, shares);
