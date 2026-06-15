@@ -4,12 +4,13 @@ pragma solidity ^0.8.17;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
 import "../interface/IVault.sol";
 import "../interface/ISymbioticVault.sol";
 import "../interface/IDefaultStakerRewards.sol";
 
-contract SymbioticProxy is Initializable, AccessControlUpgradeable {
+contract SymbioticProxy is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgradeable {
 
 	address public symbioticVault;
 	address public defaultStakerRewards;
@@ -33,6 +34,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable {
 		address _admin
 	) external initializer {
 		__AccessControl_init();
+		__ReentrancyGuard_init();
 
 		require(_symbioticVault != address(0), "SymbioticProxy: invalid symbiotic vault");
 		require(_defaultStakerRewards != address(0), "SymbioticProxy: invalid rewards");
@@ -69,6 +71,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable {
 	function deposit(uint256 amount)
 		external
 		onlyRole(DEFAULT_ADMIN_ROLE)
+		nonReentrant
 		returns (uint256 depositedAmount, uint256 mintedShares)
 	{
 		require(amount > 0, "SymbioticProxy: invalid amount");
@@ -89,6 +92,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable {
 	function withdraw(uint256 amount)
 		external
 		onlyRole(DEFAULT_ADMIN_ROLE)
+		nonReentrant
 		returns (uint256 burnedShares, uint256 mintedShares)
 	{
 		require(amount > 0, "SymbioticProxy: invalid amount");
@@ -102,6 +106,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable {
 	function redeem(uint256 shares)
 		external
 		onlyRole(DEFAULT_ADMIN_ROLE)
+		nonReentrant
 		returns (uint256 withdrawnAssets, uint256 mintedShares)
 	{
 		require(shares > 0, "SymbioticProxy: invalid shares");
@@ -112,7 +117,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable {
 		(withdrawnAssets, mintedShares) = abi.decode(result, (uint256, uint256));
 	}
 
-	function claim(uint256 epoch) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256 amount) {
+	function claim(uint256 epoch) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant returns (uint256 amount) {
 		require(principleRecipient != address(0), "SymbioticProxy: principle recipient not set");
 
 		bytes memory claimData = abi.encodeWithSelector(ISymbioticVault.claim.selector, principleRecipient, epoch);
@@ -121,7 +126,7 @@ contract SymbioticProxy is Initializable, AccessControlUpgradeable {
 		amount = abi.decode(result, (uint256));
 	}
 
-	function claimRewards() external onlyRole(DEFAULT_ADMIN_ROLE) {
+	function claimRewards() external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
 		require(rewardRecipient != address(0), "SymbioticProxy: reward recipient not set");
 		require(rewardToken != address(0), "SymbioticProxy: reward token not set");
 
