@@ -170,7 +170,7 @@ contract SymbioticProxyForkTest is Test {
         console.log("[Claim] USDC balance of rewardRecipient before:", balanceBefore);
 
         vm.prank(PROXY_ADMIN);
-        proxy.claimRewards();
+        proxy.claimRewards(NETWORK);
 
         uint256 balanceAfter = IERC20(USDC).balanceOf(REWARD_RECIPIENT);
         console.log("[Claim] USDC balance of rewardRecipient after:", balanceAfter);

@@ -82,12 +82,11 @@ contract SymbioticProxy is Ownable, ReentrancyGuard {
 		amount = abi.decode(result, (uint256));
 	}
 
-	function claimRewards() external onlyOwner nonReentrant {
+	function claimRewards(address network) external onlyOwner nonReentrant {
 		require(rewardRecipient != address(0), "SymbioticProxy: reward recipient not set");
 		require(rewardToken != address(0), "SymbioticProxy: reward token not set");
 
 		bytes[] memory activeSharesOfHints = new bytes[](0);
-		address network = address(0x98e52Ea7578F2088c152E81b17A9a459bF089f2a);
 		uint256 maxRewards = 1000;
 		bytes memory rewardData = abi.encode(network, maxRewards, activeSharesOfHints);
 		bytes memory callData = abi.encodeWithSelector(
