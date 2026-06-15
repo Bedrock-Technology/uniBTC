@@ -15,12 +15,11 @@ contract Deploy is Script {
         address defaultStakerRewards,
         address vault,
         address uniBTC,
-        address admin,
-        address rewardToken
+        address admin
     ) external {
         vm.startBroadcast();
         SymbioticProxy symbioticProxy = new SymbioticProxy(
-            symbioticVault, defaultStakerRewards, vault, uniBTC, admin, rewardToken
+            symbioticVault, defaultStakerRewards, vault, uniBTC, admin
         );
         vm.stopBroadcast();
 
@@ -31,6 +30,5 @@ contract Deploy is Script {
         console.log("vault:", vault);
         console.log("uniBTC:", uniBTC);
         console.log("admin:", admin);
-        console.log("rewardToken:", rewardToken);
     }
 }

@@ -74,7 +74,7 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN, USDC);
+        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
 
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
         address[] memory targets = new address[](3);
@@ -170,7 +170,7 @@ contract SymbioticProxyForkTest is Test {
         console.log("[Claim] USDC balance of rewardRecipient before:", balanceBefore);
 
         vm.prank(PROXY_ADMIN);
-        proxy.claimRewards(NETWORK);
+        proxy.claimRewards(NETWORK, USDC);
 
         uint256 balanceAfter = IERC20(USDC).balanceOf(REWARD_RECIPIENT);
         console.log("[Claim] USDC balance of rewardRecipient after:", balanceAfter);
@@ -185,7 +185,7 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN, USDC);
+        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
 
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
         address[] memory targets = new address[](3);
@@ -245,7 +245,7 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN, USDC);
+        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
 
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
         address[] memory targets = new address[](3);

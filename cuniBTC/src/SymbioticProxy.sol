@@ -18,15 +18,13 @@ contract SymbioticProxy is Ownable, ReentrancyGuard {
 
 	address public principleRecipient;
 	address public rewardRecipient;
-	address public rewardToken;
 
-	constructor(address _symbioticVault, address _defaultStakerRewards, address _vault, address _uniBTC, address _admin, address _rewardToken) {
+	constructor(address _symbioticVault, address _defaultStakerRewards, address _vault, address _uniBTC, address _admin) {
 		require(_symbioticVault != address(0), "SymbioticProxy: invalid symbiotic vault");
 		require(_defaultStakerRewards != address(0), "SymbioticProxy: invalid rewards");
 		require(_vault != address(0), "SymbioticProxy: invalid vault");
 		require(_uniBTC != address(0), "SymbioticProxy: invalid uniBTC");
 		require(_admin != address(0), "SymbioticProxy: invalid admin");
-		require(_rewardToken != address(0), "SymbioticProxy: invalid reward token");
 
 		_transferOwnership(_admin);
 
@@ -36,7 +34,6 @@ contract SymbioticProxy is Ownable, ReentrancyGuard {
 		uniBTC = _uniBTC;
 		principleRecipient = _vault;
 		rewardRecipient = _vault;
-		rewardToken = _rewardToken;
 	}
 
 	function deposit(uint256 amount) external onlyOwner nonReentrant returns (uint256 depositedAmount, uint256 mintedShares) {
@@ -82,9 +79,9 @@ contract SymbioticProxy is Ownable, ReentrancyGuard {
 		amount = abi.decode(result, (uint256));
 	}
 
-	function claimRewards(address network) external onlyOwner nonReentrant {
+	function claimRewards(address network, address rewardToken) external onlyOwner nonReentrant {
 		require(rewardRecipient != address(0), "SymbioticProxy: reward recipient not set");
-		require(rewardToken != address(0), "SymbioticProxy: reward token not set");
+		require(rewardToken != address(0), "SymbioticProxy: invalid reward token");
 
 		bytes[] memory activeSharesOfHints = new bytes[](0);
 		uint256 maxRewards = 1000;
