@@ -132,7 +132,7 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setMaxQuotaForTokens(btcList, quotas);
         quotas[0] = 2314;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setQuotaRates(btcList, quotas);
-        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setRedeemFeeRate(0);
+        // DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setRedeemFeeRate(0);
         // DelayRedeemRouter(payable(strategy.delayRedeemRouter))
         //     .grantRole(DelayRedeemRouter(payable(strategy.delayRedeemRouter)).OPERATOR_ROLE(), strategy.vault);
         //allow transfer cuniBTC to redeem

@@ -16,7 +16,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     using SafeERC20 for IERC20;
 
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
     /**
      * @notice The duration of one day in seconds (60 * 60 * 24 = 86,400)
      */
@@ -38,9 +37,9 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     uint256 public constant REDEEM_FEE_RATE_RANGE = 10000;
 
     /**
-     * @notice Default redeem fee rate (2%).
+     * @notice Default redeem fee rate (0%).
      */
-    uint256 public constant DEFAULT_REDEEM_FEE_RATE = 200;
+    uint256 public constant DEFAULT_REDEEM_FEE_RATE = 0;
 
     /**
      * @notice Delay for completing any delayed redeem, measured in timestamps.
@@ -182,19 +181,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
      * @notice Tracks the redeem fee for the contract.
      */
     uint256 public managementFee;
-
-    /// update 2025-7-2, add green channel feature
-    /**
-     * @notice Mapping to store the fast lane status of accounts.
-     * If enabled, users can redeem with uniBTC using retain amount.
-     */
-    mapping(address => bool) public fastLanes;
-
-    /**
-     * @notice The maximum amount of tokens that can be redeemed in the fast lane.
-     * This is used to limit the amount of tokens that can be redeemed in a single transaction.
-     */
-    mapping(address => uint256) public retainAmounts;
 
     /**
      * @notice The management fee for the contract.
@@ -463,38 +449,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
      */
     function setRedeemFeeRate(uint256 _newFeeRate) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setRedeemFeeRate(_newFeeRate);
-    }
-
-    /**
-     * @dev Sets the retain amount for fast lane redemption.
-     * @param _tokens List of BTC tokens.
-     * @param _balances List of retain amounts for each token.
-     */
-    function setRetainAmounts(address[] calldata _tokens, uint256[] calldata _balances)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        require(_tokens.length == _balances.length, "SYS006");
-        for (uint256 i = 0; i < _tokens.length; i++) {
-            retainAmounts[_tokens[i]] = _balances[i];
-        }
-        emit RetainAmountsSet(_tokens, _balances);
-    }
-
-    /**
-     * @dev Sets the fast lane status for multiple accounts.
-     * @param _accounts List of accounts to set fast lane status.
-     * @param _fastLaneStatus Corresponding fast lane status for each account.
-     */
-    function setFastLane(address[] calldata _accounts, bool[] calldata _fastLaneStatus)
-        external
-        onlyRole(OPERATOR_ROLE)
-    {
-        require(_accounts.length == _fastLaneStatus.length, "SYS006");
-        for (uint256 i = 0; i < _accounts.length; i++) {
-            fastLanes[_accounts[i]] = _fastLaneStatus[i];
-        }
-        emit FastLaneSet(_accounts, _fastLaneStatus);
     }
 
     /**
@@ -817,9 +771,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
                 tokenDebts[token].totalCleared += uniBTCAmount;
                 burnAmount += uniBTCAmount;
                 if (token == NATIVE_BTC) {
-                    // Check vault balance and fast lane logic
-                    uint256 vaultBalance = address(vault).balance;
-                    _useFastLane(recipient, token, vaultBalance, amountToSend);
                     // Transfer the native token to the recipient.
                     IVault(vault).execute(address(this), "", amountToSend);
                     (bool success,) = payable(recipient).call{value: amountToSend}("");
@@ -827,9 +778,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
                         revert("USR010");
                     }
                 } else {
-                    // Check vault balance and fast lane logic
-                    uint256 vaultBalance = IERC20(token).balanceOf(vault);
-                    _useFastLane(recipient, token, vaultBalance, amountToSend);
                     data = abi.encodeWithSelector(IERC20.transfer.selector, recipient, amountToSend);
 
                     // Transfer the specified ERC-20 token to the recipient’s address.
@@ -973,23 +921,6 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
     }
 
     /**
-     * @notice Internal function to update the fast lane status for a recipient.
-     * @param recipient The address of the recipient.
-     * @param token The specific BTC token address.
-     * @param vaultBalance The balance of the vault for the specified token.
-     * @param amountToSend The amount to be sent to the recipient.
-     */
-    function _useFastLane(address recipient, address token, uint256 vaultBalance, uint256 amountToSend) internal {
-        if (vaultBalance < retainAmounts[token] + amountToSend) {
-            require(fastLanes[recipient], "USR015");
-            require(vaultBalance >= retainAmounts[token], "USR027");
-            require(retainAmounts[token] >= amountToSend, "USR015");
-            retainAmounts[token] = retainAmounts[token] - amountToSend;
-            fastLanes[recipient] = false;
-        }
-    }
-
-    /**
      * @notice Internal function to retrieve the fee for a specific recipient and index.
      * @param recipient The address of the recipient.
      * @param index The index of the delayed redeem in the recipient's array.
@@ -1093,14 +1024,4 @@ contract DelayRedeemRouter is Initializable, AccessControlUpgradeable, PausableU
      * @notice Event emitted when the management fee is withdrawn.
      */
     event ManagementFeeWithdrawn(address recipient, uint256 amount);
-
-    /**
-     * @notice Event emitted when the fast lane is set for accounts.
-     */
-    event FastLaneSet(address[] accounts, bool[] fastLaneStatus);
-
-    /**
-     * @notice Event emitted when the retain amounts for fast lane redemption are set.
-     */
-    event RetainAmountsSet(address[] tokens, uint256[] balances);
 }
