@@ -3,9 +3,7 @@ pragma solidity ^0.8.17;
 
 import {Test, console} from "forge-std/Test.sol";
 import {SymbioticProxy} from "../src/SymbioticProxy.sol";
-import {
-    TransparentUpgradeableProxy
-} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 struct RewardDistribution {
@@ -14,27 +12,15 @@ struct RewardDistribution {
 }
 
 interface IDefaultStakerRewardsDistribute {
-    function distributeRewards(
-        address network,
-        address token,
-        uint256 amount,
-        bytes calldata data
-    ) external;
+    function distributeRewards(address network, address token, uint256 amount, bytes calldata data) external;
 
-    function claimable(
-        address token,
-        address account,
-        bytes calldata data
-    ) external view returns (uint256 amount);
+    function claimable(address token, address account, bytes calldata data) external view returns (uint256 amount);
 
     function rewardsLength(address token, address network) external view returns (uint256);
 
     function lastUnclaimedReward(address account, address token, address network) external view returns (uint256);
 
-    function rewards(address token, address network, uint256 index)
-        external
-        view
-        returns (RewardDistribution memory);
+    function rewards(address token, address network, uint256 index) external view returns (RewardDistribution memory);
 }
 
 interface IVaultExtended {
@@ -44,14 +30,8 @@ interface IVaultExtended {
 
 interface ISymbioticVaultExtended {
     function currentEpoch() external view returns (uint48);
-    function activeStakeAt(uint48 timestamp, bytes calldata hint)
-        external
-        view
-        returns (uint256);
-    function activeSharesAt(uint48 timestamp, bytes calldata hint)
-        external
-        view
-        returns (uint256);
+    function activeStakeAt(uint48 timestamp, bytes calldata hint) external view returns (uint256);
+    function activeSharesAt(uint48 timestamp, bytes calldata hint) external view returns (uint256);
     function activeSharesOfAt(address account, uint48 timestamp, bytes memory hint) external view returns (uint256);
 }
 
@@ -77,20 +57,14 @@ contract SymbioticProxyForkTest is Test {
         uint256 len = IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).rewardsLength(USDC, NETWORK);
         console.log("[Rewards] rewardsLength:", len);
         if (len > 0) {
-            RewardDistribution memory rd = IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).rewards(
-                USDC,
-                NETWORK,
-                len - 1
-            );
+            RewardDistribution memory rd =
+                IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).rewards(USDC, NETWORK, len - 1);
             console.log("[Rewards]   last index:", len - 1);
             console.log("[Rewards]   last amount:", rd.amount);
             console.log("[Rewards]   last timestamp:", uint256(rd.timestamp));
 
-            uint256 activeSharesVault = ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR).activeSharesOfAt(
-                VAULT_ADDR,
-                rd.timestamp,
-                new bytes(0)
-            );
+            uint256 activeSharesVault =
+                ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR).activeSharesOfAt(VAULT_ADDR, rd.timestamp, new bytes(0));
             console.log("[SymbioticVault] activeSharesOfAt at timestamp:", activeSharesVault);
         }
     }
@@ -153,18 +127,14 @@ contract SymbioticProxyForkTest is Test {
         IERC20(USDC).approve(DEFAULT_STAKER_REWARDS, 10000 * 1e8);
 
         // Encode distributeRewards data: (uint48 amount, uint256 timestamp, bytes, bytes)
-        uint48 rewardU48 = 10000*1e8;
+        uint48 rewardU48 = 10000 * 1e8;
         uint256 blocktime = block.timestamp;
 
         // Print activeStakeAt and activeSharesAt from symbiotic vault
-        uint256 activeStake = ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR).activeStakeAt(
-            uint48(blocktime),
-            new bytes(0)
-        );
-        uint256 activeShares = ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR).activeSharesAt(
-            uint48(blocktime),
-            new bytes(0)
-        );
+        uint256 activeStake =
+            ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR).activeStakeAt(uint48(blocktime), new bytes(0));
+        uint256 activeShares =
+            ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR).activeSharesAt(uint48(blocktime), new bytes(0));
         console.log("[SymbioticVault] activeStakeAt:", activeStake);
         console.log("[SymbioticVault] activeSharesAt:", activeShares);
 
@@ -173,13 +143,9 @@ contract SymbioticProxyForkTest is Test {
 
         // DISTRIBUTOR calls distributeRewards on DefaultStakerRewards
         vm.prank(DISTRIBUTOR);
-        IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).distributeRewards(
-            NETWORK,
-            USDC,
-            rewardU48,
-            distributeData
-        );
-        
+        IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS)
+            .distributeRewards(NETWORK, USDC, rewardU48, distributeData);
+
         console.log("[Distribute] rewards distributed by distributor");
         _printRewardsInfo();
 
@@ -190,24 +156,17 @@ contract SymbioticProxyForkTest is Test {
         IERC20(USDC).approve(DEFAULT_STAKER_REWARDS, 10000 * 1e8);
 
         // Encode distributeRewards data: (uint48 amount, uint256 timestamp, bytes, bytes)
-        rewardU48 = 10000*1e8;
+        rewardU48 = 10000 * 1e8;
         blocktime = block.timestamp;
-        uint256 activeSharesVault = ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR).activeSharesOfAt(
-            VAULT_ADDR,
-            uint48(blocktime),
-            new bytes(0)
-        );
+        uint256 activeSharesVault =
+            ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR).activeSharesOfAt(VAULT_ADDR, uint48(blocktime), new bytes(0));
         console.log("[SymbioticVault] activeSharesAt:", activeSharesVault);
         distributeData = abi.encode(uint48(blocktime - 1), 0, new bytes(0), new bytes(0));
 
         // DISTRIBUTOR calls distributeRewards on DefaultStakerRewards
         vm.prank(DISTRIBUTOR);
-        IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).distributeRewards(
-            NETWORK,
-            USDC,
-            rewardU48,
-            distributeData
-        );
+        IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS)
+            .distributeRewards(NETWORK, USDC, rewardU48, distributeData);
         console.log("[Distribute] rewards distributed by distributor 2");
         _printRewardsInfo();
         // ============================================================
@@ -216,21 +175,16 @@ contract SymbioticProxyForkTest is Test {
         uint256 maxRewards = 1000;
         bytes memory claimableData = abi.encode(NETWORK, maxRewards);
 
-        uint256 lur = IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).lastUnclaimedReward(
-            VAULT_ADDR, USDC, NETWORK
-        );
+        uint256 lur =
+            IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).lastUnclaimedReward(VAULT_ADDR, USDC, NETWORK);
         console.log("lastUnclaimedReward for VAULT:", lur);
 
-        uint256 claimableAmount = IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).claimable(
-            USDC,
-            VAULT_ADDR,
-            claimableData
-        );
+        uint256 claimableAmount =
+            IDefaultStakerRewardsDistribute(DEFAULT_STAKER_REWARDS).claimable(USDC, VAULT_ADDR, claimableData);
         console.log("[Claim] claimable USDC for rewardVault:", claimableAmount);
 
         uint256 balanceBefore = IERC20(USDC).balanceOf(REWARD_RECIPIENT);
         console.log("[Claim] USDC balance of rewardRecipient before:", balanceBefore);
-
 
         vm.prank(PROXY_ADMIN);
         proxy.claimRewards();
