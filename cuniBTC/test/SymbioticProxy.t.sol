@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import {Test, console} from "forge-std/Test.sol";
 import {SymbioticProxy} from "../src/SymbioticProxy.sol";
-import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 struct RewardDistribution {
@@ -43,7 +42,7 @@ contract SymbioticProxyForkTest is Test {
     address constant SYMBIOTIC_VAULT_ADDR = 0x4b7A4Bae15B049F84f2806eA7297fcD3702aC82B;
     address constant DEFAULT_STAKER_REWARDS = 0x08cFedEa6155a8cdABCC316517aD156dcD1b9bD4;
     address constant PROXY_ADMIN = 0x8b2667aC176d1bAa442A4d125c7D0fFCDA3AF870;
-    address constant REWARD_RECIPIENT = 0x8b2667aC176d1bAa442A4d125c7D0fFCDA3AF870;
+    address constant REWARD_RECIPIENT = 0x047D41F2544B7F63A8e991aF2068a363d210d6Da;
     address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address constant PRINCIPLE_RECIPIENT = 0x047D41F2544B7F63A8e991aF2068a363d210d6Da;
     address constant DISTRIBUTOR = 0x09A3976d8D63728d20DCDFEe1e531C206Ba91225;
@@ -75,16 +74,7 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        SymbioticProxy implementation = new SymbioticProxy();
-        TransparentUpgradeableProxy proxyProxy = new TransparentUpgradeableProxy(
-            address(implementation),
-            address(this),
-            abi.encodeCall(
-                implementation.initialize,
-                (SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN)
-            )
-        );
-        proxy = SymbioticProxy(address(proxyProxy));
+        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN, USDC);
 
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
         address[] memory targets = new address[](3);
@@ -97,13 +87,6 @@ contract SymbioticProxyForkTest is Test {
         // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
         vm.prank(VAULT_ADMIN);
         IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
-
-        // Set reward config as proxy admin
-        vm.startPrank(PROXY_ADMIN);
-        proxy.setRewardRecipient(REWARD_RECIPIENT);
-        proxy.setRewardToken(USDC);
-        proxy.setPrincipleRecipient(PRINCIPLE_RECIPIENT);
-        vm.stopPrank();
 
         // Fund vault with uniBTC for deposit
         deal(UNIBTC, VAULT_ADDR, 100e8); // 1 uniBTC (8 decimals)
@@ -202,16 +185,7 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        SymbioticProxy implementation = new SymbioticProxy();
-        TransparentUpgradeableProxy proxyProxy = new TransparentUpgradeableProxy(
-            address(implementation),
-            address(this),
-            abi.encodeCall(
-                implementation.initialize,
-                (SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN)
-            )
-        );
-        proxy = SymbioticProxy(address(proxyProxy));
+        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN, USDC);
 
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
         address[] memory targets = new address[](3);
@@ -224,13 +198,6 @@ contract SymbioticProxyForkTest is Test {
         // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
         vm.prank(VAULT_ADMIN);
         IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
-
-        // Set reward & principle config as proxy admin
-        vm.startPrank(PROXY_ADMIN);
-        proxy.setRewardRecipient(REWARD_RECIPIENT);
-        proxy.setRewardToken(USDC);
-        proxy.setPrincipleRecipient(PRINCIPLE_RECIPIENT);
-        vm.stopPrank();
 
         // Fund vault with uniBTC for deposit
         deal(UNIBTC, VAULT_ADDR, 100e8); // 100 uniBTC (8 decimals)
@@ -278,16 +245,7 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        SymbioticProxy implementation = new SymbioticProxy();
-        TransparentUpgradeableProxy proxyProxy = new TransparentUpgradeableProxy(
-            address(implementation),
-            address(this),
-            abi.encodeCall(
-                implementation.initialize,
-                (SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN)
-            )
-        );
-        proxy = SymbioticProxy(address(proxyProxy));
+        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN, USDC);
 
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
         address[] memory targets = new address[](3);
@@ -300,13 +258,6 @@ contract SymbioticProxyForkTest is Test {
         // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
         vm.prank(VAULT_ADMIN);
         IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
-
-        // Set reward & principle config as proxy admin
-        vm.startPrank(PROXY_ADMIN);
-        proxy.setRewardRecipient(REWARD_RECIPIENT);
-        proxy.setRewardToken(USDC);
-        proxy.setPrincipleRecipient(PRINCIPLE_RECIPIENT);
-        vm.stopPrank();
 
         // Fund vault with uniBTC for deposit
         deal(UNIBTC, VAULT_ADDR, 100e8); // 100 uniBTC (8 decimals)
