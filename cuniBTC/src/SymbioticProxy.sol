@@ -10,14 +10,10 @@ import "../interface/ISymbioticVault.sol";
 import "../interface/IDefaultStakerRewards.sol";
 
 contract SymbioticProxy is Ownable, ReentrancyGuard {
-
 	address public symbioticVault;
 	address public defaultStakerRewards;
 	address public vault;
 	address public uniBTC;
-
-	address public principleRecipient;
-	address public rewardRecipient;
 
 	constructor(address _symbioticVault, address _defaultStakerRewards, address _vault, address _uniBTC, address _admin) {
 		require(_symbioticVault != address(0), "SymbioticProxy: invalid symbiotic vault");
@@ -32,8 +28,6 @@ contract SymbioticProxy is Ownable, ReentrancyGuard {
 		defaultStakerRewards = _defaultStakerRewards;
 		vault = _vault;
 		uniBTC = _uniBTC;
-		principleRecipient = _vault;
-		rewardRecipient = _vault;
 	}
 
 	function deposit(uint256 amount) external onlyOwner nonReentrant returns (uint256 depositedAmount, uint256 mintedShares) {
@@ -71,16 +65,13 @@ contract SymbioticProxy is Ownable, ReentrancyGuard {
 	}
 
 	function claim(uint256 epoch) external onlyOwner nonReentrant returns (uint256 amount) {
-		require(principleRecipient != address(0), "SymbioticProxy: principle recipient not set");
-
-		bytes memory claimData = abi.encodeWithSelector(ISymbioticVault.claim.selector, principleRecipient, epoch);
+		bytes memory claimData = abi.encodeWithSelector(ISymbioticVault.claim.selector, vault, epoch);
 		bytes memory result = IVault(vault).execute(symbioticVault, claimData, 0);
 
 		amount = abi.decode(result, (uint256));
 	}
 
 	function claimRewards(address network, address rewardToken) external onlyOwner nonReentrant {
-		require(rewardRecipient != address(0), "SymbioticProxy: reward recipient not set");
 		require(rewardToken != address(0), "SymbioticProxy: invalid reward token");
 
 		bytes[] memory activeSharesOfHints = new bytes[](0);
@@ -88,7 +79,7 @@ contract SymbioticProxy is Ownable, ReentrancyGuard {
 		bytes memory rewardData = abi.encode(network, maxRewards, activeSharesOfHints);
 		bytes memory callData = abi.encodeWithSelector(
 			IDefaultStakerRewards.claimRewards.selector,
-			rewardRecipient,
+			vault,
 			rewardToken,
 			rewardData
 		);
