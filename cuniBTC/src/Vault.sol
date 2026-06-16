@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.12;
+pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -190,7 +190,10 @@ contract Vault is Initializable, AccessControlUpgradeable, ReentrancyGuardUpgrad
         emit StopService();
     }
 
-    function setPeriod(uint256 _start, uint256 _operatePeriod, uint256 _lockupPeriod) external onlyRole(OPERATOR_ROLE) {
+    function setPeriod(uint256 _start, uint256 _operatePeriod, uint256 _lockupPeriod)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         require(_operatePeriod + _lockupPeriod > 0, "USR018");
         require(_start <= block.timestamp, "USR019");
         require(_operatePeriod + _lockupPeriod < type(uint256).max, "USR020");
