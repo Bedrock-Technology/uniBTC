@@ -6,8 +6,8 @@ import {Script, console} from "forge-std/Script.sol";
 import {SymbioticProxy} from "../src/SymbioticProxy.sol";
 
 contract Deploy is Script {
-    //forge script script/SymbioticProxy.s.sol --sig 'deploy(address,address,address,address,address,address)' \
-    // $SYMBIOTIC_VAULT $DEFAULT_STAKER_REWARDS $VAULT $UNIBTC $ADMIN $REWARD_TOKEN \
+    //forge script script/SymbioticProxy.s.sol --sig 'deploy(address,address,address,address,address)' \
+    // $SYMBIOTIC_VAULT $DEFAULT_STAKER_REWARDS $VAULT $UNIBTC $ADMIN \
     //--rpc-url $RPC_ETH_HOODI --account $DEPLOYER --broadcast \
     //--verify --verifier-url $RPC_ETH_HOODI_SCAN --etherscan-api-key $KEY_ETH_HOODI_SCAN --delay 30
     function deploy(
