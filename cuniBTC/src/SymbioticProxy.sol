@@ -10,10 +10,10 @@ import "../interface/ISymbioticVault.sol";
 import "../interface/IDefaultStakerRewards.sol";
 
 contract SymbioticProxy is Ownable, ReentrancyGuard {
-	address public symbioticVault;
-	address public defaultStakerRewards;
-	address public vault;
-	address public uniBTC;
+	address public immutable symbioticVault;
+	address public immutable defaultStakerRewards;
+	address public immutable vault;
+	address public immutable uniBTC;
 
 	constructor(address _symbioticVault, address _defaultStakerRewards, address _vault, address _uniBTC, address _admin) {
 		require(_symbioticVault != address(0), "SymbioticProxy: invalid symbiotic vault");
