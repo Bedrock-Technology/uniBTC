@@ -36,17 +36,18 @@ interface ISymbioticVaultExtended {
 
 contract SymbioticProxyForkTest is Test {
     // ============ Mainnet addresses ============
-    address constant VAULT_ADDR = 0x047D41F2544B7F63A8e991aF2068a363d210d6Da;
-    address constant VAULT_ADMIN = 0xC9dA980fFABbE2bbe15d4734FDae5761B86b5Fc3;
+    address constant VAULT_ADDR = 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230;
+    address constant VAULT_ADMIN = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
     address constant UNIBTC = 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568;
-    address constant SYMBIOTIC_VAULT_ADDR = 0x4b7A4Bae15B049F84f2806eA7297fcD3702aC82B;
-    address constant DEFAULT_STAKER_REWARDS = 0x08cFedEa6155a8cdABCC316517aD156dcD1b9bD4;
-    address constant PROXY_ADMIN = 0x8b2667aC176d1bAa442A4d125c7D0fFCDA3AF870;
-    address constant REWARD_RECIPIENT = 0x047D41F2544B7F63A8e991aF2068a363d210d6Da;
+    address constant SYMBIOTIC_VAULT_ADDR = 0x9ee1881Cc42478F3d0Cf9b76A0135ece398AF1F7;
+    address constant DEFAULT_STAKER_REWARDS = 0x51329193eB24924CE48E8c5d7588Dd6187392A83;
+    address constant PROXY_ADMIN = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
+    address constant REWARD_RECIPIENT = 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230;
     address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
-    address constant PRINCIPLE_RECIPIENT = 0x047D41F2544B7F63A8e991aF2068a363d210d6Da;
+    address constant PRINCIPLE_RECIPIENT = 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230;
     address constant DISTRIBUTOR = 0x09A3976d8D63728d20DCDFEe1e531C206Ba91225;
     address constant NETWORK = 0x98e52Ea7578F2088c152E81b17A9a459bF089f2a;
+    address constant SYMBIOTIC_PORXY = 0x581d1860AeC248BB59E8f8345C70dA71dFDeA31D;
 
     bytes32 constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
@@ -74,20 +75,18 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
-
+        // proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
+        proxy = SymbioticProxy(SYMBIOTIC_PORXY);
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
-        address[] memory targets = new address[](3);
-        targets[0] = SYMBIOTIC_VAULT_ADDR;
-        targets[1] = DEFAULT_STAKER_REWARDS;
-        targets[2] = UNIBTC;
-        vm.prank(VAULT_ADMIN);
-        IVaultExtended(VAULT_ADDR).allowTarget(targets);
-
+        // address[] memory targets = new address[](3);
+        // targets[0] = SYMBIOTIC_VAULT_ADDR;
+        // targets[1] = DEFAULT_STAKER_REWARDS;
+        // targets[2] = UNIBTC;
+        // vm.prank(VAULT_ADMIN);
+        // IVaultExtended(VAULT_ADDR).allowTarget(targets);
         // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
-        vm.prank(VAULT_ADMIN);
-        IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
-
+        // vm.prank(VAULT_ADMIN);
+        // IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
         // Fund vault with uniBTC for deposit
         deal(UNIBTC, VAULT_ADDR, 100e8); // 1 uniBTC (8 decimals)
 
@@ -185,19 +184,20 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
+        // proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
+        proxy = SymbioticProxy(SYMBIOTIC_PORXY);
 
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
-        address[] memory targets = new address[](3);
-        targets[0] = SYMBIOTIC_VAULT_ADDR;
-        targets[1] = DEFAULT_STAKER_REWARDS;
-        targets[2] = UNIBTC;
-        vm.prank(VAULT_ADMIN);
-        IVaultExtended(VAULT_ADDR).allowTarget(targets);
+        // address[] memory targets = new address[](3);
+        // targets[0] = SYMBIOTIC_VAULT_ADDR;
+        // targets[1] = DEFAULT_STAKER_REWARDS;
+        // targets[2] = UNIBTC;
+        // vm.prank(VAULT_ADMIN);
+        // IVaultExtended(VAULT_ADDR).allowTarget(targets);
 
-        // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
-        vm.prank(VAULT_ADMIN);
-        IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
+        // // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
+        // vm.prank(VAULT_ADMIN);
+        // IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
 
         // Fund vault with uniBTC for deposit
         deal(UNIBTC, VAULT_ADDR, 100e8); // 100 uniBTC (8 decimals)
@@ -245,19 +245,20 @@ contract SymbioticProxyForkTest is Test {
         // Step 0: Setup & deploy SymbioticProxy
         // ============================================================
 
-        proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
+        // proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
+        proxy = SymbioticProxy(SYMBIOTIC_PORXY);
 
         // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
-        address[] memory targets = new address[](3);
-        targets[0] = SYMBIOTIC_VAULT_ADDR;
-        targets[1] = DEFAULT_STAKER_REWARDS;
-        targets[2] = UNIBTC;
-        vm.prank(VAULT_ADMIN);
-        IVaultExtended(VAULT_ADDR).allowTarget(targets);
+        // address[] memory targets = new address[](3);
+        // targets[0] = SYMBIOTIC_VAULT_ADDR;
+        // targets[1] = DEFAULT_STAKER_REWARDS;
+        // targets[2] = UNIBTC;
+        // vm.prank(VAULT_ADMIN);
+        // IVaultExtended(VAULT_ADDR).allowTarget(targets);
 
-        // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
-        vm.prank(VAULT_ADMIN);
-        IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
+        // // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
+        // vm.prank(VAULT_ADMIN);
+        // IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
 
         // Fund vault with uniBTC for deposit
         deal(UNIBTC, VAULT_ADDR, 100e8); // 100 uniBTC (8 decimals)

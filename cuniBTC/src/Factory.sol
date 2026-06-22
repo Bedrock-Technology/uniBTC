@@ -61,11 +61,13 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         delayRedeemRouterBeacon = new UpgradeableBeacon(address(delayRedeemRouterImpl));
     }
 
-    function createStrategy(string memory _name, string memory _symbol, address _defaultAdmin, address _uniBTC)
-        external
-        nonReentrant
-        onlyOwner
-    {
+    function createStrategy(
+        string memory _name,
+        string memory _symbol,
+        address _defaultAdmin,
+        address _uniBTC,
+        uint256 _totalSupply
+    ) external nonReentrant onlyOwner {
         Strategy memory existing = strategies[_symbol];
         if (existing.vault != address(0)) {
             revert("Strategy already exists");
@@ -75,7 +77,7 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
             address(cuniBTCBeacon), abi.encodeCall(cuniBTC.initialize, (address(this), _name, _symbol))
         );
         BeaconProxy vaultProxy = new BeaconProxy(
-            address(vaultBeacon), abi.encodeCall(Vault.initialize, (address(this), address(cuniBTCProxy), 50e8))
+            address(vaultBeacon), abi.encodeCall(Vault.initialize, (address(this), address(cuniBTCProxy), _totalSupply))
         );
         BeaconProxy airdropProxy =
             new BeaconProxy(address(airdropBeacon), abi.encodeCall(Airdrop.initialize, (1 days, address(this))));
@@ -127,14 +129,6 @@ contract Factory is Initializable, OwnableUpgradeable, ReentrancyGuardUpgradeabl
         address[] memory btcList = new address[](1);
         btcList[0] = uniBTC;
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).addToBtclist(btcList);
-        uint256[] memory quotas = new uint256[](1);
-        quotas[0] = 2e8;
-        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setMaxQuotaForTokens(btcList, quotas);
-        quotas[0] = 2314;
-        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setQuotaRates(btcList, quotas);
-        // DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setRedeemFeeRate(0);
-        // DelayRedeemRouter(payable(strategy.delayRedeemRouter))
-        //     .grantRole(DelayRedeemRouter(payable(strategy.delayRedeemRouter)).OPERATOR_ROLE(), strategy.vault);
         //allow transfer cuniBTC to redeem
         cuniBTC(strategy.cuniBTC).setRedeemRouter(strategy.delayRedeemRouter);
         Vault(payable(strategy.vault))
