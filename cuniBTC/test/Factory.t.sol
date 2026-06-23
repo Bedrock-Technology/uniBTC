@@ -54,7 +54,7 @@ contract FactoryTest is Test {
         );
         factory = Factory(address(factoryProxy));
 
-        factory.createStrategy("cuniBTC", "cuniBTC", Owner.addr, address(unibtc));
+        factory.createStrategy("cuniBTC", "cuniBTC", Owner.addr, address(unibtc), 40e8);
     }
 
     //forge test test/Factory.t.sol --match-test testCreateStrategy
@@ -100,7 +100,7 @@ contract FactoryTest is Test {
     //forge test test/Factory.t.sol --match-test testCreateStrategyWithSameName
     function testCreateStrategyWithSameName() public {
         vm.expectRevert("Strategy already exists");
-        factory.createStrategy("cuniBTC", "cuniBTC", address(this), address(unibtc));
+        factory.createStrategy("cuniBTC", "cuniBTC", address(this), address(unibtc), 40e8);
     }
 
     //forge test test/Factory.t.sol --match-test testE2E
@@ -115,28 +115,39 @@ contract FactoryTest is Test {
             address airdrop
         ) = factory.strategies("cuniBTC");
         Factory.Strategy memory strategy = Factory.Strategy(name, symbol, vault, _cuniBTC, delayRedeemRouter, airdrop);
-        vm.prank(Owner.addr);
-        uniBTC(unibtc).mint(address(this), 50 * 1e8);
+        deal(address(unibtc), address(this), 10e8);
         // swap 50 uniBTC to cuniBTC via vault
-        IERC20(address(unibtc)).approve(strategy.vault, 50 * 1e8);
-        Vault(payable(strategy.vault)).mint(address(unibtc), 50 * 1e8);
-        assertEq(cuniBTC(strategy.cuniBTC).balanceOf(address(this)), 50 * 1e8);
+        IERC20(address(unibtc)).approve(strategy.vault, 10 * 1e8);
+        Vault(payable(strategy.vault)).mint(address(unibtc), 10 * 1e8);
+        assertEq(cuniBTC(strategy.cuniBTC).balanceOf(address(this)), 10 * 1e8);
+
+        // redeem quotas
+        address[] memory btcList = new address[](1);
+        btcList[0] = address(unibtc);
+        uint256[] memory quotas = new uint256[](1);
+        quotas[0] = 10e8;
+        vm.prank(Owner.addr);
+        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setMaxQuotaForTokens(btcList, quotas);
+        quotas[0] = 2314;
+        vm.prank(Owner.addr);
+        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setQuotaRates(btcList, quotas);
+
         vm.warp(block.timestamp + 86400);
         // redeem cuniBTC back to uniBTC
-        IERC20(address(strategy.cuniBTC)).approve(strategy.delayRedeemRouter, 50 * 1e8);
-        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).createDelayedRedeem(address(unibtc), 50 * 1e8);
+        IERC20(address(strategy.cuniBTC)).approve(strategy.delayRedeemRouter, 1 * 1e8);
+        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).createDelayedRedeem(address(unibtc), 1 * 1e8);
 
         //claim
         vm.warp(block.timestamp + 7 * 86400);
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).claimDelayedRedeems();
-        assertEq(unibtc.balanceOf(address(this)), 49 * 1e8);
-        assertEq(IERC20(strategy.cuniBTC).balanceOf(address(this)), 0);
+        assertEq(unibtc.balanceOf(address(this)), 1e8);
+        assertEq(IERC20(strategy.cuniBTC).balanceOf(address(this)), 9e8);
     }
 
     //forge test test/Factory.t.sol --match-test testupgradeBeacon
     function testupgradeBeacon() public {
         //create another one
-        factory.createStrategy("cuniBTC", "cuniBTC-2", Owner.addr, address(unibtc));
+        factory.createStrategy("cuniBTC", "cuniBTC-2", Owner.addr, address(unibtc), 40e8);
         address beforeUpgradeAdr = address(factory.cuniBTCImpl());
         NewCuniBTC newcuniBTC = new NewCuniBTC();
         factory.upgradeBeacon(address(factory.cuniBTCBeacon()), address(newcuniBTC));
@@ -150,7 +161,7 @@ contract FactoryTest is Test {
         NewCuniBTC(payable(_cuniBTC2)).setVersion(2);
         assertEq(NewCuniBTC(payable(_cuniBTC)).version(), 2);
         assertEq(NewCuniBTC(payable(_cuniBTC2)).version(), 2);
-        factory.createStrategy("cuniBTC", "cuniBTC-3", Owner.addr, address(unibtc));
+        factory.createStrategy("cuniBTC", "cuniBTC-3", Owner.addr, address(unibtc), 40e8);
         (,,, address _cuniBTC3,,) = factory.strategies("cuniBTC-3");
         vm.prank(Owner.addr);
         NewCuniBTC(payable(_cuniBTC3)).setVersion(2);

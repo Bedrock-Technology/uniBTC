@@ -32,18 +32,19 @@ contract Deploy is Script {
         console.log("proxyAdmin", proxyAdmin);
     }
 
-    //forge script script/factory.sol --sig 'createStrategy(address,string,string,address,address)' \
-    // $FACTORY_ADDRESS "" "" $OWNER_ADDRESS $CUNIBTC_ADDRESS \
+    //forge script script/factory.sol --sig 'createStrategy(address,string,string,address,address,uint256)' \
+    // $FACTORY_ADDRESS "" "" $OWNER_ADDRESS $CUNIBTC_ADDRESS 40e8 \
     // --rpc-url $RPC_ETH_HOODI --account $DEPLOYER --broadcast
     function createStrategy(
         address factory,
         string memory name,
         string memory symbol,
         address defaultAdmin,
-        address unibtc
+        address unibtc,
+        uint256 totalSupply
     ) external {
         vm.startBroadcast();
-        Factory(payable(factory)).createStrategy(name, symbol, defaultAdmin, unibtc);
+        Factory(payable(factory)).createStrategy(name, symbol, defaultAdmin, unibtc, totalSupply);
         vm.stopBroadcast();
     }
 

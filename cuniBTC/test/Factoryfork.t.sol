@@ -24,9 +24,9 @@ contract FactoryTest is Test {
     address public deployer;
 
     function setUp() public {
-        factory = Factory(0x677F4D7Fe9d78223041E2B0f78F5Ac7ae212b3D5);
-        unibtc = uniBTC(0x611160Ae2DA00A2735e3400AC4f401918A61800a);
-        proxyAdmin = ProxyAdmin(0xB36F69446C756831cCE73bb35bb2D6f75007212c);
+        factory = Factory(0x6F10dC7dc5ff3Cbb7C18B324AbDC05fADe601370);
+        unibtc = uniBTC(0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568);
+        proxyAdmin = ProxyAdmin(0x029E4FbDAa31DE075dD74B2238222A08233978f6);
         Owner = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
         deployer = 0x8cb37518330014E027396E3ED59A231FBe3B011A;
         vm.startPrank(deployer);
@@ -60,11 +60,12 @@ contract FactoryTest is Test {
     function testCreateStrategyWithSameName() public {
         vm.prank(Owner);
         vm.expectRevert("Strategy already exists");
-        factory.createStrategy("cuniBTC", "cuniBTC", address(this), address(unibtc));
+        factory.createStrategy("cuniBTC", "cuniBTC", address(this), address(unibtc), 40e8);
     }
 
-    //forge test test/Factoryfork.t.sol --match-test testE2E --rpc-url $RPC_ETH_HOODI
+    //forge test test/Factoryfork.t.sol --match-test testE2E() --rpc-url $RPC_ETH_HOODI
     function testE2E() public {
+        string memory tokenSymbol = vm.envString("TOKEN_SYMBOL");
         // Get strategy info
         (
             string memory name,
@@ -73,31 +74,43 @@ contract FactoryTest is Test {
             address _cuniBTC,
             address delayRedeemRouter,
             address airdrop
-        ) = factory.strategies("cuniBTC");
+        ) = factory.strategies(tokenSymbol);
         Factory.Strategy memory strategy = Factory.Strategy(name, symbol, vault, _cuniBTC, delayRedeemRouter, airdrop);
-        vm.prank(Owner);
-        uniBTC(unibtc).mint(address(this), 50 * 1e8);
+        deal(address(unibtc), address(this), 10e8);
+
         // swap 50 uniBTC to cuniBTC via vault
-        IERC20(address(unibtc)).approve(strategy.vault, 50 * 1e8);
-        Vault(payable(strategy.vault)).mint(address(unibtc), 50 * 1e8);
-        assertEq(cuniBTC(strategy.cuniBTC).balanceOf(address(this)), 50 * 1e8);
+        IERC20(address(unibtc)).approve(strategy.vault, 10 * 1e8);
+        Vault(payable(strategy.vault)).mint(address(unibtc), 10 * 1e8);
+        assertEq(cuniBTC(strategy.cuniBTC).balanceOf(address(this)), 10 * 1e8);
+
+        // redeem quotas
+        address[] memory btcList = new address[](1);
+        btcList[0] = address(unibtc);
+        uint256[] memory quotas = new uint256[](1);
+        quotas[0] = 10e8;
+        vm.prank(Owner);
+        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setMaxQuotaForTokens(btcList, quotas);
+        quotas[0] = 2314;
+        vm.prank(Owner);
+        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).setQuotaRates(btcList, quotas);
+
         vm.warp(block.timestamp + 86400);
         // redeem cuniBTC back to uniBTC
-        IERC20(address(strategy.cuniBTC)).approve(strategy.delayRedeemRouter, 50 * 1e8);
-        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).createDelayedRedeem(address(unibtc), 50 * 1e8);
+        IERC20(address(strategy.cuniBTC)).approve(strategy.delayRedeemRouter, 1 * 1e8);
+        DelayRedeemRouter(payable(strategy.delayRedeemRouter)).createDelayedRedeem(address(unibtc), 1 * 1e8);
 
         //claim
         vm.warp(block.timestamp + 7 * 86400);
         DelayRedeemRouter(payable(strategy.delayRedeemRouter)).claimDelayedRedeems();
-        assertEq(unibtc.balanceOf(address(this)), 49 * 1e8);
-        assertEq(IERC20(strategy.cuniBTC).balanceOf(address(this)), 0);
+        assertEq(unibtc.balanceOf(address(this)), 1e8);
+        assertEq(IERC20(strategy.cuniBTC).balanceOf(address(this)), 9e8);
     }
 
     //forge test test/Factoryfork.t.sol --match-test testupgradeBeacon --rpc-url $RPC_ETH_HOODI
     function testupgradeBeacon() public {
         //create another one
         vm.startPrank(Owner);
-        factory.createStrategy("cuniBTC", "cuniBTC-2", Owner, address(unibtc));
+        factory.createStrategy("cuniBTC", "cuniBTC-2", Owner, address(unibtc), 40e8);
         address beforeUpgradeAdr = address(factory.cuniBTCImpl());
         NewCuniBTC newcuniBTC = new NewCuniBTC();
         factory.upgradeBeacon(address(factory.cuniBTCBeacon()), address(newcuniBTC));
@@ -109,7 +122,7 @@ contract FactoryTest is Test {
         NewCuniBTC(payable(_cuniBTC2)).setVersion(2);
         assertEq(NewCuniBTC(payable(_cuniBTC)).version(), 2);
         assertEq(NewCuniBTC(payable(_cuniBTC2)).version(), 2);
-        factory.createStrategy("cuniBTC", "cuniBTC-3", Owner, address(unibtc));
+        factory.createStrategy("cuniBTC", "cuniBTC-3", Owner, address(unibtc), 40e8);
         (,,, address _cuniBTC3,,) = factory.strategies("cuniBTC-3");
         NewCuniBTC(payable(_cuniBTC3)).setVersion(2);
         vm.stopPrank();
