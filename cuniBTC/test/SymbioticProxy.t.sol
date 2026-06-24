@@ -31,23 +31,24 @@ interface ISymbioticVaultExtended {
     function currentEpoch() external view returns (uint48);
     function activeStakeAt(uint48 timestamp, bytes calldata hint) external view returns (uint256);
     function activeSharesAt(uint48 timestamp, bytes calldata hint) external view returns (uint256);
+    function activeBalanceOf(address account) external view returns (uint256);
     function activeSharesOfAt(address account, uint48 timestamp, bytes memory hint) external view returns (uint256);
 }
 
 contract SymbioticProxyForkTest is Test {
     // ============ Mainnet addresses ============
     address constant VAULT_ADDR = 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230;
-    address constant VAULT_ADMIN = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
+    address constant VAULT_ADMIN = 0x3A57Ef914b02829E5E1b7064690D9Ab6ea209E9e;
     address constant UNIBTC = 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568;
-    address constant SYMBIOTIC_VAULT_ADDR = 0x9ee1881Cc42478F3d0Cf9b76A0135ece398AF1F7;
-    address constant DEFAULT_STAKER_REWARDS = 0x51329193eB24924CE48E8c5d7588Dd6187392A83;
-    address constant PROXY_ADMIN = 0xac07f2721EcD955c4370e7388922fA547E922A4f;
+    address constant SYMBIOTIC_VAULT_ADDR = 0xcA5412F167228F33571a1d2C1FCcF28f5B74ab59;
+    address constant DEFAULT_STAKER_REWARDS = 0x6f64BfAF4562d2Dc0Fa4b3b22F679a8363dd68F2;
+    address constant PROXY_ADMIN = 0x385afecb8F3990b6120dA008ea324c77deA2e3Fd;
     address constant REWARD_RECIPIENT = 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230;
     address constant USDC = 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48;
     address constant PRINCIPLE_RECIPIENT = 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230;
     address constant DISTRIBUTOR = 0x09A3976d8D63728d20DCDFEe1e531C206Ba91225;
     address constant NETWORK = 0x98e52Ea7578F2088c152E81b17A9a459bF089f2a;
-    address constant SYMBIOTIC_PORXY = 0x581d1860AeC248BB59E8f8345C70dA71dFDeA31D;
+    address constant SYMBIOTIC_PORXY = 0xbbD642E86759d6168335872C41167944631b8F6C;
 
     bytes32 constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
@@ -69,7 +70,7 @@ contract SymbioticProxyForkTest is Test {
         }
     }
 
-    /// forge test test/SymbioticProxy.t.sol --match-test testForkFlow --fork-url $RPC_ETH_MAINNET -vvvv
+    /// forge test test/SymbioticProxy.t.sol --match-test testForkFlow --fork-url $RPC_ETH -vvvv
     function testForkFlow() public {
         // ============================================================
         // Step 0: Setup & deploy SymbioticProxy
@@ -77,14 +78,14 @@ contract SymbioticProxyForkTest is Test {
 
         // proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
         proxy = SymbioticProxy(SYMBIOTIC_PORXY);
-        // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
-        // address[] memory targets = new address[](3);
+        // // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
+        // address[] memory targets = new address[](2);
         // targets[0] = SYMBIOTIC_VAULT_ADDR;
         // targets[1] = DEFAULT_STAKER_REWARDS;
-        // targets[2] = UNIBTC;
+        // // targets[2] = UNIBTC;
         // vm.prank(VAULT_ADMIN);
         // IVaultExtended(VAULT_ADDR).allowTarget(targets);
-        // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
+        // // Grant OPERATOR_ROLE on Vault to the proxy (needed for execute)
         // vm.prank(VAULT_ADMIN);
         // IVaultExtended(VAULT_ADDR).grantRole(OPERATOR_ROLE, address(proxy));
         // Fund vault with uniBTC for deposit
@@ -178,7 +179,7 @@ contract SymbioticProxyForkTest is Test {
         assertGt(balanceAfter, balanceBefore, "Should have claimed rewards");
     }
 
-    /// forge test test/SymbioticProxy.t.sol --match-test testForkRedeem --fork-url $RPC_ETH_MAINNET -vvvv
+    /// forge test test/SymbioticProxy.t.sol --match-test testForkRedeem --fork-url $RPC_ETH -vvvv
     function testForkRedeem() public {
         // ============================================================
         // Step 0: Setup & deploy SymbioticProxy
@@ -187,11 +188,11 @@ contract SymbioticProxyForkTest is Test {
         // proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
         proxy = SymbioticProxy(SYMBIOTIC_PORXY);
 
-        // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
-        // address[] memory targets = new address[](3);
+        // // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
+        // address[] memory targets = new address[](2);
         // targets[0] = SYMBIOTIC_VAULT_ADDR;
         // targets[1] = DEFAULT_STAKER_REWARDS;
-        // targets[2] = UNIBTC;
+        // // targets[2] = UNIBTC;
         // vm.prank(VAULT_ADMIN);
         // IVaultExtended(VAULT_ADDR).allowTarget(targets);
 
@@ -239,7 +240,7 @@ contract SymbioticProxyForkTest is Test {
         assertGt(claimedAmount, 0, "Should have claimed withdrawn uniBTC");
     }
 
-    /// forge test test/SymbioticProxy.t.sol --match-test testForkRedeemShares --fork-url $RPC_ETH_MAINNET -vvvv
+    /// forge test test/SymbioticProxy.t.sol --match-test testForkRedeemShares --fork-url $RPC_ETH -vvvv
     function testForkRedeemShares() public {
         // ============================================================
         // Step 0: Setup & deploy SymbioticProxy
@@ -248,11 +249,11 @@ contract SymbioticProxyForkTest is Test {
         // proxy = new SymbioticProxy(SYMBIOTIC_VAULT_ADDR, DEFAULT_STAKER_REWARDS, VAULT_ADDR, UNIBTC, PROXY_ADMIN);
         proxy = SymbioticProxy(SYMBIOTIC_PORXY);
 
-        // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
-        // address[] memory targets = new address[](3);
+        // // Allow Vault to execute on symbioticVault, defaultStakerRewards, and uniBTC
+        // address[] memory targets = new address[](2);
         // targets[0] = SYMBIOTIC_VAULT_ADDR;
         // targets[1] = DEFAULT_STAKER_REWARDS;
-        // targets[2] = UNIBTC;
+        // // targets[2] = UNIBTC;
         // vm.prank(VAULT_ADMIN);
         // IVaultExtended(VAULT_ADDR).allowTarget(targets);
 
@@ -298,5 +299,19 @@ contract SymbioticProxyForkTest is Test {
         console.log("[Claim] claimed amount:", claimedAmount);
 
         assertGt(claimedAmount, 0, "Should have claimed redeemed uniBTC");
+    }
+
+    /// forge test test/SymbioticProxy.t.sol --match-test testForkWithdraw --fork-url $RPC_ETH -vvvv
+    function testForkWithdraw() public {
+        proxy = SymbioticProxy(SYMBIOTIC_PORXY);
+        ISymbioticVaultExtended symbioticVault = ISymbioticVaultExtended(SYMBIOTIC_VAULT_ADDR);
+        uint256 activeBalance = symbioticVault.activeBalanceOf(VAULT_ADDR);
+        console.log("activebalance before:", activeBalance);
+        vm.prank(PROXY_ADMIN);
+        (uint256 withdrawnAssets, uint256 redeemMintedShares) = proxy.withdraw(1000);
+        console.log("[Redeem] withdrawnAssets:", withdrawnAssets);
+        console.log("[Redeem] mintedShares:", redeemMintedShares);
+        activeBalance = symbioticVault.activeBalanceOf(VAULT_ADDR);
+        console.log("activebalance:", activeBalance);
     }
 }
