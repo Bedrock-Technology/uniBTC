@@ -12,7 +12,7 @@
   airdrop (address) : 0x9eB0ba9722f2F60ef87E569628eC99f952974307
 }
 
-SymbioticProxy: 0x581d1860AeC248BB59E8f8345C70dA71dFDeA31D
+SymbioticProxy: 0xbbD642E86759d6168335872C41167944631b8F6C
 ```
 
 # deploy
@@ -50,17 +50,17 @@ TOKEN_SYMBOL="suniBTC" forge test test/Factoryfork.t.sol --match-test 'testE2E' 
 ## deploy SymbioticProxy 
 ```bash
 forge script script/SymbioticProxy.s.sol --sig 'deploy(address,address,address,address,address)' \
-0x9ee1881cc42478f3d0cf9b76a0135ece398af1f7 0x51329193eB24924CE48E8c5d7588Dd6187392A83 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230 0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568 $OWNER_ADDRESS \
+0xcA5412F167228F33571a1d2C1FCcF28f5B74ab59 0x6f64bfaf4562d2dc0fa4b3b22f679a8363dd68f2 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230 0x004e9c3ef86bc1ca1f0bb5c7662861ee93350568 0x385afecb8F3990b6120dA008ea324c77deA2e3Fd \
 --rpc-url $RPC_ETH --account $DEPLOYER --broadcast \
 --verify --verifier-url $RPC_ETH_SCAN --etherscan-api-key $KEY_ETH_SCAN --delay 30
 == Logs ==
-  SymbioticProxy deployed at: 0x581d1860AeC248BB59E8f8345C70dA71dFDeA31D
-  owner: 0xac07f2721EcD955c4370e7388922fA547E922A4f
-  symbioticVault: 0x9ee1881Cc42478F3d0Cf9b76A0135ece398AF1F7
-  defaultStakerRewards: 0x51329193eB24924CE48E8c5d7588Dd6187392A83
+  SymbioticProxy deployed at: 0xbbD642E86759d6168335872C41167944631b8F6C
+  owner: 0x385afecb8F3990b6120dA008ea324c77deA2e3Fd
+  symbioticVault: 0xcA5412F167228F33571a1d2C1FCcF28f5B74ab59
+  defaultStakerRewards: 0x6f64BfAF4562d2Dc0Fa4b3b22F679a8363dd68F2
   vault: 0xB8b0aEd0a1Ce913183665B71bD9653fe378f2230
   uniBTC: 0x004E9C3EF86bc1ca1f0bB5C7662861Ee93350568
-  admin: 0xac07f2721EcD955c4370e7388922fA547E922A4f
+  admin: 0x385afecb8F3990b6120dA008ea324c77deA2e3Fd
 ```
 ## set suniBTC params
 1. DelayRedeemRouter. setMaxQuotaForTokens and setQuotaRates to enable withdrawal
